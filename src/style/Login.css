@@ -1,0 +1,248 @@
+/* ==========================================================
+   Login.css — SÓ ESTRUTURA (sem cor, sem fonte)
+   ========================================================== */
+
+
+/* Ocupa a tela inteira e centraliza o card no meio,
+   tanto na horizontal quanto na vertical */
+.login-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+
+/* O card em si: 2 colunas lado a lado.
+   1.1fr / 1fr = a coluna do form fica um pouco mais larga
+   que a coluna do painel da direita. Mude esses números
+   se quiser outra proporção */
+.login-card {
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  border-radius: 8px;     /* arredondamento dos cantos do card */
+  overflow: hidden;       /* corta qualquer coisa que passe do arredondado */
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-color);
+  border-radius: 8px;
+}
+
+
+/* Coluna esquerda (form). O padding é o "respiro" interno,
+   e o flex-column + justify-center centraliza o conteúdo
+   verticalmente dentro dessa coluna */
+.login-form-side {
+  padding: 56px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border-color);
+}
+
+.login-title {
+  margin-bottom: 15px;
+  line-height: 1.3;
+  font-family: var(--font-title);
+  color: var(--main-txt-color);
+  font-weight: 800;
+  font-size: 36px;
+}
+
+.login-subtitle {
+  margin: 0 0 22px;
+  font-family: var(--font-body);
+  color: var(--main-txt-color);
+  font-size: 15.5px;
+}
+
+.login-required-hint {
+  margin: 0 0 24px;
+  color: var(--dark-red);
+}
+
+/* Espaço entre um campo (label+input) e o próximo */
+.login-field {
+  margin-bottom: 24px;
+  margin-top: -5px;
+}
+
+.login-field label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--main-txt-color);
+}
+
+/* O input: largura total da coluna + espaçamento interno.
+   Esses 11px/14px são o "acolchoamento" do texto dentro da caixa */
+.login-field input {
+  width: 100%;
+  padding: 11px 14px;
+  box-sizing: border-box;  /* garante que o padding não estoure a largura de 100% */
+  border-radius: 4px;
+  border: 1px solid var(--border-color); 
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+
+/* Linha do "Esqueci minha senha", empurrada pra direita.
+   O margin negativo em cima é só pra puxar ela um pouco
+   mais perto do último input (ajuste fino, pode tirar) */
+.login-form-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0px 0 24px;
+}
+
+
+/* Botão ocupa a largura toda da coluna */
+.login-submit {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Efeito de "afundar" o botão no exato momento do clique —
+   1px pra baixo. É posição, não cor, por isso tá aqui */
+.login-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.login-submit:disabled {
+  cursor: not-allowed;
+}
+
+
+/* Caixinha de mensagem (erro/sucesso) que aparece
+   embaixo do botão depois do submit */
+.login-feedback {
+  margin-top: 25px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 15.5px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  font-family: var(--font-body);
+}
+
+.login-feedback.is-error {
+  background: rgba(228, 64, 95, 0.1);
+  color: var(--dark-red);
+  border: 1px solid rgba(228, 64, 95, 0.3);
+}
+
+.login-feedback.is-success {
+  background: rgba(51, 208, 51, 0.1);
+  color: var(--dark-green);
+  border: 1px solid rgba(49, 188, 49, 0.1);
+}
+
+/* CCPOP SIDE */
+
+/* Coluna direita (painel de marca). Mesma lógica do form-side:
+   padding + flex-column + justify-center */
+.login-side {
+  padding: 56px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* O círculo do badge — width/height iguais + border-radius:50%
+   é o que faz virar um círculo perfeito */
+.login-side-badge {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px; 
+}
+
+.login-side-badge img {
+  width: 100%;
+  height: 100%;
+  margin-top: -40px;
+  object-fit: contain;
+}
+
+.login-side-title {
+  margin: 0 auto 24px; 
+  font-family: var(--font-title);
+  margin-top: -24px;
+}
+
+/* list-style:none tira a bolinha padrão do navegador;
+   gap:10px é o espaço entre cada item da lista */
+.login-side-list {
+  list-style: none;
+  font-family: var(--font-body);
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-side-list li {
+  padding-left: 12px;    /* era 18px — reduz o espaço entre bolinha e texto */
+  position: relative;
+}
+
+/* A "bolinha" quadrada antes de cada item — um quadradinho
+   de 6x6px posicionado à esquerda do texto */
+.login-side-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+}
+
+.login-side-cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 12px 22px;
+}
+
+.login-form-side .btn {
+  width: 100%;
+}
+
+/* Abaixo de 720px de largura (celular): o card para de ter
+   2 colunas e empilha uma embaixo da outra */
+@media (max-width: 720px) {
+   .login-card {
+    grid-template-columns: 1fr;
+  }
+
+  .login-form-side {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);  /* 👈 linha horizontal no lugar da vertical */
+  }
+
+  /* "order: -1" faz o painel de marca aparecer ACIMA
+     do formulário quando empilhado, mesmo estando depois
+     dele no HTML */
+  .login-side {
+    order: -1;
+    padding: 40px 24px;
+  }
+
+  .login-form-side {
+    padding: 40px 24px;
+  }
+
+}

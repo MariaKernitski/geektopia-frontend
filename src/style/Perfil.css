@@ -1,0 +1,295 @@
+/* ==========================================================
+   Perfil.css — mesmo sistema visual do Login/Cadastro
+   ========================================================== */
+
+.perfil-page {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.perfil-shell {
+  width: 100%;
+  max-width: 960px;
+}
+
+.perfil-loading {
+  text-align: center;
+  color: var(--soft-txt-color);
+  font-size: 14px;
+  padding: 80px 20px;
+}
+
+/* ---------------- FEEDBACK (sucesso/erro) ---------------- */
+
+.perfil-feedback {
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.perfil-feedback.is-sucesso {
+  background: rgba(52, 168, 104, 0.1);
+  color: var(--dark-green);
+  border: 1px solid rgba(52, 168, 104, 0.3);
+}
+
+.perfil-feedback.is-erro {
+  background: rgba(228, 64, 95, 0.1);
+  color: var(--dark-red);
+  border: 1px solid rgba(228, 64, 95, 0.3);
+}
+
+/* ---------------- CARD PRINCIPAL (sidebar + conteúdo) ---------------- */
+
+.perfil-card {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.perfil-edit-trigger {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.perfil-form-actions-edit {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---------------- SIDEBAR ---------------- */
+
+.perfil-sidebar {
+  padding: 32px 20px;
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-alt-color);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.perfil-badge {
+  width: 110px;
+  height: 110px;
+  align-self: center;
+  object-fit: contain;
+}
+
+.perfil-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perfil-nav-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+.perfil-nav-btn:hover {
+  background: rgba(22, 21, 26, 0.05);
+  color: var(--main-txt-color);
+}
+
+.perfil-nav-btn.is-active {
+  background: var(--surface-color);
+  color: var(--main-txt-color);
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--dark-yellow);
+}
+
+
+/* ---------------- CONTEÚDO ---------------- */
+
+.cronometro strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.perfil-content {
+  padding: 40px 44px;
+}
+
+.perfil-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.perfil-avatar-wrap {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+}
+
+.perfil-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.perfil-greeting-title {
+  font-family: var(--font-title);
+  font-size: 18px;
+  margin: 0 0 4px;
+  color: var(--main-txt-color);
+}
+
+.perfil-greeting-sub {
+  font-size: 12.5px;
+  color: var(--soft-txt-color);
+  margin: 0;
+}
+
+.perfil-tab-body {
+  min-height: 220px;
+}
+
+/* ---------------- BOX DE INFORMAÇÕES ---------------- */
+
+.perfil-info-box {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  background: var(--bg-color);
+}
+
+.perfil-info-row {
+  display: flex;
+  gap: 6px;
+  font-size: 13.5px;
+  margin: 0 0 8px;
+  color: var(--main-txt-color);
+}
+
+.perfil-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.perfil-info-row .label {
+  font-weight: 600;
+  color: var(--soft-txt-color);
+  min-width: 130px;
+}
+
+/* ---------------- FORMULÁRIO DE EDIÇÃO ---------------- */
+
+.perfil-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.perfil-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perfil-field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--main-txt-color);
+}
+
+.perfil-field input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 13.5px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+}
+
+.perfil-field input:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+.perfil-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* ---------------- ESTADOS VAZIOS (Ingressos, Histórico, Competições) ---------------- */
+
+.perfil-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--soft-txt-color);
+}
+
+.perfil-empty-state h3 {
+  font-family: var(--font-title);
+  font-size: 16px;
+  color: var(--main-txt-color);
+  margin: 0 0 8px;
+}
+
+.perfil-empty-state p {
+  font-size: 13.5px;
+  margin: 0;
+}
+
+/* ---------------- SEGURANÇA / SENHA ---------------- */
+
+.perfil-security-form {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.perfil-security-title {
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 16px;
+  margin: 0 0 20px;
+}
+
+/* ---------------- BANNER DE RODAPÉ ---------------- */
+
+.perfil-banner {
+  margin-top: 28px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: var(--light-yellow);
+  color: var(--main-txt-color);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ---------------- RESPONSIVO ---------------- */
+
+@media (max-width: 780px) {
+  .perfil-card {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-sidebar {
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .perfil-nav {
+    flex-direction: row;
+  }
+
+  .perfil-form {
+    grid-template-columns: 1fr;
+  }
+}

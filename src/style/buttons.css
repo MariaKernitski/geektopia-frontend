@@ -1,0 +1,77 @@
+/* ==========================================================
+   Botões — NEXUS
+   Todos compartilham a MESMA base (formato, fonte, animação).
+   Só a cor muda, de acordo com o PAPEL do botão — não com o texto dele.
+   ========================================================== */
+
+/* ---- Base compartilhada por TODOS os botões ---- */
+.btn {
+  font-family: var(--font-title);
+  font-weight: 500;
+  font-size: 15px;
+  padding: 10px 20px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+}
+
+/* Animação padrão de clique — igual em TODOS os botões */
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Estado desabilitado — igual em TODOS os botões */
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---- PRIMÁRIO: Entrar, Cadastrar, Comprar, Salvar, Confirmar ---- */
+.btn-primary {
+  background: var(--light-yellow);
+  border-color: var(--light-yellow);
+  color: var(--main-txt-color);
+  border-radius: 4px;
+  box-shadow: var(--shadow-card);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--dark-yellow);
+  border-color: var(--dark-yellow);
+}
+
+/* ---- SECUNDÁRIO: Cancelar (não-destrutivo), Voltar, Ver mais ---- */
+.btn-secondary {
+  background: transparent;
+  border-color: var(--light-yellow);
+  border-radius: 4px;
+  color: var(--main-txt-color);
+}
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--main-txt-color);
+  background: var(--bg-alt-color);
+}
+
+.btn-outline-accent {
+  background: transparent;
+  border-radius: 4px;
+  border-color: var(--dark-yellow);
+  color: var(--dark-yellow);
+}
+.btn-outline-accent:hover:not(:disabled) {
+  background: var(--bg-alt-color);
+  border-radius: 4px;
+  border-color: var(--main-txt-color);
+  color: var(--main-txt-color);
+}
+
+/* ---- PERIGO: Excluir conta, Remover perfil, Cancelar inscrição ---- */
+.btn-danger {
+  background: transparent;
+  border-color: var(--dark-red);
+  color: var(--dark-red);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--light-red);
+}

@@ -1,0 +1,215 @@
+/* ==========================================================
+   Cadastro.css — mesmo sistema visual do Login
+   ========================================================== */
+
+.cadastro-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.cadastro-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ---------------- ABAS DE ETAPA ---------------- */
+
+.cadastro-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cadastro-step {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--soft-txt-color);
+  padding-bottom: 8px;
+  border-bottom: 2px solid transparent;
+}
+
+.cadastro-step.is-active {
+  color: var(--dark-yellow);
+  font-weight: 700;
+  border-bottom-color: var(--dark-yellow);
+}
+
+/* ---------------- CONTEÚDO ---------------- */
+
+.cadastro-content {
+  padding: 32px 36px;
+}
+
+.cadastro-title {
+  font-family: var(--font-title);
+  font-size: 20px;
+  margin: 0 0 20px;
+  color: var(--main-txt-color);
+}
+
+/* ---------------- CAMPOS ---------------- */
+
+.cadastro-field {
+  margin-bottom: 18px;
+}
+
+.cadastro-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--main-txt-color);
+}
+
+.cadastro-field input,
+.cadastro-field select {
+  width: 100%;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+
+.cadastro-field input:focus,
+.cadastro-field select:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+.cadastro-field input:disabled,
+.cadastro-field select:disabled {
+  background: var(--bg-alt-color);
+  cursor: not-allowed;
+}
+
+/* ---------------- GRUPO DE RADIO (Tipo de Documento) ---------------- */
+
+.cadastro-radio-group {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0 14px;
+}
+
+.cadastro-radio-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13.5px;
+}
+
+/* :has() destaca o "pill" quando o radio dentro dele está marcado.
+   Suportado nos navegadores modernos (Chrome/Edge/Firefox atuais) */
+.cadastro-radio-option:has(input:checked) {
+  border-color: var(--dark-yellow);
+  background: var(--bg-alt-color);
+  font-weight: 600;
+}
+
+/* ---------------- SENHA ---------------- */
+
+.cadastro-senha-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cadastro-senha-checklist li {
+  font-size: 12px;
+  color: var(--soft-txt-color);
+  padding-left: 20px;
+  position: relative;
+}
+
+.cadastro-senha-checklist li::before {
+  content: '○';
+  position: absolute;
+  left: 0;
+}
+
+.cadastro-senha-checklist li.is-valido {
+  color: var(--dark-green);
+}
+
+.cadastro-senha-checklist li.is-valido::before {
+  content: '✓';
+  font-weight: 700;
+}
+
+/* ---------------- FIELDSET (Opcionais) ---------------- */
+
+.cadastro-fieldset {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 8px 0 20px;
+}
+
+.cadastro-fieldset legend {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--soft-txt-color);
+  padding: 0 6px;
+}
+
+/* ---------------- CHECKBOX DE TERMOS ---------------- */
+
+.cadastro-checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--main-txt-color);
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.cadastro-checkbox-field input {
+  margin-top: 3px;
+}
+
+/* ---------------- MENSAGEM DE ERRO ---------------- */
+
+.cadastro-feedback {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.cadastro-feedback.is-error {
+  background: rgba(228, 64, 95, 0.1);
+  color: var(--dark-red);
+  border: 1px solid rgba(228, 64, 95, 0.3);
+}
+
+/* ---------------- BOTÕES DE NAVEGAÇÃO ---------------- */
+
+.cadastro-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+.cadastro-actions.has-two .btn {
+  flex: 1;
+}
