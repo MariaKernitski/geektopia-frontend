@@ -10,7 +10,7 @@ export function LandingPage() {
       <section className="landing-hero">
         <div className="landing-hero-grid">
           <div>
-            <p className="landing-eyebrow">Conselho de Cultura POP de Ponta Grossa</p>
+            <p className="landing-eyebrow">Site ofcial do Conselho de Cultura POP de Ponta Grossa</p>
             <img src={geektopiaTitle} alt="GEEKTOPIA" className="landing-title-img" />
             <h1 className="landing-title">O maior encontro geek da região tem data marcada</h1>
             <p className="landing-sub">
@@ -60,10 +60,10 @@ export function LandingPage() {
       <section className="landing-section landing-about landing-bordered">
         <div className="landing-about-grid">
           <div>
-            <h3 className="landing-about-title">Quem é o CCPOP</h3>
+            <h3 className="landing-about-title">Quem é o CCPOP ?</h3>
             <p className="landing-about-text">
-              O Conselho de Cultura POP de Ponta Grossa é uma empresa promotora e organizadora de eventos geek, nerd e otaku na cidade de Ponta Grossa, Paraná.
-              O CCPOP-PG é responsável pela organização do maior evento geek de Ponta Grossa, o GEEKTOPIA.
+              O Conselho de Cultura POP de Ponta Grossa (CCPOP) é uma empresa promotora e organizadora de eventos geek, nerd e otaku na cidade de Ponta Grossa, Paraná.
+              O CCPOP é responsável pela organização do maior evento geek de Ponta Grossa, o GEEKTOPIA.
             </p>
           </div>
           <img src={ccpopLogo} alt="Logo CCPOP" className="landing-about-badge" />

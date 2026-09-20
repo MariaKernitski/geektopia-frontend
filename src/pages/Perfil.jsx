@@ -19,9 +19,44 @@ export function Perfil() {
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
 
+  const [estados, setEstados] = useState([]);
+  const [cidades, setCidades] = useState([]);
+
+  const [ingressos, setIngressos] = useState([]);
+  const [carregandoIngressos, setCarregandoIngressos] = useState(false);
+  const [ingressosCarregados, setIngressosCarregados] = useState(false);
+
   useEffect(() => {
     carregarPerfil();
   }, []);
+
+  // Só busca os ingressos quando a aba é aberta pela primeira vez —
+  // não tem motivo pra chamar essa API se a pessoa nunca clicar ali.
+  useEffect(() => {
+    if (abaAtiva === 'ingressos' && !ingressosCarregados) {
+      carregarIngressos();
+    }
+  }, [abaAtiva]);
+
+  // Mesma fonte usada no Cadastro, pra manter o padrão de UF/cidade igual em todo o site.
+  useEffect(() => {
+    fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
+      .then(res => res.json())
+      .then(data => setEstados(data))
+      .catch(err => console.error('Erro ao buscar estados:', err));
+  }, []);
+
+  useEffect(() => {
+    if (!estado) {
+      setCidades([]);
+      return;
+    }
+
+    fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios?orderBy=nome`)
+      .then(res => res.json())
+      .then(data => setCidades(data))
+      .catch(err => console.error('Erro ao buscar cidades:', err));
+  }, [estado]);
 
   const carregarPerfil = () => {
     api.get('/auth/me')
@@ -38,6 +73,23 @@ export function Perfil() {
       .catch(() => setMensagem({ tipo: 'erro', texto: 'Erro ao carregar dados do usuário.' }));
   };
 
+  const carregarIngressos = () => {
+    setCarregandoIngressos(true);
+    api.get('/ingressos/meus')
+      .then(res => {
+        setIngressos(res.data);
+        setIngressosCarregados(true);
+      })
+      .catch(() => setMensagem({ tipo: 'erro', texto: 'Erro ao carregar seus ingressos.' }))
+      .finally(() => setCarregandoIngressos(false));
+  };
+
+  const ROTULO_STATUS_INGRESSO = {
+    Valido: 'Válido',
+    Utilizado: 'Utilizado',
+    Cancelado: 'Cancelado'
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setMensagem({ tipo: '', texto: '' });
@@ -46,6 +98,7 @@ export function Perfil() {
         nome_completo: nomeCompleto,
         telefone,
         cidade,
+        estado,
         nickname,
         avatar_url: avatarUrl
       });
@@ -61,6 +114,7 @@ export function Perfil() {
     setNomeCompleto(user.nome_completo || '');
     setTelefone(user.telefone || '');
     setCidade(user.cidade || '');
+    setEstado(user.estado || '');
     setNickname(user.perfil?.nickname || '');
     setModoEdicao(false);
     setMensagem({ tipo: '', texto: '' });
@@ -218,12 +272,42 @@ export function Perfil() {
                         <input value={telefone} onChange={e => setTelefone(e.target.value)} />
                       </div>
                       <div className="perfil-field">
-                        <label>Cidade</label>
-                        <input value={cidade} onChange={e => setCidade(e.target.value)} />
-                      </div>
-                      <div className="perfil-field">
                         <label>Foto de Perfil</label>
                         <input type="file" accept="image/*" onChange={handleFileUpload} />
+                      </div>
+                      <div className="perfil-field">
+                        <label>Estado</label>
+                        <select
+                          value={estado}
+                          onChange={e => {
+                            setEstado(e.target.value);
+                            setCidade('');
+                          }}
+                        >
+                          <option value="">Selecione um Estado...</option>
+                          {estados.map(uf => (
+                            <option key={uf.id} value={uf.sigla}>
+                              {uf.nome} ({uf.sigla})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="perfil-field">
+                        <label>Cidade</label>
+                        <select
+                          value={cidade}
+                          onChange={e => setCidade(e.target.value)}
+                          disabled={!estado}
+                        >
+                          <option value="">
+                            {estado ? 'Selecione uma Cidade...' : 'Selecione primeiro o Estado'}
+                          </option>
+                          {cidades.map(c => (
+                            <option key={c.id} value={c.nome}>
+                              {c.nome}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       <div className="perfil-form-actions perfil-form-actions-edit">
@@ -236,9 +320,46 @@ export function Perfil() {
               )}
 
               {abaAtiva === 'ingressos' && (
-                <div className="perfil-empty-state">
-                  <h3>🎟️ Seus Ingressos</h3>
-                  <p>Você ainda não possui ingressos comprados para os próximos eventos.</p>
+                <div>
+                  {carregandoIngressos && (
+                    <p className="perfil-loading-inline">Carregando seus ingressos...</p>
+                  )}
+
+                  {!carregandoIngressos && ingressos.length === 0 && (
+                    <div className="perfil-empty-state">
+                      <h3>🎟️ Seus Ingressos</h3>
+                      <p>Você ainda não possui ingressos comprados para os próximos eventos.</p>
+                    </div>
+                  )}
+
+                  {!carregandoIngressos && ingressos.length > 0 && (
+                    <div className="perfil-ingresso-list">
+                      {ingressos.map(ing => (
+                        <div key={ing.id_ingresso} className="perfil-ingresso-card">
+                          <div className="perfil-ingresso-info">
+                            <h4>{ing.geektopia.nome_edicao}</h4>
+                            <p className="perfil-ingresso-lote">{ing.lote.nome_lote}</p>
+                            <p className="perfil-ingresso-meta">
+                              {ing.geektopia.local || 'Local a definir'}
+                              {ing.geektopia.data_inicio &&
+                                ` · ${new Date(ing.geektopia.data_inicio).toLocaleDateString('pt-BR')}`}
+                            </p>
+                            <p className="perfil-ingresso-titular">Titular: {ing.nome_titular}</p>
+                            <span className={`perfil-ingresso-status is-${ing.status_ingresso.toLowerCase()}`}>
+                              {ROTULO_STATUS_INGRESSO[ing.status_ingresso] || ing.status_ingresso}
+                            </span>
+                          </div>
+                          <div className="perfil-ingresso-qr">
+                            <img
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(ing.codigo_qr)}`}
+                              alt={`QR code do ingresso #${ing.id_ingresso}`}
+                            />
+                            <span className="perfil-ingresso-codigo">{ing.codigo_qr}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -273,7 +394,7 @@ export function Perfil() {
             </div>
 
             <div className="perfil-banner">
-                🎉 <Cronometro />
+                <Cronometro />
             </div>
 
           </div>
