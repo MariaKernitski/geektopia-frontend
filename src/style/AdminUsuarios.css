@@ -17,6 +17,12 @@
   border-radius: 6px;
   font-size: 13.5px;
   white-space: pre-line;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.admin-list-feedback.is-hidden {
+  visibility: hidden;
 }
 
 .admin-list-feedback.is-sucesso {
@@ -123,4 +129,21 @@
 .admin-create-row input:focus {
   outline: none;
   border-color: var(--dark-yellow);
+}
+
+.admin-status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--bg-alt-color);
+  color: var(--soft-txt-color);
+  white-space: nowrap;
+}
+
+.admin-eventos-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--soft-txt-color);
+  font-size: 13.5px;
 }

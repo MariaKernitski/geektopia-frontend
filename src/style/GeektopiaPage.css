@@ -1,0 +1,146 @@
+.geektopia-loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--soft-txt-color);
+}
+
+.geektopia-hero {
+  background: var(--main-txt-color);
+  color: #fff;
+}
+
+.geektopia-hero-empty {
+  padding: 56px 32px;
+  text-align: center;
+  color: #B9B8C0;
+}
+
+.geektopia-hero-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1px 0.95fr;
+  gap: 48px;
+  padding: 64px 32px;
+  max-width: 1160px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.geektopia-hero-divider {
+  background: #2C2A32;
+  align-self: stretch;
+}
+
+.geektopia-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--light-yellow);
+  margin: 0 0 14px;
+}
+
+.geektopia-hero-title {
+  font-family: var(--font-title);
+  font-size: 30px;
+  line-height: 1.3;
+  margin: 0 0 12px;
+}
+
+.geektopia-hero-local {
+  font-size: 14px;
+  color: #B9B8C0;
+  margin: 0 0 22px;
+}
+
+.geektopia-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #2C2A32;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.geektopia-panel-label {
+  font-family: var(--font-title);
+  font-size: 12px;
+  color: var(--light-yellow);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.geektopia-section {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 56px 32px;
+}
+
+.geektopia-section-title {
+  font-family: var(--font-title);
+  font-size: 21px;
+  margin: 0 0 6px;
+}
+
+.geektopia-section-sub {
+  color: var(--soft-txt-color);
+  font-size: 14px;
+  margin: 0 0 26px;
+}
+
+.geektopia-vazio, .geektopia-erro {
+  color: var(--soft-txt-color);
+  font-size: 13.5px;
+  padding: 20px 0;
+}
+
+.geektopia-erro { color: var(--dark-red); }
+
+.geektopia-pocket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.geektopia-pocket-card {
+  display: block;
+  text-decoration: none;
+  color: var(--main-txt-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface-color);
+  transition: border-color 0.15s ease;
+}
+
+.geektopia-pocket-card:hover {
+  border-color: var(--dark-yellow);
+}
+
+.geektopia-pocket-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.geektopia-pocket-img-placeholder {
+  background: linear-gradient(135deg, #2A2930, var(--main-txt-color));
+}
+
+.geektopia-pocket-info {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.geektopia-pocket-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.geektopia-pocket-local {
+  font-size: 12.5px;
+  color: var(--soft-txt-color);
+}
+
+@media (max-width: 860px) {
+  .geektopia-hero-grid { grid-template-columns: 1fr; }
+  .geektopia-hero-divider { display: none; }
+}

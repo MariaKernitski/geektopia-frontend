@@ -1,0 +1,94 @@
+.evento-form {
+  max-width: 640px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 28px;
+  background: var(--surface-color);
+  margin-top: -70px;
+}
+
+.evento-field {
+  margin-bottom: 18px;
+}
+
+.evento-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--main-txt-color);
+}
+
+.evento-field input,
+.evento-field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.evento-field input:focus,
+.evento-field textarea:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+.evento-field-row {
+  display: flex;
+  gap: 16px;
+}
+
+.evento-field-row .evento-field {
+  flex: 1;
+}
+
+.evento-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.evento-sucesso-texto {
+  font-size: 14px;
+  color: var(--main-txt-color);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.evento-preview-banner {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin: 12px 0 20px;
+}
+
+.evento-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--main-txt-color);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.evento-aviso {
+  font-size: 12.5px;
+  color: var(--dark-red);
+  background: var(--light-red);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0 0 18px;
+  min-height: 50px;
+  box-sizing: border-box;
+}
+
+.evento-aviso.is-hidden {
+  visibility: hidden;
+}
+

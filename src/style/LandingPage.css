@@ -11,6 +11,7 @@
   max-width: 1160px;
   margin: 0 auto;
   align-items: center;
+  position: relative;
 }
 
 .landing-hero-divider {
@@ -29,13 +30,21 @@
   width: 400px;
   display: flex;
   margin-top: 50px;
+  margin-bottom: 100px;
 }
 
 .landing-title {
   font-family: var(--font-title);
   font-size: 32px;
   line-height: 1.3;
-  margin: 0 0 18px;
+  color: var(--light-yellow);
+  margin: 0;
+  position: absolute;
+  margin-left: 70px;
+  top: 80px;
+  left: 55%;
+  width: 430px;
+  left: 58%;
 }
 
 .landing-pixel-word {
@@ -62,6 +71,7 @@
   border: 1px solid #2C2A32;
   border-radius: 8px;
   margin-left: 50px;
+  margin-bottom: -100px;
   padding: 25px;
 }
 
