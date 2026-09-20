@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FiDownload } from 'react-icons/fi';
 import api from '../services/api';
 import '../style/Dashboard.css';
 
@@ -45,12 +46,21 @@ export function Dashboard() {
             <h1 className="dash-title">Dashboard e Relatórios</h1>
             <p className="dash-sub">Perfil demográfico dos usuários cadastrados no NEXUS.</p>
           </div>
-          {dados && (
-            <div className="dash-total">
-              <span className="dash-total-num">{dados.total_usuarios}</span>
-              <span className="dash-total-label">usuários cadastrados</span>
-            </div>
-          )}
+
+          <div className="dash-header-direita">
+            {dados && (
+              <div className="dash-total">
+                <span className="dash-total-num">{dados.total_usuarios}</span>
+                <span className="dash-total-label">usuários cadastrados</span>
+              </div>
+            )}
+
+            {dados && (
+              <button type="button" className="btn btn-secondary dash-btn-exportar" onClick={() => window.print()}>
+                <FiDownload /> Exportar para PDF
+              </button>
+            )}
+          </div>
         </div>
 
         {erro && <div className="dash-erro" role="status">{erro}</div>}

@@ -37,6 +37,12 @@
   margin: 0;
 }
 
+.dash-header-direita {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .dash-total {
   display: flex;
   flex-direction: column;
@@ -46,6 +52,13 @@
   box-shadow: var(--shadow-card);
   border-radius: var(--radius-md);
   padding: 12px 24px;
+}
+
+.dash-btn-exportar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .dash-total-num {
@@ -154,4 +167,37 @@
   background: var(--light-yellow);
   border-radius: 4px;
   transition: width 0.3s ease;
+}
+
+/* ---------------- EXPORTAR PARA PDF (via impressão do navegador) ---------------- */
+/* O botão "Exportar para PDF" chama window.print(); estas regras só valem na
+   hora de imprimir/gerar o PDF, escondendo o que não faz sentido no papel
+   (menu do site, sombra dos cards) e garantindo que as cores das barras saiam
+   impressas (por padrão, alguns navegadores tiram cor de fundo ao imprimir). */
+@media print {
+  .header,
+  .dash-btn-exportar {
+    display: none !important;
+  }
+
+  .dash-page {
+    padding: 0;
+  }
+
+  .dash-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .dash-barra-preenchida,
+  .dash-total,
+  .dash-card {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .dash-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
 }
