@@ -49,10 +49,29 @@ export function GeektopiaDetalhe() {
     if (itens.length === 0) return;
 
     setComprando(true);
+
+    // Abre a aba (ainda vazia) já aqui, dentro do clique do usuário — se
+    // esperássemos a resposta do servidor pra abrir, o navegador trata como
+    // pop-up "não pedido pelo usuário" e bloqueia. Só trocamos o endereço
+    // dela depois que o Mercado Pago responder.
+    const abaPagamento = window.open('', '_blank');
+
     try {
       const res = await api.post('/pedidos', { itens });
-      window.location.href = res.data.init_point;
+
+      if (!abaPagamento) {
+        // Pop-up bloqueado mesmo assim: usa a aba atual como reserva.
+        window.location.href = res.data.init_point;
+        return;
+      }
+
+      abaPagamento.location.href = res.data.init_point;
+      // A aba do site fica esperando a confirmação — ela mesma consulta o
+      // pagamento sozinha, sem precisar que o Mercado Pago redirecione de volta.
+      navigate(`/pedido/${res.data.id_pedido}/confirmacao`);
     } catch (err) {
+      if (abaPagamento) abaPagamento.close();
+
       if (err.response?.status === 401) {
         setMensagem({ tipo: 'erro', texto: 'Faça login para comprar seu ingresso.' });
       } else {
