@@ -2,121 +2,105 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { ConfirmModal } from '../components/ConfirmModal';
-import '../style/AdminUsuarios.css';
+import { AvisoBox } from '../components/edicao/AvisoBox';
+import { ROTULO_STATUS } from '../components/edicao/abas';
+import { useAviso, mensagemDeErro } from '../hooks/useAviso';
+import { formatarData } from '../utils/datas';
+import '../style/AdminEdicao.css';
+
+// As edições em três grupos, na ordem em que a diretoria costuma procurar.
+const GRUPOS = [
+  { tipo: 'Principal', titulo: 'Geektopia Principal (vigente)', vazio: 'Nenhuma Principal no momento.' },
+  { tipo: 'Pocket', titulo: 'Edições Pocket', vazio: 'Nenhuma edição Pocket cadastrada.' },
+  { tipo: 'PrincipalAnterior', titulo: 'Principais anteriores', vazio: null } // some quando vazio
+];
 
 export function AdminEventosLista() {
-  const [eventos, setEventos] = useState([]);
-  const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
+  const [eventos, setEventos] = useState(null);
+  const { aviso, mostrar } = useAviso();
   const [idParaExcluir, setIdParaExcluir] = useState(null);
 
-  const loadEventos = () => {
+  const carregar = () => {
     api.get('/geektopia/admin/todas')
-      .then(res => setEventos(res.data))
-      .catch(err => setMensagem({ tipo: 'erro', texto: err.response?.data?.error || 'Erro ao carregar eventos.' }));
+      .then((res) => setEventos(res.data))
+      .catch((err) => { mostrar('erro', mensagemDeErro(err, 'Erro ao carregar as edições.')); setEventos([]); });
   };
 
-  useEffect(() => {
-    loadEventos();
-  }, []);
-
-  const tornarPrincipal = async (id) => {
-    try {
-      const res = await api.patch(`/geektopia/${id}/tornar-principal`);
-      setMensagem({ tipo: 'sucesso', texto: res.data.message });
-      loadEventos();
-    } catch (err) {
-      setMensagem({ tipo: 'erro', texto: err.response?.data?.error || 'Erro ao definir edição principal.' });
-    }
-  };
-
-  const alterarStatus = async (id, novoStatus) => {
-    try {
-      const res = await api.patch(`/geektopia/${id}/status`, { status_evento: novoStatus });
-      setMensagem({ tipo: 'sucesso', texto: res.data.message });
-      loadEventos();
-    } catch (err) {
-      setMensagem({ tipo: 'erro', texto: err.response?.data?.error || 'Erro ao alterar status do evento.' });
-    }
-  };
+  useEffect(carregar, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const confirmarExclusao = async () => {
+    const id = idParaExcluir;
+    setIdParaExcluir(null);
     try {
-      const res = await api.delete(`/geektopia/${idParaExcluir}`);
-      setMensagem({ tipo: 'sucesso', texto: res.data.message });
-      loadEventos();
+      const res = await api.delete(`/geektopia/${id}`);
+      mostrar('sucesso', res.data.message);
+      carregar();
     } catch (err) {
-      setMensagem({ tipo: 'erro', texto: err.response?.data?.error || 'Erro ao excluir evento.' });
-    } finally {
-      setIdParaExcluir(null);
+      mostrar('erro', mensagemDeErro(err, 'Erro ao excluir a edição.'));
     }
   };
 
   return (
-    <div className="admin-list-page">
-      <Link to="/admin/eventos" className="btn btn-secondary" style={{ marginBottom: '16px', display: 'inline-block' }}>
-        ← Voltar
-      </Link>
+    <div className="ed-pagina">
+      <Link to="/admin/eventos" className="btn btn-secondary ed-voltar">← Voltar</Link>
 
-      <div className="admin-list-header">
-        <h1 className="admin-list-title">Gerenciar Eventos</h1>
+      <div className="ed-lista-cabecalho">
+        <h1 className="ed-titulo-pagina">Gerenciar eventos</h1>
         <Link to="/admin/eventos/criar" className="btn btn-primary">+ Criar evento</Link>
       </div>
 
-      <div className={`admin-list-feedback is-${mensagem.tipo} ${!mensagem.texto ? 'is-hidden' : ''}`} role="status">
-        {mensagem.texto}
-      </div>
+      <AvisoBox aviso={aviso} />
 
-      <div className="admin-list">
-        {eventos.length === 0 && (
-          <div className="admin-eventos-empty">Nenhum evento cadastrado ainda.</div>
-        )}
+      {eventos === null && <p className="ed-vazio">Carregando edições...</p>}
 
-        {eventos.map(ev => (
-          <div className="admin-list-row" key={ev.id_geektopia}>
-            <div className="admin-list-info">
-              <span className="admin-list-name">{ev.nome_edicao}</span>
-              <span className="admin-list-email">
-                {ev.local || 'Local não definido'}
-                {ev.data_inicio && ` · ${new Date(ev.data_inicio).toLocaleDateString('pt-BR')}`}
-                {` · ${ev._count?.lotes || 0} lote(s)`}
-              </span>
-            </div>
+      {eventos !== null && eventos.length === 0 && (
+        <div className="ed-vazio">
+          <strong>Nenhuma edição cadastrada ainda.</strong>
+          <span>Use “Criar evento” para começar.</span>
+        </div>
+      )}
 
-            <span className={`admin-role-badge ${ev.tipo_edicao === 'Principal' ? 'is-admin' : ''}`}>
-              {ev.tipo_edicao === 'Principal' ? 'Principal' : 'Pocket'}
-            </span>
+      {eventos !== null && eventos.length > 0 && GRUPOS.map((grupo) => {
+        const itens = eventos.filter((ev) => ev.tipo_edicao === grupo.tipo);
+        if (itens.length === 0 && !grupo.vazio) return null;
 
-            <span className="admin-status-badge">{ev.status_evento}</span>
+        return (
+          <section key={grupo.tipo} className="ed-grupo" aria-labelledby={`g-${grupo.tipo}`}>
+            <h2 id={`g-${grupo.tipo}`} className="ed-subtitulo-secao">{grupo.titulo}</h2>
 
-            <div className="admin-list-actions">
-              {ev.tipo_edicao !== 'Principal' && (
-                <button className="btn btn-secondary" onClick={() => tornarPrincipal(ev.id_geektopia)}>
-                  Tornar Principal
-                </button>
-              )}
-
-              {ev.status_evento === 'VendasAbertas' ? (
-                <button className="btn btn-secondary" onClick={() => alterarStatus(ev.id_geektopia, 'VendasEncerradas')}>
-                  Encerrar vendas
-                </button>
-              ) : (
-                <button className="btn btn-secondary" onClick={() => alterarStatus(ev.id_geektopia, 'VendasAbertas')}>
-                  Abrir vendas
-                </button>
-              )}
-
-              <button className="btn btn-danger" onClick={() => setIdParaExcluir(ev.id_geektopia)}>
-                Excluir
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+            {itens.length === 0 ? (
+              <p className="ed-vazio">{grupo.vazio}</p>
+            ) : (
+              <ul className="ed-lista">
+                {itens.map((ev) => (
+                  <li className="ed-item" key={ev.id_geektopia}>
+                    <div className="ed-item-info">
+                      <span className="ed-item-nome">
+                        {ev.nome_edicao}
+                        <span className={`ed-badge is-status-${ev.status_evento}`}>{ROTULO_STATUS[ev.status_evento]}</span>
+                      </span>
+                      <span className="ed-item-detalhe">
+                        {ev.local || 'Local não definido'}
+                        {ev.data_inicio && ` · ${formatarData(ev.data_inicio)}`}
+                        {` · ${ev._count?.lotes || 0} lote(s)`}
+                      </span>
+                    </div>
+                    <div className="ed-item-acoes">
+                      <Link to={`/admin/eventos/${ev.id_geektopia}`} className="btn btn-primary ed-btn-sm">Gerenciar</Link>
+                      <button type="button" className="btn btn-danger ed-btn-sm" onClick={() => setIdParaExcluir(ev.id_geektopia)}>Excluir</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        );
+      })}
 
       <ConfirmModal
         isOpen={idParaExcluir !== null}
-        title="Excluir evento"
-        message="Tem certeza que deseja excluir este evento? Essa ação não pode ser desfeita."
+        title="Excluir edição"
+        message="Tem certeza que deseja excluir esta edição? Só é possível se ela não tiver ingressos, lotes ou outros registros ligados. Essa ação não pode ser desfeita."
         confirmLabel="Excluir"
         variant="danger"
         onConfirm={confirmarExclusao}

@@ -55,6 +55,13 @@ export function PedidoConfirmacao() {
     return () => clearTimeout(temporizador);
   }, [status, erro, mensagem, sincronizar]);
 
+  // Pedido de ingresso volta ao perfil; taxa de espaço volta à área do expositor.
+  const destino = pedido?._count?.solicitacoesEspaco > 0
+    ? { to: '/expositor', rotulo: 'Voltar à área do expositor' }
+    : pedido?._count?.inscricoesCompeticao > 0
+      ? { to: '/participar', rotulo: 'Voltar' }
+      : { to: '/perfil', rotulo: 'Ver meus ingressos' };
+
   const resumo = pedido && (
     <div className="confirmacao-resumo">
       <div className="confirmacao-linha">
@@ -99,7 +106,7 @@ export function PedidoConfirmacao() {
             <h2 className="confirmacao-title is-sucesso">Pagamento confirmado! 🎉</h2>
             <p className="confirmacao-sub">{mensagem || 'Seu pedido foi aprovado.'}</p>
             {resumo}
-            <Link to="/perfil" className="btn btn-primary">Ver meus ingressos</Link>
+            <Link to={destino.to} className="btn btn-primary">{destino.rotulo}</Link>
           </>
         )}
 

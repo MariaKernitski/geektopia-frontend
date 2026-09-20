@@ -37,6 +37,7 @@ export function Header() {
             {isAdmin && (
               <Link to="/admin" className="btn btn-secondary">Painel ADM</Link>
             )}
+            <Link to="/participar" className="btn btn-secondary">Participar</Link>
             <Link to="/perfil" className="btn btn-secondary">Meu Perfil</Link>
             <button onClick={handleLogout} className="btn btn-primary">Sair</button>
           </>

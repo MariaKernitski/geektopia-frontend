@@ -92,3 +92,11 @@
   visibility: hidden;
 }
 
+.cadastro-card {
+  min-width: 820px;
+  
+}
+
+.cadastro-card .cadastro-steps {
+  margin-bottom: -50px;
+}

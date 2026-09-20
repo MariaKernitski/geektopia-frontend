@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { Cronometro } from '../components/Cronometro';
+import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
 import '../style/GeektopiaPage.css';
 
 export function GeektopiaPage() {
@@ -71,6 +72,11 @@ export function GeektopiaPage() {
               <div className="geektopia-pocket-info">
                 <span className="geektopia-pocket-name">{ev.nome_edicao}</span>
                 {ev.local && <span className="geektopia-pocket-local">{ev.local}</span>}
+                {seloClassificacao(ev.classificacao_etaria) && (
+                  <span className="selo-idade" aria-label={descricaoClassificacao(ev.classificacao_etaria)}>
+                    {seloClassificacao(ev.classificacao_etaria)}
+                  </span>
+                )}
               </div>
             </Link>
           ))}

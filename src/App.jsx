@@ -9,13 +9,20 @@ import { Perfil } from './pages/Perfil';
 import { Admin } from './pages/Admin';
 import { AdminHub } from './pages/AdminHub';
 import { AdminCriarEvento } from './pages/AdminCriarEvento';
+import { AdminEventoTipoEscolha } from './pages/AdminEventoTipoEscolha';
 import { AdminEventosHub } from './pages/AdminEventosHub';
 import { GeektopiaPage } from './pages/GeektopiaPage';
 import { GeektopiaDetalhe } from './pages/GeektopiaDetalhe';
 import { AdminEventosLista } from './pages/AdminEventosLista';
-import { AdminEventoLotes } from './pages/AdminEventoLotes';
+import { AdminEdicao } from './pages/AdminEdicao';
 import { PedidoConfirmacao } from './pages/PedidoConfirmacao';
 import { Dashboard } from './pages/Dashboard';
+import { AdminEspacos } from './pages/AdminEspacos';
+import { Participar } from './pages/Participar';
+import { ExpositorArea } from './pages/ExpositorArea';
+import { ExpositorPerfil } from './pages/ExpositorPerfil';
+import { ExpositorSolicitar } from './pages/ExpositorSolicitar';
+import { ExpositorSolicitacao } from './pages/ExpositorSolicitacao';
 
 export default function App() {
   return (
@@ -31,10 +38,17 @@ export default function App() {
         <Route path="/admin" element={<AdminRoute><AdminHub /></AdminRoute>} />
         <Route path="/admin/usuarios" element={<AdminRoute><Admin /></AdminRoute>} />
         <Route path="/admin/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
-        <Route path="/admin/eventos/criar" element={<AdminRoute><AdminCriarEvento /></AdminRoute>} />
+        <Route path="/admin/eventos/criar" element={<AdminRoute><AdminEventoTipoEscolha /></AdminRoute>} />
+        <Route path="/admin/eventos/criar/:tipo" element={<AdminRoute><AdminCriarEvento /></AdminRoute>} />
+        <Route path="/admin/espacos" element={<AdminRoute><AdminEspacos /></AdminRoute>} />
+        <Route path="/participar" element={<PrivateRoute><Participar /></PrivateRoute>} />
+        <Route path="/expositor" element={<PrivateRoute><ExpositorArea /></PrivateRoute>} />
+        <Route path="/expositor/perfil" element={<PrivateRoute><ExpositorPerfil /></PrivateRoute>} />
+        <Route path="/expositor/solicitar" element={<PrivateRoute><ExpositorSolicitar /></PrivateRoute>} />
+        <Route path="/expositor/solicitacoes/:id" element={<PrivateRoute><ExpositorSolicitacao /></PrivateRoute>} />
         <Route path="/admin/eventos" element={<AdminRoute><AdminEventosHub /></AdminRoute>} />
         <Route path="/admin/eventos/lista" element={<AdminRoute><AdminEventosLista /></AdminRoute>} />
-        <Route path="/admin/eventos/:id/lotes" element={<AdminRoute><AdminEventoLotes /></AdminRoute>} />
+        <Route path="/admin/eventos/:id/:aba?" element={<AdminRoute><AdminEdicao /></AdminRoute>} />
         <Route path="/geektopia" element={<GeektopiaPage />} />
         <Route path="/geektopia/:id" element={<GeektopiaDetalhe />} />
       </Routes>

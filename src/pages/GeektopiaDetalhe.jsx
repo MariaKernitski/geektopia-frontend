@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
 import '../style/GeektopiaDetalhe.css';
 
 export function GeektopiaDetalhe() {
@@ -32,6 +33,12 @@ export function GeektopiaDetalhe() {
   };
 
   const totalSelecionado = Object.values(quantidades).reduce((soma, q) => soma + q, 0);
+
+  const valorTotalSelecionado = lotes.reduce((soma, lote) => {
+    const qtd = quantidades[lote.id_lote] || 0;
+    const preco = lote.valor_ingresso || 0;
+    return soma + qtd * preco;
+  }, 0);
 
   const finalizarCompra = async () => {
     setMensagem({ tipo: '', texto: '' });
@@ -69,27 +76,38 @@ export function GeektopiaDetalhe() {
 
   return (
     <div className="geektopia-detalhe-page">
-      {evento.banner_url && (
-        <img src={evento.banner_url} alt={evento.nome_edicao} className="geektopia-detalhe-banner" />
-      )}
+      <div className="geektopia-detalhe-hero">
+        {evento.banner_url ? (
+          <img src={evento.banner_url} alt={evento.nome_edicao} className="geektopia-detalhe-banner" />
+        ) : (
+          <div className="geektopia-detalhe-banner geektopia-detalhe-banner-vazio" />
+        )}
+        <div className="geektopia-detalhe-hero-overlay" />
 
-      <div className="geektopia-detalhe-content">
-        <button type="button" className="btn btn-secondary" onClick={() => navigate('/geektopia')} style={{ marginBottom: '20px' }}>
+        <button type="button" className="btn btn-secondary geektopia-detalhe-voltar" onClick={() => navigate('/geektopia')}>
           ← Voltar
         </button>
 
-        <h1 className="geektopia-detalhe-title">{evento.nome_edicao}</h1>
-
-        <div className="geektopia-detalhe-meta">
-          {evento.local && <span>{evento.local}</span>}
-          {evento.data_inicio && (
-            <span>
-              {new Date(evento.data_inicio).toLocaleDateString('pt-BR')}
-              {evento.data_fim && ` a ${new Date(evento.data_fim).toLocaleDateString('pt-BR')}`}
-            </span>
-          )}
+        <div className="geektopia-detalhe-hero-info">
+          <h1 className="geektopia-detalhe-title">{evento.nome_edicao}</h1>
+          <div className="geektopia-detalhe-meta">
+            {seloClassificacao(evento.classificacao_etaria) && (
+              <span className="selo-idade" title={descricaoClassificacao(evento.classificacao_etaria)} aria-label={descricaoClassificacao(evento.classificacao_etaria)}>
+                {seloClassificacao(evento.classificacao_etaria)}
+              </span>
+            )}
+            {evento.local && <span>📍 {evento.local}</span>}
+            {evento.data_inicio && (
+              <span>
+                🗓️ {new Date(evento.data_inicio).toLocaleDateString('pt-BR')}
+                {evento.data_fim && ` a ${new Date(evento.data_fim).toLocaleDateString('pt-BR')}`}
+              </span>
+            )}
+          </div>
         </div>
+      </div>
 
+      <div className="geektopia-detalhe-content">
         {evento.descricao && <p className="geektopia-detalhe-descricao">{evento.descricao}</p>}
 
         <h2 className="geektopia-detalhe-subtitulo">Ingressos</h2>
@@ -101,31 +119,51 @@ export function GeektopiaDetalhe() {
         {lotes.length === 0 ? (
           <p className="geektopia-vazio">Nenhum lote de ingresso disponível ainda para este evento.</p>
         ) : (
-          <div className="geektopia-lotes">
-            {lotes.map(lote => (
-              <div className="geektopia-lote-row" key={lote.id_lote}>
-                <div className="geektopia-lote-info">
-                  <span className="geektopia-lote-nome">{lote.nome_lote}</span>
-                  <span className="geektopia-lote-preco">
-                    {lote.valor_ingresso != null
-                      ? `R$ ${lote.valor_ingresso.toFixed(2)}`
-                      : 'Preço a definir'}
-                  </span>
-                  {lote.esgotado && <span className="geektopia-lote-esgotado">Esgotado</span>}
-                </div>
-                <input
-                  type="number"
-                  min="0"
-                  disabled={lote.esgotado}
-                  value={quantidades[lote.id_lote] || ''}
-                  onChange={(e) => alterarQuantidade(lote.id_lote, e.target.value)}
-                  className="geektopia-lote-qtd"
-                  placeholder="0"
-                />
-              </div>
-            ))}
+          <div className="geektopia-lotes pixel-cut">
+            {lotes.map(lote => {
+              const qtd = quantidades[lote.id_lote] || 0;
+              return (
+                <div className={`geektopia-lote-row ${lote.esgotado ? 'is-esgotado' : ''}`} key={lote.id_lote}>
+                  <div className="geektopia-lote-info">
+                    <span className="geektopia-lote-nome">{lote.nome_lote}</span>
+                    <span className="geektopia-lote-preco">
+                      {lote.valor_ingresso != null
+                        ? `R$ ${lote.valor_ingresso.toFixed(2)}`
+                        : 'Preço a definir'}
+                    </span>
+                    {lote.esgotado && <span className="geektopia-lote-esgotado-badge">Esgotado</span>}
+                  </div>
 
-            <div className="geektopia-lote-actions">
+                  <div className="geektopia-lote-stepper">
+                    <button
+                      type="button"
+                      className="geektopia-stepper-btn"
+                      disabled={lote.esgotado || qtd === 0}
+                      onClick={() => alterarQuantidade(lote.id_lote, qtd - 1)}
+                    >
+                      −
+                    </button>
+                    <span className="geektopia-stepper-valor">{qtd}</span>
+                    <button
+                      type="button"
+                      className="geektopia-stepper-btn"
+                      disabled={lote.esgotado}
+                      onClick={() => alterarQuantidade(lote.id_lote, qtd + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            <div className="geektopia-lote-resumo">
+              <div className="geektopia-lote-resumo-texto">
+                <span>
+                  {totalSelecionado} ingresso{totalSelecionado === 1 ? '' : 's'} selecionado{totalSelecionado === 1 ? '' : 's'}
+                </span>
+                <strong>Total: R$ {valorTotalSelecionado.toFixed(2)}</strong>
+              </div>
               <button
                 type="button"
                 className="btn btn-primary"
