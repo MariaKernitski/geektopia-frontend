@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .pedido-confirmacao-page {
   min-height: 70vh;
   display: flex;
@@ -46,11 +47,55 @@
 
 .pedido-confirmacao-sub {
   font-size: 13.5px;
+=======
+/* ==========================================================
+   PedidoConfirmacao.css — mesmo sistema visual do Login/Perfil
+   ========================================================== */
+
+.confirmacao-page {
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 24px;
+}
+
+.confirmacao-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-md);
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.confirmacao-title {
+  font-family: var(--font-title);
+  font-size: 20px;
+  color: var(--main-txt-color);
+  margin: 0 0 10px;
+}
+
+.confirmacao-title.is-sucesso {
+  color: var(--dark-green);
+}
+
+.confirmacao-title.is-erro {
+  color: var(--dark-red);
+}
+
+.confirmacao-sub {
+  font-family: var(--font-body);
+  font-size: 14px;
+>>>>>>> 1fab20a83644f24304743ae75d39b0105be11ef4
   color: var(--soft-txt-color);
   margin: 0 0 24px;
   line-height: 1.5;
 }
 
+<<<<<<< HEAD
 .pedido-confirmacao-resumo {
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
@@ -72,3 +117,18 @@
   flex-direction: column;
   gap: 10px;
 }
+=======
+.confirmacao-spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 20px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--light-yellow);
+  border-radius: 50%;
+  animation: confirmacao-girar 0.8s linear infinite;
+}
+
+@keyframes confirmacao-girar {
+  to { transform: rotate(360deg); }
+}
+>>>>>>> 1fab20a83644f24304743ae75d39b0105be11ef4
