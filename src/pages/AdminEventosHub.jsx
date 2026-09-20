@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import { FiPlusCircle, FiList } from 'react-icons/fi';
+import { FiPlusCircle, FiList, FiShoppingBag } from 'react-icons/fi';
 import '../style/AdminHub.css';
 
 const OPCOES = [
   { to: '/admin/eventos/criar', Icone: FiPlusCircle, titulo: 'Criar evento' },
   { to: '/admin/eventos/lista', Icone: FiList, titulo: 'Gerenciar eventos' },
+  { to: '/admin/espacos', Icone: FiShoppingBag, titulo: 'Espaços de exposição' },
 ];
 
 export function AdminEventosHub() {
@@ -22,7 +23,7 @@ export function AdminEventosHub() {
           </div>
         </div>
 
-        <div className="admin-hub-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', maxWidth: '480px' }}>
+        <div className="admin-hub-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: '720px' }}>
           {OPCOES.map(({ to, Icone, titulo }) => (
             <Link to={to} key={to} className="admin-hub-card">
               <Icone className="admin-hub-card-icon" />

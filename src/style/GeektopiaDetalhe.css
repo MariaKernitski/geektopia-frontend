@@ -1,29 +1,67 @@
+/* ---------------- HERO (banner + título por cima) ---------------- */
+
+.geektopia-detalhe-hero {
+  position: relative;
+  overflow: hidden;
+}
+
 .geektopia-detalhe-banner {
   width: 100%;
-  max-height: 320px;
+  height: 340px;
   object-fit: cover;
   display: block;
 }
 
-.geektopia-detalhe-content {
+.geektopia-detalhe-banner-vazio {
+  background: linear-gradient(135deg, var(--main-txt-color), #2b2a33);
+}
+
+.geektopia-detalhe-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(22, 21, 26, 0) 35%, rgba(22, 21, 26, 0.88) 100%);
+  pointer-events: none;
+}
+
+.geektopia-detalhe-voltar {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.geektopia-detalhe-hero-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 24px 24px 22px;
   max-width: 760px;
   margin: 0 auto;
-  padding: 40px 24px 80px;
 }
 
 .geektopia-detalhe-title {
   font-family: var(--font-title);
-  font-size: 26px;
-  margin: 0 0 10px;
-  color: var(--main-txt-color);
+  font-size: 30px;
+  margin: 0 0 8px;
+  color: #fff;
 }
 
 .geektopia-detalhe-meta {
   display: flex;
-  gap: 16px;
+  gap: 18px;
+  flex-wrap: wrap;
   font-size: 13.5px;
-  color: var(--soft-txt-color);
-  margin: 0 0 20px;
+  color: var(--light-cyan);
+  font-weight: 600;
+}
+
+/* ---------------- CONTEÚDO ---------------- */
+
+.geektopia-detalhe-content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
 }
 
 .geektopia-detalhe-descricao {
@@ -37,12 +75,16 @@
 .geektopia-detalhe-subtitulo {
   font-family: var(--font-title);
   font-size: 18px;
-  margin: 0 0 16px;
+  margin-bottom: -40px;
 }
+
+/* ---------------- CAIXA DE LOTES ---------------- */
 
 .geektopia-lotes {
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
+  background: var(--surface-color);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 
@@ -51,46 +93,151 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 18px;
+  padding: 18px 20px;
   border-bottom: 1px solid var(--border-color);
+  transition: background 0.15s ease;
+}
+
+.geektopia-lote-row:hover {
+  background: var(--bg-alt-color);
 }
 
 .geektopia-lote-row:last-of-type {
   border-bottom: none;
 }
 
+.geektopia-lote-row.is-esgotado {
+  opacity: 0.55;
+}
+
 .geektopia-lote-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .geektopia-lote-nome {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--main-txt-color);
 }
 
 .geektopia-lote-preco {
-  font-size: 13px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--dark-cyan);
+}
+
+.geektopia-lote-esgotado-badge {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--dark-red);
+  background: var(--light-red);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ---------------- STEPPER (+ / -) ---------------- */
+
+.geektopia-lote-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.geektopia-stepper-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: var(--bg-alt-color);
+  color: var(--main-txt-color);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.geektopia-stepper-btn:hover:not(:disabled) {
+  background: var(--light-yellow);
+}
+
+.geektopia-stepper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.geektopia-stepper-valor {
+  display: inline-block;
+  width: 36px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ---------------- RESUMO / FINALIZAR ---------------- */
+
+.geektopia-lote-resumo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--bg-alt-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.geektopia-lote-resumo-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
   color: var(--soft-txt-color);
 }
 
-.geektopia-lote-esgotado {
-  font-size: 11.5px;
-  color: var(--dark-red);
-  font-weight: 600;
+.geektopia-lote-resumo-texto strong {
+  font-size: 16px;
+  color: var(--main-txt-color);
+  font-family: var(--font-title);
 }
 
-.geektopia-lote-qtd {
-  width: 64px;
-  padding: 8px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+/* ---------------- ESTADOS ---------------- */
+
+.geektopia-vazio {
+  font-size: 13.5px;
+  color: var(--soft-txt-color);
+  padding: 20px 0;
+}
+
+.geektopia-loading,
+.geektopia-erro {
   text-align: center;
+  padding: 80px 20px;
+  color: var(--soft-txt-color);
 }
 
-.geektopia-lote-actions {
-  padding: 16px 18px;
-  display: flex;
-  justify-content: flex-end;
+/* ---------------- RESPONSIVO ---------------- */
+
+@media (max-width: 560px) {
+  .geektopia-detalhe-banner {
+    height: 220px;
+  }
+
+  .geektopia-detalhe-title {
+    font-size: 22px;
+  }
+
+  .geektopia-lote-resumo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .geektopia-lote-resumo .btn {
+    width: 100%;
+  }
 }

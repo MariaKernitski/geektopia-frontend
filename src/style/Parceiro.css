@@ -1,0 +1,96 @@
+/* ==========================================================
+   Área do participante (expositor/competidor) — prefixo .pt-
+   Complementa AdminEdicao.css (.ed-*), que traz formulários,
+   listas, badges e botões pequenos.
+   ========================================================== */
+
+
+.pt-cabecalho-acoes { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.pt-cabecalho-acoes .ed-titulo-pagina { margin: 0; }
+
+.pt-grade { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+.pt-cartoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 0 0 8px; padding: 0; border: 0; }
+
+/* Cartão de escolha (radio acessível) */
+.pt-cartao {
+  position: relative;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 16px;
+  background: var(--surface-color);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.pt-cartao:hover { border-color: var(--dark-yellow); }
+.pt-cartao:has(input:checked) { border-color: var(--dark-yellow); background: #FFFAEB; box-shadow: 0 0 0 1px var(--dark-yellow); }
+.pt-cartao:has(input:focus-visible) { outline: 2px solid var(--dark-cyan); outline-offset: 2px; }
+.pt-cartao.is-bloqueado { opacity: 0.6; cursor: not-allowed; background: var(--bg-alt-color); }
+.pt-cartao-titulo { font-family: var(--font-title); font-weight: 600; font-size: 15px; color: var(--main-txt-color); }
+.pt-cartao-texto { font-size: 13px; line-height: 1.45; color: var(--soft-txt-color); }
+.pt-cartao-preco { font-family: var(--font-title); font-weight: 700; font-size: 16px; color: var(--main-txt-color); margin-top: 4px; }
+
+.pt-secao { margin-bottom: 28px; }
+.pt-secao-titulo { display: flex; align-items: center; gap: 10px; font-family: var(--font-title); font-size: 17px; margin: 0 0 12px; color: var(--main-txt-color); }
+.pt-numero { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--light-yellow); font-size: 13px; font-weight: 700; }
+
+/* Quantidade (− n +) */
+.pt-quantidade { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+.pt-quantidade:last-child { border-bottom: 0; }
+.pt-quantidade-info { display: flex; flex-direction: column; gap: 2px; }
+.pt-quantidade-nome { font-weight: 600; font-size: 14px; }
+.pt-quantidade-preco { font-size: 12.5px; color: var(--soft-txt-color); }
+.pt-stepper { display: inline-flex; align-items: center; gap: 4px; }
+.pt-stepper button { width: 40px; height: 40px; border: 1px solid var(--border-color); background: var(--surface-color); border-radius: 4px; font-size: 20px; line-height: 1; cursor: pointer; color: var(--main-txt-color); }
+.pt-stepper button:hover:not(:disabled) { background: var(--bg-alt-color); border-color: var(--main-txt-color); }
+.pt-stepper button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pt-stepper output { min-width: 36px; text-align: center; font-weight: 600; font-size: 16px; }
+
+/* Resumo financeiro */
+.pt-resumo { position: sticky; top: 16px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
+.pt-resumo h2 { font-family: var(--font-title); font-size: 16px; margin: 0 0 12px; }
+.pt-valor-linha { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14px; }
+.pt-valor-linha span:first-child { color: var(--soft-txt-color); }
+.pt-valor-total { margin-top: 8px; padding-top: 12px; border-top: 2px solid var(--main-txt-color); font-family: var(--font-title); font-weight: 700; font-size: 18px; }
+.pt-valor-total span:first-child { color: var(--main-txt-color); }
+.pt-resumo-vazio { font-size: 13.5px; color: var(--soft-txt-color); margin: 0 0 12px; }
+.pt-resumo .btn { width: 100%; margin-top: 14px; }
+
+/* Andamento da candidatura */
+.pt-etapas { list-style: none; margin: 0 0 8px; padding: 0; display: flex; gap: 0; }
+.pt-etapa { flex: 1; position: relative; padding-top: 30px; text-align: center; font-size: 12.5px; color: var(--soft-txt-color); }
+.pt-etapa::before { content: ''; position: absolute; top: 9px; left: 0; right: 0; height: 3px; background: var(--border-color); }
+.pt-etapa:first-child::before { left: 50%; }
+.pt-etapa:last-child::before { right: 50%; }
+.pt-etapa::after { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 21px; height: 21px; border-radius: 50%; background: var(--surface-color); border: 3px solid var(--border-color); box-sizing: border-box; }
+.pt-etapa.is-feita { color: var(--main-txt-color); }
+.pt-etapa.is-feita::before, .pt-etapa.is-atual::before { background: var(--dark-green); }
+.pt-etapa.is-feita::after { background: var(--dark-green); border-color: var(--dark-green); }
+.pt-etapa.is-atual { color: var(--main-txt-color); font-weight: 600; }
+.pt-etapa.is-atual::after { border-color: var(--dark-yellow); background: var(--light-yellow); }
+.pt-etapa.is-atual:last-child::after { border-color: var(--dark-green); background: var(--dark-green); }
+
+.pt-destaque { padding: 14px 16px; border-radius: 8px; background: #FBF0CF; border: 1px solid var(--light-yellow); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+.pt-destaque.is-ok { background: var(--light-green); border-color: rgba(39, 138, 91, 0.35); }
+.pt-destaque.is-erro { background: var(--light-red); border-color: rgba(228, 64, 95, 0.35); }
+.pt-destaque .ed-acoes { margin-top: 12px; }
+
+.pt-logo { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; background: var(--bg-alt-color); flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-title); font-weight: 700; font-size: 22px; color: var(--soft-txt-color); overflow: hidden; }
+.pt-logo img { width: 100%; height: 100%; object-fit: cover; }
+.pt-perfil-card { display: flex; align-items: center; gap: 16px; padding: 18px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 24px; }
+.pt-perfil-info { flex: 1; min-width: 0; }
+.pt-perfil-info strong { display: block; font-family: var(--font-title); font-size: 17px; overflow-wrap: anywhere; }
+.pt-perfil-info span { font-size: 13.5px; color: var(--soft-txt-color); overflow-wrap: anywhere; }
+
+.pt-cartoes-participar { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+a.pt-cartao-link { text-decoration: none; color: inherit; }
+.pt-cartao-link.is-desabilitado { pointer-events: none; }
+
+@media (max-width: 860px) {
+  .pt-grade { grid-template-columns: 1fr; }
+  .pt-resumo { position: static; }
+}
+@media (max-width: 520px) {
+  .pt-etapa { font-size: 11px; }
+  .pt-perfil-card { flex-wrap: wrap; }
+}

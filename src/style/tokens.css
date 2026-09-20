@@ -119,3 +119,15 @@
     0 var(--pixel-cut)
   );
 }
+/* Selo de classificação indicativa ("14+", "Livre"), usado nas páginas públicas */
+.selo-idade {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  font-family: var(--font-title);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
