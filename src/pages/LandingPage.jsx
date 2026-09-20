@@ -1,8 +1,7 @@
 import { Cronometro } from '../components/Cronometro';
 import '../style/LandingPage.css';
 import ccpopLogo from '../assets/LOGO_CCPOP.png';
-
-const dataProximoEvento = new Date('2026-08-22T09:00:00-03:00');
+import geektopiaTitle from '../assets/GEEKTOPIA-title.png';
 
 export function LandingPage() {
   return (
@@ -12,6 +11,7 @@ export function LandingPage() {
         <div className="landing-hero-grid">
           <div>
             <p className="landing-eyebrow">Conselho de Cultura POP de Ponta Grossa</p>
+            <img src={geektopiaTitle} alt="GEEKTOPIA" className="landing-title-img" />
             <h1 className="landing-title">O maior encontro geek da região tem data marcada</h1>
             <p className="landing-sub">
               Ingressos, competições, exposições e credenciamento da{' '}
@@ -27,7 +27,7 @@ export function LandingPage() {
 
           <div className="landing-panel">
             <div className="landing-panel-label">Contagem regressiva</div>
-            <Cronometro dataAlvo={dataProximoEvento} />
+            <Cronometro />
           </div>
         </div>
       </section>

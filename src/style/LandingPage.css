@@ -19,10 +19,16 @@
 }
 
 .landing-eyebrow {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--light-yellow);
   margin: 0 0 14px;
+}
+
+.landing-title-img {
+  width: 400px;
+  display: flex;
+  margin-top: 50px;
 }
 
 .landing-title {
@@ -43,6 +49,7 @@
   color: #B9B8C0;
   max-width: 44ch;
   margin: 0 0 26px;
+  margin-top: -60px;
 }
 
 .landing-hero-ctas {
@@ -54,7 +61,8 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid #2C2A32;
   border-radius: 8px;
-  padding: 24px;
+  margin-left: 50px;
+  padding: 25px;
 }
 
 .landing-panel-label {
@@ -215,6 +223,17 @@
 }
 
 .landing-footer a:hover {
+  color: var(--light-yellow);
+}
+
+.landing-hero-ctas .btn-secondary {
+  color: #fff;
+  border-color: #45444C;
+}
+
+.landing-hero-ctas .btn-secondary:hover {
+  background: transparent;
+  border-color: var(--light-yellow);
   color: var(--light-yellow);
 }
 

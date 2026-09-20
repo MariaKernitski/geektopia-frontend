@@ -18,7 +18,6 @@ export function Perfil() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
-  const dataProximoEvento = new Date('2027-08-22T09:00:00-03:00');
 
   useEffect(() => {
     carregarPerfil();
@@ -274,7 +273,7 @@ export function Perfil() {
             </div>
 
             <div className="perfil-banner">
-                🎉 <Cronometro dataAlvo={dataProximoEvento} />
+                🎉 <Cronometro />
             </div>
 
           </div>

@@ -55,6 +55,7 @@
 }
 
 .header-actions .btn-secondary:hover {
+  background: transparent;
   border-color: var(--light-yellow);
   color: var(--light-yellow);
 }

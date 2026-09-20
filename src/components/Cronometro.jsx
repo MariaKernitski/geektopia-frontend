@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+const DATA_PROXIMO_EVENTO = new Date('2027-08-22T09:00:00-03:00');
+
 function calcularTempoRestante(dataAlvo) {
   const diferenca = dataAlvo - new Date();
 
@@ -16,8 +18,8 @@ function calcularTempoRestante(dataAlvo) {
   };
 }
 
-// props: dataAlvo (obrigatório) — instância de Date do momento que o cronômetro deve atingir
-export function Cronometro({ dataAlvo }) {
+// dataAlvo é opcional — se não passar nada, usa DATA_PROXIMO_EVENTO por padrão
+export function Cronometro({ dataAlvo = DATA_PROXIMO_EVENTO }) {
   const [tempo, setTempo] = useState(() => calcularTempoRestante(dataAlvo));
 
   useEffect(() => {
@@ -25,8 +27,6 @@ export function Cronometro({ dataAlvo }) {
       setTempo(calcularTempoRestante(dataAlvo));
     }, 1000);
 
-    // limpa o intervalo quando o componente sai da tela,
-    // senão ele continua rodando escondido e vaza memória
     return () => clearInterval(intervalo);
   }, [dataAlvo]);
 

@@ -42,8 +42,12 @@ export function Header() {
           </>
         ) : (
           <>
-            <Link to="/login" className="btn btn-secondary">Entrar</Link>
-            <Link to="/cadastro" className="btn btn-primary">Cadastrar</Link>
+            {location.pathname !== '/login' && (
+              <Link to="/login" className="btn btn-secondary">Entrar</Link>
+            )}
+            {location.pathname !== '/cadastro' && (
+              <Link to="/cadastro" className="btn btn-primary">Cadastrar</Link>
+            )}
           </>
         )}
       </div>

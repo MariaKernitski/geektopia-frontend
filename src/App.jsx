@@ -7,6 +7,7 @@ import { Login } from './pages/Login';
 import { Cadastro } from './pages/Cadastro';
 import { Perfil } from './pages/Perfil';
 import { Admin } from './pages/Admin';
+import { AdminHub } from './pages/AdminHub';
 
 export default function App() {
   return (
@@ -18,7 +19,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
-        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+        <Route path="/admin" element={<AdminRoute><AdminHub /></AdminRoute>} />
+        <Route path="/admin/usuarios" element={<AdminRoute><Admin /></AdminRoute>} /> 
       </Routes>
     </BrowserRouter>
   );

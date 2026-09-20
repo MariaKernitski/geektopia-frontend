@@ -1,0 +1,126 @@
+.admin-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.admin-list-title {
+  font-family: var(--font-title);
+  font-size: 22px;
+  margin: 0 0 24px;
+  color: var(--main-txt-color);
+}
+
+.admin-list-feedback {
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  white-space: pre-line;
+}
+
+.admin-list-feedback.is-sucesso {
+  background: var(--light-green);
+  color: var(--dark-green);
+  border: 1px solid rgba(52, 168, 104, 0.3);
+}
+
+.admin-list-feedback.is-erro {
+  background: var(--light-red);
+  color: var(--dark-red);
+  border: 1px solid rgba(228, 64, 95, 0.3);
+}
+
+.admin-list {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.admin-list-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-color);
+}
+
+.admin-list-row:last-child {
+  border-bottom: none;
+}
+
+.admin-list-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-list-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--main-txt-color);
+}
+
+.admin-list-email {
+  font-size: 12.5px;
+  color: var(--soft-txt-color);
+}
+
+.admin-role-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--bg-alt-color);
+  color: var(--soft-txt-color);
+  white-space: nowrap;
+}
+
+.admin-role-badge.is-admin {
+  background: var(--light-yellow);
+  color: var(--main-txt-color);
+}
+
+.admin-list-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.admin-create-form {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-create-row {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-create-row input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 13.5px;
+}
+
+.admin-create-row input:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}

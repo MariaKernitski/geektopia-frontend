@@ -1,0 +1,91 @@
+.admin-hub-page {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.admin-hub-shell {
+  width: 100%;
+  max-width: 900px;
+}
+
+.admin-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-alt-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+}
+
+.admin-hub-greeting {
+  font-family: var(--font-title);
+  font-size: 20px;
+  margin: 0 0 6px;
+  color: var(--main-txt-color);
+}
+
+.admin-hub-sub {
+  font-size: 13.5px;
+  color: var(--soft-txt-color);
+  margin: 0;
+}
+
+.admin-hub-badge {
+  width: 100px;
+  height: 55px;
+  margin-right: 25px;
+  object-fit: contain;
+}
+
+.admin-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.admin-hub-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 16px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--main-txt-color);
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.admin-hub-card:hover {
+  border-color: var(--dark-yellow);
+  transform: translateY(-2px);
+}
+
+.admin-hub-card-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--main-txt-color);
+}
+
+.admin-hub-card-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .admin-hub-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-hub-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
