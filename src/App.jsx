@@ -23,6 +23,7 @@ import { Dashboard } from './pages/Dashboard';
 import { AdminPaginas } from './pages/AdminPaginas';
 import { AdminCheckin } from './pages/AdminCheckin';
 import { ErroTela } from './components/ErroTela';
+import { Termos } from './pages/Termos';
 import { EventosComunidade } from './pages/EventosComunidade';
 import { AdminSolicitacoes } from './pages/AdminSolicitacoes';
 import { AdminUsuarioForm } from './pages/AdminUsuarioForm';
@@ -40,6 +41,7 @@ export default function App() {
       <ErroTela>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/termos" element={<Termos />} />
         <Route path="/eventos" element={<EventosComunidade />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />

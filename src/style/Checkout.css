@@ -369,3 +369,9 @@
     width: 100%;
   }
 }
+
+.ck-termos {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--soft-txt-color);
+}

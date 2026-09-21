@@ -29,6 +29,7 @@ export function Rodape() {
           <Link to="/">Início</Link>
           <Link to="/geektopia">Geektopia</Link>
           {token ? <Link to={ehAdmin ? '/admin' : '/perfil'}>{ehAdmin ? 'Painel' : 'Meu perfil'}</Link> : <Link to="/login">Entrar</Link>}
+          <Link to="/termos">Termos e privacidade</Link>
           {info.instagram && <a href={info.instagram} target="_blank" rel="noopener noreferrer"><FiInstagram aria-hidden="true" /> Instagram</a>}
         </nav>
       </div>

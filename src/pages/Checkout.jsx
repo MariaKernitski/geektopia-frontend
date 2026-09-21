@@ -280,6 +280,8 @@ function Formulario({ idEvento, evento, lotes }) {
                   </section>
                 )}
 
+                <p className="ck-termos">Ao continuar para o pagamento, você concorda com os <Link to="/termos#compras" target="_blank" rel="noopener noreferrer">termos de compra e ingressos</Link> e com a <Link to="/termos#privacidade" target="_blank" rel="noopener noreferrer">política de privacidade</Link>.</p>
+
                 <div className="ck-acoes">
                   <button type="button" className="btn btn-secondary ck-btn" onClick={() => setEtapa('dados')}>Voltar</button>
                   <button type="button" className="btn btn-primary ck-btn" disabled={enviando || (regrasParaAceite && !aceite)} onClick={pagar}>

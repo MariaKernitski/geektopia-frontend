@@ -12,6 +12,7 @@ import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../utils/mascaras';
 import { formatarData, formatarMoeda } from '../utils/datas';
 import { eventoPassou } from '../utils/evento';
 import { requisitosSenha, senha as validarSenha } from '../utils/validacao';
+import { GENEROS, SEXUALIDADES, comporGenero, comporSexualidade, separarGenero, separarSexualidade } from '../utils/genero';
 import { SecaoEventosComunidade } from '../components/perfil/SecaoEventosComunidade';
 import { BotaoPdf } from '../components/BotaoPdf';
 import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
@@ -188,6 +189,8 @@ function SecaoDados({ user, onSalvo }) {
       <dl className="perfil-dados">
         <Item Icone={FiMail} rotulo="E-mail" valor={user.email} />
         <Item Icone={FiPhone} rotulo="Telefone" valor={user.telefone ? mascaraTelefone(user.telefone) : ''} />
+        <Item Icone={FiUser} rotulo="Gênero" valor={user.genero || ''} />
+        <Item Icone={FiUser} rotulo="Sexualidade (opcional)" valor={user.sexualidade || ''} />
         <Item Icone={FiMapPin} rotulo="Localização" valor={user.cidade ? `${user.cidade}${user.estado ? ` - ${user.estado}` : ''}` : ''} />
       </dl>
     </section>
@@ -197,7 +200,8 @@ function SecaoDados({ user, onSalvo }) {
 function FormEdicao({ user, onCancelar, onSalvo }) {
   const [form, setForm] = useState({
     nome_completo: user.nome_completo || '', nickname: user.perfil?.nickname || '',
-    telefone: user.telefone ? mascaraTelefone(user.telefone) : '', estado: user.estado || '', cidade: user.cidade || ''
+    telefone: user.telefone ? mascaraTelefone(user.telefone) : '', estado: user.estado || '', cidade: user.cidade || '',
+    ...separarGenero(user.genero), ...separarSexualidade(user.sexualidade)
   });
   const [estados, setEstados] = useState([]);
   const [cidades, setCidades] = useState([]);
@@ -222,11 +226,13 @@ function FormEdicao({ user, onCancelar, onSalvo }) {
     e.preventDefault();
     setErro('');
     if (form.nome_completo.trim().split(/\s+/).length < 2) { setErro('Informe nome e sobrenome.'); return; }
+    if (!form.genero) { setErro('Selecione o gênero (ou "Prefiro não informar").'); return; }
     setSalvando(true);
     try {
       const res = await api.put('/auth/profile', {
         nome_completo: form.nome_completo.trim(), nickname: form.nickname.trim(), telefone: form.telefone.replace(/\D/g, ''),
         estado: form.estado, cidade: form.cidade,
+        genero: comporGenero(form.genero, form.generoOutro), sexualidade: comporSexualidade(form.sexualidade, form.sexualidadeOutra),
         ...(user.perfil?.avatar_url && { avatar_url: user.perfil.avatar_url })
       });
       onSalvo(res.data.message || 'Dados atualizados.');
@@ -258,6 +264,33 @@ function FormEdicao({ user, onCancelar, onSalvo }) {
             {(form.estado ? cidades : []).map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}
           </select>
         </div>
+        <div className="perfil-field">
+          <label htmlFor="pf-genero">Gênero *</label>
+          <select id="pf-genero" name="genero" value={form.genero} onChange={alterar}>
+            <option value="">Selecione...</option>
+            {GENEROS.map((g) => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </div>
+        {form.genero === 'Outro' && (
+          <div className="perfil-field">
+            <label htmlFor="pf-genero-outro">Como você se identifica? (opcional)</label>
+            <input id="pf-genero-outro" name="generoOutro" value={form.generoOutro} onChange={alterar} maxLength={40} />
+          </div>
+        )}
+        <div className="perfil-field">
+          <label htmlFor="pf-sexualidade">Sexualidade (opcional)</label>
+          <select id="pf-sexualidade" name="sexualidade" value={form.sexualidade} onChange={alterar}>
+            <option value="">Não informar agora</option>
+            {SEXUALIDADES.map((g) => <option key={g} value={g}>{g}</option>)}
+          </select>
+          <small className="perfil-ajuda">Só informe se quiser. É um dado sensível, usado apenas em estatísticas do público (sem identificar você). Você pode apagar quando quiser.</small>
+        </div>
+        {form.sexualidade === 'Outra' && (
+          <div className="perfil-field">
+            <label htmlFor="pf-sex-outra">Qual? (opcional)</label>
+            <input id="pf-sex-outra" name="sexualidadeOutra" value={form.sexualidadeOutra} onChange={alterar} maxLength={40} />
+          </div>
+        )}
         <p className="perfil-ajuda perfil-form-full">E-mail, documento e data de nascimento não podem ser alterados aqui. Para corrigi-los, fale com a organização.</p>
         <div className="perfil-form-actions">
           <button type="button" className="btn btn-secondary" onClick={onCancelar}>Cancelar</button>
