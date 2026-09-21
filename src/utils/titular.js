@@ -5,6 +5,10 @@ import { exigirDigitoVerificador, idadeEmAnos } from './validacao';
 // (geektopia-backend/src/utils/titulares.js); o servidor é a palavra final.
 
 export const MAX_INGRESSOS_POR_COMPRA = 10;
+export const IDADE_MAXIMA = 110;
+
+// Menor data de nascimento aceita no campo de data (AAAA-MM-DD).
+export const nascimentoMinimo = () => `${new Date().getFullYear() - IDADE_MAXIMA}-01-01`;
 
 // Limite de ingressos do lote por pessoa. Meia-entrada tem 1 por pessoa mesmo sem configurar.
 export const limiteDoLote = (lote) => lote.limite_por_pessoa ?? (lote.categoria === 'Meia' ? 1 : null);
@@ -38,14 +42,13 @@ export function validarTitular(t, { minIdade } = {}) {
 
   if (!t.nasc) erros.nascimento = 'Informe a data de nascimento.';
   else {
-    const d = new Date(`${t.nasc}T00:00:00Z`);
-    if (Number.isNaN(d.getTime())) erros.nascimento = 'Data inválida. Confira dia, mês e ano.';
-    else if (d > new Date()) erros.nascimento = 'A data de nascimento não pode ser no futuro.';
-    else {
-      const idade = idadeEmAnos(t.nasc);
-      if (idade > 120) erros.nascimento = 'Data inválida: ano muito antigo.';
-      else if (minIdade && idade < minIdade) erros.nascimento = `Este ingresso exige ${minIdade}+ anos. O titular tem ${idade}.`;
-    }
+    const idade = idadeEmAnos(t.nasc);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(t.nasc) || idade === null) {
+      erros.nascimento = /^\d{4}-\d{2}-\d{2}$/.test(t.nasc) && new Date(`${t.nasc}T00:00:00Z`) > new Date()
+        ? 'A data de nascimento não pode ser no futuro.'
+        : 'Data inválida. Confira dia, mês e ano (com 4 dígitos).';
+    } else if (idade > IDADE_MAXIMA) erros.nascimento = 'Data inválida: confira o ano de nascimento.';
+    else if (minIdade && idade < minIdade) erros.nascimento = `Este ingresso exige ${minIdade}+ anos. O titular tem ${idade}.`;
   }
   return erros;
 }

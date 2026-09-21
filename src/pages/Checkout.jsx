@@ -5,7 +5,7 @@ import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
 import { ROTULO_CATEGORIA, moeda } from '../utils/evento';
 import { mascaraCpf } from '../utils/mascaras';
-import { MAX_INGRESSOS_POR_COMPRA, documentoCanonico, idadeExigida, limiteDoLote, validarTitular } from '../utils/titular';
+import { MAX_INGRESSOS_POR_COMPRA, documentoCanonico, idadeExigida, limiteDoLote, nascimentoMinimo, validarTitular } from '../utils/titular';
 import '../style/Publico.css';
 import '../style/Checkout.css';
 
@@ -221,7 +221,7 @@ function Formulario({ idEvento, evento, lotes }) {
 
                         <div className="ck-campo">
                           <label htmlFor={`b-${ing.chave}`}>Data de nascimento *</label>
-                          <input id={`b-${ing.chave}`} type="date" max={hoje()} value={t.nasc} onChange={(ev) => alterar(ing.chave, 'nasc', ev.target.value)} aria-invalid={e.nascimento ? true : undefined} />
+                          <input id={`b-${ing.chave}`} type="date" min={nascimentoMinimo()} max={hoje()} value={t.nasc} onChange={(ev) => alterar(ing.chave, 'nasc', ev.target.value)} aria-invalid={e.nascimento ? true : undefined} />
                           {e.nascimento && <p className="ck-erro" role="alert">{e.nascimento}</p>}
                         </div>
                       </div>

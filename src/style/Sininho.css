@@ -1,0 +1,122 @@
+.sn {
+  position: relative;
+}
+.sn-botao {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #45444c;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+.sn-botao:hover {
+  border-color: var(--light-yellow);
+  color: var(--light-yellow);
+}
+.sn-botao:focus-visible {
+  outline: 3px solid var(--light-cyan);
+  outline-offset: 2px;
+}
+.sn-contagem {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--dark-red);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+.sn-painel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 30;
+  width: min(380px, 92vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--surface-color);
+  color: var(--main-txt-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(22, 21, 26, 0.28);
+}
+.sn-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-family: var(--font-title);
+}
+.sn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-cyan);
+  cursor: pointer;
+}
+.sn-vazio {
+  margin: 0;
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--soft-txt-color);
+}
+.sn-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sn-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--surface-color);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.sn-item:hover {
+  background: var(--bg-alt-color);
+}
+.sn-item.is-nova {
+  background: #fbf0cf;
+  border-left: 4px solid var(--dark-yellow);
+}
+.sn-titulo {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 15px;
+}
+.sn-texto {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--soft-txt-color);
+  white-space: pre-line;
+}
+.sn-quando {
+  font-size: 12px;
+  color: var(--soft-txt-color);
+}

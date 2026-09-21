@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3333/api',
+  // Endereço da API: definido por ambiente (VITE_API_URL no .env do front). Sem ele, usa o backend local.
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3333/api',
 });
 
 api.interceptors.request.use((config) => {

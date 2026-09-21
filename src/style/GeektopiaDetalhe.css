@@ -934,3 +934,29 @@
     display: none;
   }
 }
+
+.dt-secao.is-destaque {
+  margin-top: 40px;
+  padding: 32px;
+  background: var(--surface-color);
+  border: 2px solid var(--main-txt-color);
+  border-radius: 12px;
+  box-shadow: 8px 8px 0 var(--cor-edicao, var(--light-yellow));
+}
+.dt-limites {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  list-style: none;
+  font-size: 14px;
+  background: var(--bg-alt-color);
+  border-left: 4px solid var(--cor-edicao, var(--light-yellow));
+  border-radius: 6px;
+}
+@media (max-width: 700px) {
+  .dt-secao.is-destaque {
+    padding: 20px 16px;
+    box-shadow: 4px 4px 0 var(--cor-edicao, var(--light-yellow));
+  }
+}

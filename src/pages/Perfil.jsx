@@ -13,6 +13,7 @@ import { formatarData, formatarMoeda } from '../utils/datas';
 import { eventoPassou } from '../utils/evento';
 import { requisitosSenha, senha as validarSenha } from '../utils/validacao';
 import { BotaoPdf } from '../components/BotaoPdf';
+import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
 import { situacaoDaInscricao, ROTULO_MODALIDADE } from '../utils/competicao';
 import { situacaoDaSolicitacao } from '../utils/solicitacao';
 import '../style/Perfil.css';
@@ -131,6 +132,7 @@ export function Perfil() {
 
           <main className="perfil-painel">
             {secao === 'dados' && <SecaoDados user={user} onSalvo={(texto) => { setMensagem({ tipo: 'sucesso', texto }); recarregar(); }} />}
+            {secao === 'ingressos' && <ComprasPendentes aoConfirmar={recarregar} />}
             {secao === 'ingressos' && <SecaoIngressos proximos={ingressosProximos} anteriores={ingressosAnteriores} />}
             {secao === 'participacoes' && <SecaoParticipacoes ingressos={ingressos} inscricoes={inscricoes} solicitacoes={solicitacoes} />}
             {secao === 'seguranca' && <SecaoSeguranca onMensagem={setMensagem} />}
@@ -332,6 +334,28 @@ function SecaoIngressos({ proximos, anteriores }) {
       <p className="perfil-ajuda perfil-ajuda-ing">Guarde o PDF no celular: na entrada, basta mostrar o QR code e um documento com foto.</p>
       {proximos.length > 0 && (<><h3 className="perfil-subtitulo">Próximos eventos</h3><ListaIngressos ingressos={proximos} /></>)}
       {anteriores.length > 0 && (<><h3 className="perfil-subtitulo">Anteriores e cancelados</h3><ListaIngressos ingressos={anteriores} /></>)}
+    </section>
+  );
+}
+
+// Compras de ingresso que o Mercado Pago ainda não confirmou para o site (ex.: a pessoa pagou
+// e fechou a aba antes de voltar). A tela confere sozinha e libera os ingressos.
+function ComprasPendentes({ aoConfirmar }) {
+  const [pedidos, setPedidos] = useState([]);
+  const carregar = useCallback(() => {
+    api.get('/pedidos/meus')
+      .then((r) => setPedidos(r.data.filter((p) => p.status_pedido === 'Pendente' && p.itens.length > 0 && Date.now() - new Date(p.data_pedido).getTime() < 48 * 3600 * 1000)))
+      .catch(() => {});
+  }, []);
+  useEffect(() => { carregar(); }, [carregar]);
+  const { verificando, mensagem, verificar } = usePagamentosPendentes(pedidos.map((p) => p.id_pedido), () => { carregar(); aoConfirmar(); });
+  if (pedidos.length === 0) return null;
+  return (
+    <section className="perfil-ajuda perfil-ajuda-ing" role="status" aria-label="Compras aguardando confirmação">
+      <strong>Compra aguardando confirmação do pagamento ({pedidos.map((p) => `#${p.id_pedido}`).join(', ')})</strong>
+      <p>Se você já pagou, o ingresso aparece aqui assim que o Mercado Pago confirmar. Estamos conferindo.</p>
+      {mensagem && <p>{mensagem}</p>}
+      <button type="button" className="btn btn-secondary" onClick={verificar} disabled={verificando}>{verificando ? 'Conferindo...' : 'Verificar agora'}</button>
     </section>
   );
 }
