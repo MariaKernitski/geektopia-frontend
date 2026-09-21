@@ -1,7 +1,3 @@
-/* ==========================================================
-   Cadastro.css — mesmo sistema visual do Login
-   ========================================================== */
-
 .cadastro-page {
   min-height: 80vh;
   display: flex;
@@ -18,8 +14,6 @@
   border-radius: 8px;
   overflow: hidden;
 }
-
-/* ---------------- ABAS DE ETAPA ---------------- */
 
 .cadastro-steps {
   display: flex;
@@ -43,8 +37,6 @@
   border-bottom-color: var(--dark-yellow);
 }
 
-/* ---------------- CONTEÚDO ---------------- */
-
 .cadastro-content {
   padding: 32px 36px;
 }
@@ -55,8 +47,6 @@
   margin: 0 0 20px;
   color: var(--main-txt-color);
 }
-
-/* ---------------- CAMPOS ---------------- */
 
 .cadastro-field {
   margin-bottom: 18px;
@@ -93,8 +83,6 @@
   cursor: not-allowed;
 }
 
-/* ---------------- GRUPO DE RADIO (Tipo de Documento) ---------------- */
-
 .cadastro-radio-group {
   display: flex;
   gap: 10px;
@@ -112,15 +100,11 @@
   font-size: 13.5px;
 }
 
-/* :has() destaca o "pill" quando o radio dentro dele está marcado.
-   Suportado nos navegadores modernos (Chrome/Edge/Firefox atuais) */
 .cadastro-radio-option:has(input:checked) {
   border-color: var(--dark-yellow);
   background: var(--bg-alt-color);
   font-weight: 600;
 }
-
-/* ---------------- SENHA ---------------- */
 
 .cadastro-senha-checklist {
   list-style: none;
@@ -153,8 +137,6 @@
   font-weight: 700;
 }
 
-/* ---------------- FIELDSET (Opcionais) ---------------- */
-
 .cadastro-fieldset {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -168,8 +150,6 @@
   color: var(--soft-txt-color);
   padding: 0 6px;
 }
-
-/* ---------------- CHECKBOX DE TERMOS ---------------- */
 
 .cadastro-checkbox-field {
   display: flex;
@@ -185,8 +165,6 @@
   margin-top: 3px;
 }
 
-/* ---------------- MENSAGEM DE ERRO ---------------- */
-
 .cadastro-feedback {
   margin: 0 0 20px;
   padding: 10px 14px;
@@ -200,8 +178,6 @@
   color: var(--dark-red);
   border: 1px solid rgba(228, 64, 95, 0.3);
 }
-
-/* ---------------- BOTÕES DE NAVEGAÇÃO ---------------- */
 
 .cadastro-actions {
   display: flex;

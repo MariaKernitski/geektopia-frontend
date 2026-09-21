@@ -1,7 +1,3 @@
-/* ==========================================================
-   Dashboard.css — mesmo sistema visual do AdminHub/Perfil
-   ========================================================== */
-
 .dash-page {
   min-height: 80vh;
   display: flex;
@@ -169,11 +165,6 @@
   transition: width 0.3s ease;
 }
 
-/* ---------------- EXPORTAR PARA PDF (via impressão do navegador) ---------------- */
-/* O botão "Exportar para PDF" chama window.print(); estas regras só valem na
-   hora de imprimir/gerar o PDF, escondendo o que não faz sentido no papel
-   (menu do site, sombra dos cards) e garantindo que as cores das barras saiam
-   impressas (por padrão, alguns navegadores tiram cor de fundo ao imprimir). */
 @media print {
   .header,
   .dash-btn-exportar {

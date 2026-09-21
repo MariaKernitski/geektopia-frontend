@@ -1,99 +1,84 @@
-/* ==========================================================
-   NEXUS — Design Tokens (versão final, mesclada v1+v2)
-   Importe este arquivo UMA VEZ, no index.css. Todas as páginas
-   (Login.css, LandingPage.css, Perfil.css, Cadastro.css...)
-   usam as variáveis daqui — é isso que garante que um botão,
-   uma cor ou uma fonte fiquem iguais em todo o site.
-   ========================================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  /* ---- Base ---- */
-  --bg-color: #FCFAF6;         /* fundo geral: branco quente, bem sutil */
-  --bg-alt-color: #F3F0E9;     /* seções alternadas (ex: "Sobre") */
-  --surface-color: #FFFFFF;    /* cards, inputs, modais */
-  --border-color: #cdc8bd;     /* linhas finas, contorno de input */
 
-  /* ---- Texto / marca ---- */
-  --main-txt-color: #16151A;   /* texto principal, nav, hero, footer, painéis */
-  --soft-txt-color: #64636B;   /* texto secundário, legendas, placeholders */
+  --bg-color: #fcfaf6;
+  --bg-alt-color: #f3f0e9;
+  --surface-color: #ffffff;
+  --border-color: #cdc8bd;
 
-  /* ---- Amarelo (destaque principal: CTAs, estado ativo) ---- */
-  --light-yellow: #F7C531;     /* botão primário */
-  --dark-yellow: #DDA80E;      /* hover do botão primário */
+  --main-txt-color: #16151a;
+  --soft-txt-color: #64636b;
 
-  /* ---- Ciano (info/links) ---- */
-  --light-cyan: #6FE3E0;       /* usar em cima de fundo ESCURO (nav, hero, console) */
-  --dark-cyan: #0E7C78;        /* usar em cima de fundo CLARO (links no corpo do site) */
+  --light-yellow: #f7c531;
+  --dark-yellow: #dda80e;
 
-  /* ---- Verde (sucesso) ---- */
-  --dark-green: #278A5B;       /* texto/ícone de sucesso, borda de campo válido */
-  --light-green: #E3F7EC;      /* fundo suave de alerta/badge de sucesso */
+  --light-cyan: #6fe3e0;
+  --dark-cyan: #0e7c78;
 
-  /* ---- Vermelho (erro) ---- */
-  --dark-red: #E4405F;         /* texto/ícone de erro, borda de campo inválido */
-  --light-red: #FDE7EA;        /* fundo suave de alerta/badge de erro */
+  --dark-green: #278a5b;
+  --light-green: #e3f7ec;
 
-  /* ---- Tipografia ---- */
-  --font-pixel: 'Press Start 2P', monospace; /* só o título "GEEKTOPIA" */
-  --font-title: 'Chakra Petch', sans-serif;   /* títulos, nav, botões */
-  --font-body: 'Inter', sans-serif;             /* parágrafos, formulários */
+  --dark-red: #e4405f;
+  --light-red: #fde7ea;
 
-  /* ---- Bordas / recortes ---- */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --pixel-cut: 7px;/* ==========================================================
-   NEXUS — Design Tokens (versão final, mesclada v1+v2)
-   Importe este arquivo UMA VEZ, no index.css. Todas as páginas
-   (Login.css, LandingPage.css, Perfil.css, Cadastro.css...)
-   usam as variáveis daqui — é isso que garante que um botão,
-   uma cor ou uma fonte fiquem iguais em todo o site.
-   ========================================================== */
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-title: 'Chakra Petch', sans-serif;
+  --font-body: 'Inter', sans-serif;
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
-
-:root {
-  /* ---- Base ---- */
-  --bg-color: #FCFAF6;         /* fundo geral: branco quente, bem sutil */
-  --bg-alt-color: #F3F0E9;     /* seções alternadas (ex: "Sobre") */
-  --surface-color: #FFFFFF;    /* cards, inputs, modais */
-  --border-color: #cdc8bd;     /* linhas finas, contorno de input */
-
-  /* ---- Texto / marca ---- */
-  --main-txt-color: #16151A;   /* texto principal, nav, hero, footer, painéis */
-  --soft-txt-color: #64636B;   /* texto secundário, legendas, placeholders */
-
-  /* ---- Amarelo (destaque principal: CTAs, estado ativo) ---- */
-  --light-yellow: #F7C531;     /* botão primário */
-  --dark-yellow: #DDA80E;      /* hover do botão primário */
-
-  /* ---- Ciano (info/links) ---- */
-  --light-cyan: #6FE3E0;       /* usar em cima de fundo ESCURO (nav, hero, console) */
-  --dark-cyan: #0E7C78;        /* usar em cima de fundo CLARO (links no corpo do site) */
-
-  /* ---- Verde (sucesso) ---- */
-  --dark-green: #278A5B;       /* texto/ícone de sucesso, borda de campo válido */
-  --light-green: #E3F7EC;      /* fundo suave de alerta/badge de sucesso */
-
-  /* ---- Vermelho (erro) ---- */
-  --dark-red: #E4405F;         /* texto/ícone de erro, borda de campo inválido */
-  --light-red: #FDE7EA;        /* fundo suave de alerta/badge de erro */
-
-  /* ---- Tipografia ---- */
-  --font-pixel: 'Press Start 2P', monospace; /* só o título "GEEKTOPIA" */
-  --font-title: 'Chakra Petch', sans-serif;   /* títulos, nav, botões */
-  --font-body: 'Inter', sans-serif;             /* parágrafos, formulários */
-
-  /* ---- Bordas / recortes ---- */
   --radius-sm: 6px;
   --radius-md: 8px;
   --pixel-cut: 7px;
 
-  --shadow-card: 2px 2px 2px rgba(22, 21, 26, 0.10);
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+
+    --bg-color: #fcfaf6;
+    --bg-alt-color: #f3f0e9;
+    --surface-color: #ffffff;
+    --border-color: #cdc8bd;
+
+    --main-txt-color: #16151a;
+    --soft-txt-color: #64636b;
+
+    --light-yellow: #f7c531;
+    --dark-yellow: #dda80e;
+
+    --light-cyan: #6fe3e0;
+    --dark-cyan: #0e7c78;
+
+    --dark-green: #278a5b;
+    --light-green: #e3f7ec;
+
+    --dark-red: #e4405f;
+    --light-red: #fde7ea;
+
+    --font-pixel: 'Press Start 2P', monospace;
+    --font-title: 'Chakra Petch', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --pixel-cut: 7px;
+
+    --shadow-card: 2px 2px 2px rgba(22, 21, 26, 0.1);
+  }
+
+  .pixel-cut {
+    clip-path: polygon(
+      var(--pixel-cut) 0,
+      100% 0,
+      100% calc(100% - var(--pixel-cut)),
+      calc(100% - var(--pixel-cut)) 100%,
+      0 100%,
+      0 var(--pixel-cut)
+    );
+  }
+
+  --shadow-card: 2px 2px 2px rgba(22, 21, 26, 0.1);
 }
 
-/* Utilitário: o corte pixelado usado em botões e painéis de destaque */
 .pixel-cut {
   clip-path: polygon(
     var(--pixel-cut) 0,
@@ -105,21 +90,6 @@
   );
 }
 
-  --shadow-card: 2px 2px 2px rgba(22, 21, 26, 0.10);
-}
-
-/* Utilitário: o corte pixelado usado em botões e painéis de destaque */
-.pixel-cut {
-  clip-path: polygon(
-    var(--pixel-cut) 0,
-    100% 0,
-    100% calc(100% - var(--pixel-cut)),
-    calc(100% - var(--pixel-cut)) 100%,
-    0 100%,
-    0 var(--pixel-cut)
-  );
-}
-/* Selo de classificação indicativa ("14+", "Livre"), usado nas páginas públicas */
 .selo-idade {
   display: inline-block;
   align-self: flex-start;
