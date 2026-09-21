@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { AvisoBox } from '../components/edicao/AvisoBox';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { abrirAbaPagamento, fecharAbaPagamento, irParaPagamento } from '../utils/pagamentoAba';
 import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
 import { avisoDaTela, useCarga } from '../hooks/useCarga';
 import { useAviso, mensagemDeErro } from '../hooks/useAviso';
@@ -36,12 +37,14 @@ export function CompetidorArea() {
   });
 
   const pagar = async (i) => {
+    const aba = abrirAbaPagamento();
     limpar();
     setTrabalhando(i.id_inscricao);
     try {
       const res = await api.post(`/inscricoes/${i.id_inscricao}/pagamento`, {}, { timeout: 30000 });
-      window.location.assign(res.data.init_point); // vai para o Mercado Pago
+      if (irParaPagamento(aba, res.data.init_point)) setTrabalhando(null); // outra aba; esta confere o pagamento sozinha
     } catch (err) {
+      fecharAbaPagamento(aba);
       mostrar('erro', err.code === 'ECONNABORTED'
         ? 'O Mercado Pago demorou para responder. Nenhuma cobrança foi feita; tente novamente.'
         : mensagemDeErro(err, 'Não foi possível abrir o pagamento.'));

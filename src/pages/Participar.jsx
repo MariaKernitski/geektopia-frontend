@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiAward, FiShoppingBag, FiTag } from 'react-icons/fi';
+import { FiArrowRight, FiAward, FiCalendar, FiShoppingBag, FiTag } from 'react-icons/fi';
 import '../style/AdminEdicao.css';
 import '../style/Parceiro.css';
 
@@ -15,6 +15,10 @@ const OPCOES = [
   {
     to: '/expositor', Icone: FiShoppingBag, titulo: 'Quero expor', acao: 'Abrir a área do expositor',
     texto: 'Tenha uma loja, um estande ou uma mesa de artista nas edições. Crie o perfil, peça o espaço e acompanhe a análise.'
+  },
+  {
+    to: '/perfil?secao=comunidade', Icone: FiCalendar, titulo: 'Quero divulgar meu evento', acao: 'Enviar evento',
+    texto: 'Organiza um evento geek, cultural ou de jogos? Envie para a CCPOP analisar e divulgar na página Eventos da comunidade. É gratuito.'
   }
 ];
 

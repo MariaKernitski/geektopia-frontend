@@ -1,17 +1,19 @@
 import { Link, useSearchParams } from 'react-router-dom';
-import { FiAward, FiShoppingBag } from 'react-icons/fi';
+import { FiAward, FiCalendar, FiShoppingBag } from 'react-icons/fi';
 import { AbaExpositores } from '../components/edicao/AbaExpositores';
+import { AbaComunidade } from '../components/edicao/AbaComunidade';
 import { AbaInscricoes } from '../components/edicao/AbaInscricoes';
 import { usePendencias } from '../hooks/usePendencias';
 import '../style/AdminEdicao.css';
 
 const ABAS = [
   { chave: 'expositores', rotulo: 'Expositores', Icone: FiShoppingBag, Componente: AbaExpositores },
-  { chave: 'competicoes', rotulo: 'Competições', Icone: FiAward, Componente: AbaInscricoes }
+  { chave: 'competicoes', rotulo: 'Competições', Icone: FiAward, Componente: AbaInscricoes },
+  { chave: 'comunidade', rotulo: 'Eventos da comunidade', Icone: FiCalendar, Componente: AbaComunidade }
 ];
 
 // Central de solicitações: tudo o que espera análise da organização, de todas as
-// edições num lugar só, separado por tipo (espaço de expositor / inscrição em competição).
+// edições num lugar só, separado por tipo (espaço de expositor / inscrição em competição / evento da comunidade).
 export function AdminSolicitacoes() {
   const [params, setParams] = useSearchParams();
   const pendencias = usePendencias();
@@ -22,7 +24,7 @@ export function AdminSolicitacoes() {
     <div className="ed-pagina">
       <Link to="/admin" className="btn btn-secondary ed-voltar">← Painel</Link>
       <h1 className="ed-titulo-pagina">Solicitações</h1>
-      <p className="ed-ajuda-topo">Pedidos de espaço de expositores e inscrições em competições que aguardam a sua análise, de todas as edições.</p>
+      <p className="ed-ajuda-topo">Pedidos de espaço de expositores, inscrições em competições e eventos da comunidade que aguardam a sua análise, de todas as edições.</p>
 
       <nav className="sol-abas" aria-label="Tipos de solicitação">
         {ABAS.map(({ chave: k, rotulo, Icone }) => (

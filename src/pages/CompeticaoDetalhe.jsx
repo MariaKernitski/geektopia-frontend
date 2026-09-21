@@ -142,7 +142,8 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
       if (form.link_equipe.trim() && !ehUrl(form.link_equipe)) n.link_equipe = 'O link deve começar com http:// ou https://.';
     }
     if (form.redes.trim() && !ehUrl(form.redes)) n.redes = 'O link deve começar com http:// ou https://.';
-    if (form.portfolio.trim() && !ehUrl(form.portfolio)) n.portfolio = 'O link deve começar com http:// ou https://.';
+    if (!form.portfolio.trim()) n.portfolio = 'Informe o link do seu material (portfólio, Instagram, Drive ou vídeo): a organização avalia a inscrição por ele.';
+    else if (!ehUrl(form.portfolio)) n.portfolio = 'O link deve começar com http:// ou https://.';
     if (form.audio.trim() && !ehUrl(form.audio)) n.audio = 'O link deve começar com http:// ou https://.';
     if (!form.aceite) n.aceite = 'Confirme que leu as informações da competição.';
     setErros(n);
@@ -155,7 +156,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
 
       const corpo = {
         id_competicao: competicao.id_competicao,
-        url_portfolio_apresentacao: form.portfolio.trim() || undefined,
+        url_portfolio_apresentacao: form.portfolio.trim(),
         link_audio_apresentacao: form.audio.trim() || undefined
       };
       if (modalidade !== 'Solo') {
@@ -225,7 +226,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
         )}
 
         <div className="ed-campo">
-          <label htmlFor="i-portfolio">Link do seu material de apresentação</label>
+          <label htmlFor="i-portfolio">Link do seu material de apresentação *</label>
           <input id="i-portfolio" name="portfolio" type="url" value={form.portfolio} onChange={alterar} placeholder="https://..." {...aria('portfolio')} />
           {campoErro('portfolio')}
           <small className="ed-ajuda">Portfólio, vídeo, fotos ou rede social. É o que a organização usa para avaliar a inscrição.</small>

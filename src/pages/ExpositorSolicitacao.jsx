@@ -4,6 +4,7 @@ import { FiAlertCircle, FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi
 import api from '../services/api';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { PagamentoCard } from '../components/PagamentoCard';
+import { abrirAbaPagamento, fecharAbaPagamento, irParaPagamento } from '../utils/pagamentoAba';
 import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
 import { AvisoBox } from '../components/edicao/AvisoBox';
 import { avisoDaTela, useCarga } from '../hooks/useCarga';
@@ -70,12 +71,14 @@ function Detalhe({ carga }) {
   const avisoInicial = location.state?.sucesso ? { tipo: 'sucesso', texto: location.state.sucesso } : aviso;
 
   const pagar = async () => {
+    const aba = abrirAbaPagamento();
     limpar();
     setTrabalhando(true);
     try {
       const res = await api.post(`/solicitacoes-espaco/${s.id_solicitacao}/pagamento`);
-      window.location.assign(res.data.init_point); // vai para o Mercado Pago
+      if (irParaPagamento(aba, res.data.init_point)) setTrabalhando(false); // outra aba; esta confere o pagamento sozinha
     } catch (err) {
+      fecharAbaPagamento(aba);
       mostrar('erro', mensagemDeErro(err, 'Não foi possível gerar o pagamento. Tente de novo.'));
       setTrabalhando(false);
     }

@@ -9,7 +9,7 @@ const OPCOES = [
   { to: '/admin/eventos', Icone: FiCalendar, titulo: 'Administrar Eventos' },
   { to: '/admin/solicitacoes', Icone: FiInbox, titulo: 'Solicitações (expositores e competições)', pendencias: true },
   { to: '/admin/checkin', Icone: FiCheckSquare, titulo: 'Check-in de ingressos (portaria)' },
-  { to: '/admin/paginas', Icone: FiFileText, titulo: 'Página inicial e textos do site' },
+  { to: '/admin/paginas', Icone: FiFileText, titulo: 'Páginas do site (inicial e Geektopia)' },
   { to: '/admin/dashboard', Icone: FiBarChart2, titulo: 'Dashboards e Relatórios' },
 ];
 

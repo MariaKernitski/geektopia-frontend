@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { abrirAbaPagamento, fecharAbaPagamento, irParaPagamento } from '../utils/pagamentoAba';
 import { FiAlertCircle, FiArrowLeft, FiCheck, FiInfo, FiLock, FiUser } from 'react-icons/fi';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
@@ -62,6 +63,7 @@ function Formulario({ idEvento, evento, lotes }) {
   const [aceite, setAceite] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const navigate = useNavigate();
   const [usouMeusDados, setUsouMeusDados] = useState(false);
 
   if (ingressos.length === 0) return <Navigate to={`/geektopia/${idEvento}`} replace />;
@@ -132,6 +134,7 @@ function Formulario({ idEvento, evento, lotes }) {
   };
 
   const pagar = async () => {
+    const aba = abrirAbaPagamento();
     setMensagem('');
     setEnviando(true);
     try {
@@ -145,8 +148,10 @@ function Formulario({ idEvento, evento, lotes }) {
       }));
       const res = await api.post('/pedidos', { itens: corpoItens }, { timeout: 30000 });
       try { sessionStorage.removeItem(chaveCarrinho); sessionStorage.removeItem(chaveRascunho); } catch { /* ignora */ }
-      window.location.assign(res.data.init_point); // Mercado Pago
+      // Mercado Pago abre em outra aba; esta segue para a confirmação, que libera os ingressos sozinha assim que o pagamento cair.
+      if (irParaPagamento(aba, res.data.init_point)) navigate(`/pedido/${res.data.id_pedido}/confirmacao`);
     } catch (err) {
+      fecharAbaPagamento(aba);
       const r = err.response;
       setMensagem(
         r?.status === 401 ? 'Sua sessão expirou. Entre novamente para comprar.'

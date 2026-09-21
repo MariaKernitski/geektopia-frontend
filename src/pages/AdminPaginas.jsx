@@ -6,12 +6,21 @@ import { ConfirmModal } from '../components/ConfirmModal';
 import { AvisoBox } from '../components/edicao/AvisoBox';
 import { avisoDaTela, useCarga } from '../hooks/useCarga';
 import { useAviso, mensagemDeErro } from '../hooks/useAviso';
+import { useSearchParams } from 'react-router-dom';
+import { AbasPaginas } from '../components/paginas/AbasPaginas';
+import { AdminPaginaGeektopia } from './AdminPaginaGeektopia';
 import { partesDoTitulo } from '../utils/landingPadrao';
 import '../style/AdminEdicao.css';
 import '../style/AdminPaginas.css';
 
 // Administrar Páginas Informativas: por enquanto, a landing page (textos, números e chamadas).
 export function AdminPaginas() {
+  const [params] = useSearchParams();
+  if (params.get('pagina') === 'geektopia') return <AdminPaginaGeektopia />;
+  return <AdminPaginaInicial />;
+}
+
+function AdminPaginaInicial() {
   const buscar = useCallback(async () => {
     const [conteudo, sugestoes] = await Promise.all([api.get('/conteudo/landing'), api.get('/conteudo/sugestoes').catch(() => ({ data: null }))]);
     return { conteudo: conteudo.data, sugestoes: sugestoes.data };
@@ -83,9 +92,10 @@ function Formulario({ conteudo, sugestoes, recarregar }) {
     <div className="ed-pagina ed-pagina-estreita">
       <Link to="/admin" className="btn btn-secondary ed-voltar">← Painel</Link>
       <div className="ed-lista-cabecalho">
-        <h1 className="ed-titulo-pagina">Página inicial</h1>
+        <h1 className="ed-titulo-pagina">Editar: Página inicial</h1>
         <a href="/" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">Ver a página <FiExternalLink aria-hidden="true" /></a>
       </div>
+      <AbasPaginas atual="inicial" />
       <p className="ed-ajuda-topo">Edite os textos e os números da página inicial do site. O que ficar em branco (nos campos obrigatórios) não é aceito; para voltar ao texto original, use “Restaurar textos padrão”.</p>
       <AvisoBox aviso={avisoDaTela(aviso, null)} />
 

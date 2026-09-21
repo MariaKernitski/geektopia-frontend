@@ -113,6 +113,7 @@ export function Admin() {
 
   return (
     <div className="ed-pagina">
+      <Link to="/admin" className="btn btn-secondary ed-voltar">← Painel</Link>
       <div className="ed-lista-cabecalho">
         <h1 className="ed-titulo-pagina">Usuários</h1>
         <Link to="/admin/usuarios/novo" className="btn btn-primary">+ Novo usuário</Link>
