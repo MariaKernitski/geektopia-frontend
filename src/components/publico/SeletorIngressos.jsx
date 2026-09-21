@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { CATEGORIAS, moeda } from '../../utils/evento';
+import { MAX_INGRESSOS_POR_COMPRA, limiteDoLote } from '../../utils/titular';
 
 const POUCAS_UNIDADES = 10;
 
@@ -39,6 +40,13 @@ export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, s
 
   return (
     <div className="dt-ingressos">
+      {vendaAberta && (
+        <ul className="dt-limites" aria-label="Limites de compra">
+          <li>Máximo de <strong>{MAX_INGRESSOS_POR_COMPRA} ingressos</strong> por compra.</li>
+          <li>Cada ingresso sai em nome de uma pessoa (nome, documento e nascimento).</li>
+          <li>Meia-entrada: <strong>1 por pessoa</strong>, com comprovação na entrada.</li>
+        </ul>
+      )}
       {grupos.length > 1 && (
         <div className="dt-abas" role="tablist" aria-label="Tipos de ingresso">
           {grupos.map((g, i) => {
@@ -75,6 +83,7 @@ export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, s
                 <div className="dt-lote-info">
                   <strong className="dt-lote-nome" id={`lote-${l.id_lote}`}>{l.nome_lote}</strong>
                   <div className="dt-lote-chips">
+                    {limiteDoLote(l) && <span className="pb-chip">Máx. {limiteDoLote(l)} por pessoa</span>}
                     {l.idade_minima && <span className="pb-chip">{l.idade_minima}+ anos</span>}
                     {poucos && <span className="pb-chip is-aviso">{l.restantes === 1 ? 'Última unidade' : `Restam ${l.restantes}`}</span>}
                     {l.esgotado && <span className="pb-chip is-erro">Esgotado</span>}

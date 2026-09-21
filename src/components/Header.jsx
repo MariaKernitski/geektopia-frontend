@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { usePendencias } from '../hooks/usePendencias';
+import { Sininho } from './Sininho';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
 import '../style/Header.css';
 
@@ -36,6 +37,7 @@ export function Header() {
       <div className="header-actions">
         {user ? (
           <>
+            <Sininho />
             {isAdmin && (
               <Link to="/admin" className="btn btn-secondary header-admin">
                 Painel ADM

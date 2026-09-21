@@ -8,6 +8,7 @@ import { Contagem } from '../components/publico/Contagem';
 import { NavInterna } from '../components/publico/NavInterna';
 import { AvisoMenores, URL_TERMO_MENORES } from '../components/publico/AvisoMenores';
 import { CartaoCompeticao } from '../components/publico/CartaoCompeticao';
+import { Rodape } from '../components/Rodape';
 import { SeletorIngressos } from '../components/publico/SeletorIngressos';
 import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
 import { chaveDoDia, eventoPassou, horaCurta, horarioEvento, linkMapa, moeda, periodoEvento, tituloDoDia } from '../utils/evento';
@@ -18,9 +19,9 @@ import '../style/GeektopiaDetalhe.css';
 
 const iniciais = (nome = '') => nome.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join('');
 
-function Secao({ id, titulo, texto, alt, children }) {
+function Secao({ id, titulo, texto, alt, destaque, children }) {
   return (
-    <section className={`pb-secao dt-secao ${alt ? 'is-alt' : ''}`} id={id} aria-labelledby={`${id}-t`}>
+    <section className={`pb-secao dt-secao ${alt ? 'is-alt' : ''} ${destaque ? 'is-destaque' : ''}`} id={id} aria-labelledby={`${id}-t`}>
       <header className="pb-cabecalho">
         <h2 className="pb-titulo" id={`${id}-t`}>{titulo}</h2>
         {texto && <p className="pb-lead">{texto}</p>}
@@ -205,6 +206,7 @@ export function GeektopiaDetalhe() {
   );
 
   return (
+    <>
     <main className="pb-pagina dt-pagina" style={{ '--cor-edicao': cor }}>
       {/* ---------------- HERO ---------------- */}
       <header className={`dt-hero ${fundoCor ? 'dt-hero-cor' : ''}`} style={fundoCor ? { background: fundoCor } : undefined}>
@@ -268,7 +270,7 @@ export function GeektopiaDetalhe() {
           )}
 
           {/* ---------------- INGRESSOS ---------------- */}
-          <Secao id="ingressos" titulo="Ingressos" texto={vendaAberta ? 'Escolha o tipo e a quantidade. Você confere tudo antes de pagar.' : undefined}>
+          <Secao id="ingressos" titulo="Escolha seus ingressos" destaque texto={vendaAberta ? 'Escolha o tipo e a quantidade. Você confere tudo antes de pagar.' : undefined}>
             {temRegras && (
               <div className="dt-avisos" role="note">
                 <FiShield aria-hidden="true" />
@@ -403,5 +405,7 @@ export function GeektopiaDetalhe() {
         </div>
       )}
     </main>
+    <Rodape />
+    </>
   );
 }
