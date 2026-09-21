@@ -18,6 +18,7 @@ import { AdminEdicao } from './pages/AdminEdicao';
 import { PedidoConfirmacao } from './pages/PedidoConfirmacao';
 import { Dashboard } from './pages/Dashboard';
 import { AdminEspacos } from './pages/AdminEspacos';
+import { AdminUsuarioForm } from './pages/AdminUsuarioForm';
 import { Participar } from './pages/Participar';
 import { ExpositorArea } from './pages/ExpositorArea';
 import { ExpositorPerfil } from './pages/ExpositorPerfil';
@@ -37,6 +38,8 @@ export default function App() {
         <Route path="/pedido/:id/confirmacao" element={<PrivateRoute><PedidoConfirmacao /></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><AdminHub /></AdminRoute>} />
         <Route path="/admin/usuarios" element={<AdminRoute><Admin /></AdminRoute>} />
+        <Route path="/admin/usuarios/novo" element={<AdminRoute><AdminUsuarioForm /></AdminRoute>} />
+        <Route path="/admin/usuarios/:id/editar" element={<AdminRoute><AdminUsuarioForm /></AdminRoute>} />
         <Route path="/admin/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
         <Route path="/admin/eventos/criar" element={<AdminRoute><AdminEventoTipoEscolha /></AdminRoute>} />
         <Route path="/admin/eventos/criar/:tipo" element={<AdminRoute><AdminCriarEvento /></AdminRoute>} />

@@ -6,7 +6,7 @@ import { avisoDaTela, useCarga } from '../../hooks/useCarga';
 import { AvisoBox } from './AvisoBox';
 import { formatarMoeda } from '../../utils/datas';
 
-const VAZIO = { nome_competicao: '', modalidade: '', valor_taxa_inscricao: '', regras_url: '' };
+const VAZIO = { nome_competicao: '', modalidade: '', valor_taxa_inscricao: '', descricao: '' };
 const MODALIDADES = [
   { valor: 'Solo', rotulo: 'Solo (individual)' },
   { valor: 'Dupla', rotulo: 'Dupla' },
@@ -46,7 +46,7 @@ export function AbaCompeticoes({ evento, recarregarResumo, marcarAlterado }) {
       nome_competicao: c.nome_competicao || '',
       modalidade: c.modalidade || '',
       valor_taxa_inscricao: c.valor_taxa_inscricao === null ? '' : String(c.valor_taxa_inscricao),
-      regras_url: c.regras_url || ''
+      descricao: c.descricao || ''
     });
     setErros({});
   };
@@ -60,9 +60,6 @@ export function AbaCompeticoes({ evento, recarregarResumo, marcarAlterado }) {
     if (form.valor_taxa_inscricao !== '' && !(Number(form.valor_taxa_inscricao) >= 0)) {
       novos.valor_taxa_inscricao = 'Informe um valor a partir de zero, ou deixe em branco para competição gratuita.';
     }
-    if (form.regras_url.trim() && !/^https?:\/\//i.test(form.regras_url.trim())) {
-      novos.regras_url = 'O link deve começar com http:// ou https://';
-    }
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -70,7 +67,7 @@ export function AbaCompeticoes({ evento, recarregarResumo, marcarAlterado }) {
       nome_competicao: form.nome_competicao.trim(),
       modalidade: form.modalidade || null,
       valor_taxa_inscricao: form.valor_taxa_inscricao === '' ? null : Number(form.valor_taxa_inscricao),
-      regras_url: form.regras_url.trim() || null
+      descricao: form.descricao.trim() || null
     };
 
     setEnviando(true);
@@ -133,9 +130,12 @@ export function AbaCompeticoes({ evento, recarregarResumo, marcarAlterado }) {
           </div>
         </div>
         <div className="ed-campo">
-          <label htmlFor="c-regras">Link das regras</label>
-          <input id="c-regras" name="regras_url" type="url" value={form.regras_url} onChange={alterar} placeholder="https://..." {...aria('regras_url')} />
-          {erroCampo('regras_url')}
+          <label htmlFor="c-desc">Descrição</label>
+          <textarea
+            id="c-desc" name="descricao" rows={4} value={form.descricao} onChange={alterar} maxLength={5000}
+            placeholder="O que é a competição, como funciona, regras principais, premiação..."
+          />
+          <small className="ed-ajuda">{form.descricao.length}/5000 · aparece na página da edição para quem quer se inscrever.</small>
         </div>
         <div className="ed-acoes ed-acoes-esquerda">
           <button type="submit" className="btn btn-primary" disabled={enviando}>
@@ -161,6 +161,7 @@ export function AbaCompeticoes({ evento, recarregarResumo, marcarAlterado }) {
                 <span className="ed-item-detalhe">
                   {c.valor_taxa_inscricao ? `Inscrição ${formatarMoeda(c.valor_taxa_inscricao)}` : 'Inscrição gratuita'}
                 </span>
+                {c.descricao && <span className="ed-item-detalhe ed-item-resumo">{c.descricao}</span>}
               </div>
               <div className="ed-item-acoes">
                 <button type="button" className="btn btn-secondary ed-btn-sm" onClick={() => comecarEdicao(c)}>Editar</button>
