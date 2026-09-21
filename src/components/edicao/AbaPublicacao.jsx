@@ -167,7 +167,6 @@ export function AbaPublicacao({ evento, resumo, recarregarEvento }) {
               <Item ok={Boolean(evento.tagline || evento.texto_sobre)} aviso>Frase de destaque ou texto “sobre” (aba Vitrine)</Item>
               <Item ok={resumo.programacao > 0} aviso>Programação ({resumo.programacao} atividade(s))</Item>
               <Item ok={resumo.convidados > 0} aviso>Convidados ({resumo.convidados})</Item>
-              <Item ok={resumo.fotos > 0} aviso>Fotos ({resumo.fotos})</Item>
             </>
           )}
         </ul>

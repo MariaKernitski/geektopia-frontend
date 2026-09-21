@@ -122,14 +122,14 @@ function HeroSemEdicao({ ano, temPockets }) {
 }
 
 // ---------------------------------------------------------- COMO PARTICIPAR
-function ComoParticipar({ edicao, temCompeticoes }) {
+function ComoParticipar({ edicao, temCompeticoes, conteudo }) {
   const venda = situacaoDeVenda(edicao);
   const preco = edicao.ingressos?.preco_a_partir;
 
   return (
     <section className="pb-secao vt-participar" aria-labelledby="vt-participar-t">
       <div className="pb-container">
-        <CabecalhoSecao id="vt-participar-t" titulo="Como você quer participar?" texto="Escolha o seu papel na Geektopia. Você pode ser mais de um." />
+        <CabecalhoSecao id="vt-participar-t" titulo={conteudo.titulo} texto={conteudo.texto || undefined} />
         <div className="vt-caminhos">
           <Link to={`/geektopia/${edicao.id_geektopia}#ingressos`} className="pb-cartao vt-caminho">
             <span className="vt-caminho-icone" aria-hidden="true"><FiTag /></span>
@@ -179,24 +179,32 @@ function diasDoEvento(edicao) {
 
 // "Sobre" em faixa escura: parágrafo de abertura grande, texto corrido, cartões de
 // destaques e uma régua de números tirados dos dados reais da edição.
-function Sobre({ edicao }) {
-  const paragrafos = (edicao.texto_sobre || edicao.descricao || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
-  const destaques = Array.isArray(edicao.destaques) ? edicao.destaques : [];
+const CONTEUDO_PADRAO = {
+  sobre: { titulo: 'Sobre a Geektopia', texto: '', destaques: [] },
+  galeria: { titulo: 'Galeria de fotos', texto: 'Um gostinho do que já rolou na Geektopia. Arraste ou use as setas.' },
+  participar: { titulo: 'Como você quer participar?', texto: 'Escolha o seu papel na Geektopia. Você pode ser mais de um.' }
+};
+
+// Texto geral da Geektopia (editado em Páginas informativas): não depende de nenhuma edição.
+// Os números abaixo dele, sim, vêm da edição em destaque.
+function Sobre({ conteudo, edicao }) {
+  const paragrafos = (conteudo.texto || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const destaques = Array.isArray(conteudo.destaques) ? conteudo.destaques : [];
   const [abertura, ...resto] = paragrafos;
 
-  const dias = diasDoEvento(edicao);
-  const numeros = [
+  const dias = edicao ? diasDoEvento(edicao) : 0;
+  const numeros = edicao ? [
     dias > 0 && { valor: dias, rotulo: dias === 1 ? 'dia de evento' : 'dias de evento' },
     edicao.convidados.length > 0 && { valor: edicao.convidados.length, rotulo: edicao.convidados.length === 1 ? 'convidado' : 'convidados' },
     edicao.competicoes.length > 0 && { valor: edicao.competicoes.length, rotulo: edicao.competicoes.length === 1 ? 'competição' : 'competições' },
     edicao.expositores.length > 0 && { valor: edicao.expositores.length, rotulo: edicao.expositores.length === 1 ? 'expositor' : 'expositores' }
-  ].filter(Boolean);
+  ].filter(Boolean) : [];
 
   return (
     <section className="pb-secao is-escura vt-sobre-sec" id="sobre" aria-labelledby="vt-sobre-t">
       <span className="vt-pixels" aria-hidden="true" />
       <div className="pb-container">
-        <CabecalhoSecao id="vt-sobre-t" titulo="Sobre a Geektopia" />
+        <CabecalhoSecao id="vt-sobre-t" titulo={conteudo.titulo} />
         <div className={`vt-sobre ${destaques.length ? 'tem-destaques' : ''}`}>
           <div className="vt-sobre-texto">
             {abertura && <p className="is-primeiro">{abertura}</p>}
@@ -252,16 +260,16 @@ function Convidados({ convidados }) {
 }
 
 // ----------------------------------------------------------------- GALERIA
-function Galeria({ fotos }) {
+function Galeria({ fotos, conteudo }) {
   return (
     <section className="pb-secao is-escura" id="galeria" aria-labelledby="vt-gal-t">
       <div className="pb-container">
-        <CabecalhoSecao id="vt-gal-t" titulo="Galeria de fotos" texto="Um gostinho do que já rolou na Geektopia. Arraste ou use as setas." />
+        <CabecalhoSecao id="vt-gal-t" titulo={conteudo.titulo} texto={conteudo.texto || undefined} />
         <Carrossel
           rotulo="Fotos da Geektopia" autoplay={5000} itens={fotos.map((f) => ({ ...f, id: f.id_foto }))} classeItem="vt-foto-item"
           renderItem={(f) => (
             <figure className="vt-foto">
-              <img src={f.url_foto} alt={f.legenda || `Foto da ${f.edicao}`} loading="lazy" />
+              <img src={f.url_foto} alt={f.legenda || 'Foto da Geektopia'} loading="lazy" />
               {f.legenda && <figcaption><span>{f.legenda}</span></figcaption>}
             </figure>
           )}
@@ -363,17 +371,18 @@ export function GeektopiaPage() {
 
   const edicao = dados?.destaque || null;
   const galeria = dados?.galeria ?? [];
+  const conteudo = { ...CONTEUDO_PADRAO, ...(dados?.conteudo || {}) };
+  const temSobre = Boolean(conteudo.sobre.texto || conteudo.sobre.destaques?.length);
   // Só os Pockets que ainda vão acontecer, do mais próximo ao mais distante: os encerrados saem da página.
   const pockets = useMemo(
     () => (dados?.pockets ?? []).filter((p) => !eventoPassou(p)).sort((a, b) => new Date(a.data_inicio || 8.64e15) - new Date(b.data_inicio || 8.64e15)),
     [dados]
   );
 
-  const temSobreEdicao = Boolean(edicao && (edicao.texto_sobre || edicao.descricao || (Array.isArray(edicao.destaques) && edicao.destaques.length > 0)));
   const secoes = useMemo(() => {
     const lista = [];
+    if (temSobre) lista.push({ id: 'sobre', rotulo: 'Sobre', Icone: FiInfo });
     if (edicao) {
-      if (temSobreEdicao) lista.push({ id: 'sobre', rotulo: 'Sobre', Icone: FiInfo });
       if (edicao.convidados.length) lista.push({ id: 'convidados', rotulo: 'Convidados', Icone: FiUsers });
       if (galeria.length) lista.push({ id: 'galeria', rotulo: 'Galeria', Icone: FiImage });
       if (edicao.expositores.length) lista.push({ id: 'expositores', rotulo: 'Expositores', Icone: FiShoppingBag });
@@ -381,7 +390,7 @@ export function GeektopiaPage() {
     }
     if (pockets.length) lista.push({ id: 'pockets', rotulo: 'Pockets', Icone: FiCalendar });
     return lista;
-  }, [edicao, temSobreEdicao, galeria.length, pockets.length]);
+  }, [edicao, temSobre, galeria.length, pockets.length]);
 
   if (carregando) {
     return (
@@ -404,7 +413,6 @@ export function GeektopiaPage() {
   }
 
   const cor = edicao && ehHexValido(edicao.cor_destaque) ? edicao.cor_destaque : COR_PADRAO;
-  const temSobre = Boolean(edicao && (edicao.texto_sobre || edicao.descricao || (Array.isArray(edicao.destaques) && edicao.destaques.length > 0)));
 
   return (
     <>
@@ -424,10 +432,10 @@ export function GeektopiaPage() {
         />
       )}
 
-      {edicao && <ComoParticipar edicao={edicao} temCompeticoes={edicao.competicoes.length > 0} />}
-      {temSobre && <Sobre edicao={edicao} />}
+      {edicao && <ComoParticipar edicao={edicao} temCompeticoes={edicao.competicoes.length > 0} conteudo={conteudo.participar} />}
+      {temSobre && <Sobre conteudo={conteudo.sobre} edicao={edicao} />}
       {edicao && edicao.convidados.length > 0 && <Convidados convidados={edicao.convidados} />}
-      {galeria.length > 0 && <Galeria fotos={galeria} />}
+      {galeria.length > 0 && <Galeria fotos={galeria} conteudo={conteudo.galeria} />}
       {edicao && edicao.expositores.length > 0 && <Expositores expositores={edicao.expositores} />}
       {edicao && edicao.competicoes.length > 0 && <Competicoes competicoes={edicao.competicoes} />}
       <Pockets pockets={pockets} />

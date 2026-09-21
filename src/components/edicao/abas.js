@@ -1,4 +1,4 @@
-import { FiAward, FiFlag, FiGrid, FiClock, FiEdit3, FiGlobe, FiImage, FiLayout, FiShoppingBag, FiTag, FiUsers } from 'react-icons/fi';
+import { FiAward, FiFlag, FiGrid, FiClock, FiEdit3, FiGlobe, FiLayout, FiShoppingBag, FiTag, FiUsers } from 'react-icons/fi';
 
 // Catálogo das abas do painel de uma edição. Fica num arquivo próprio para o
 // painel (AdminEdicao) e o assistente de criação (AdminCriarEvento) lerem a
@@ -13,11 +13,10 @@ export const ABAS = {
   convidados: { rotulo: 'Convidados', Icone: FiUsers },
   espacos: { rotulo: 'Espaços', Icone: FiGrid },
   expositores: { rotulo: 'Expositores', Icone: FiShoppingBag },
-  fotos: { rotulo: 'Fotos', Icone: FiImage },
   publicacao: { rotulo: 'Publicação', Icone: FiGlobe }
 };
 
-const ABAS_PRINCIPAL = ['dados', 'vitrine', 'ingressos', 'programacao', 'competicoes', 'inscricoes', 'convidados', 'espacos', 'expositores', 'fotos', 'publicacao'];
+const ABAS_PRINCIPAL = ['dados', 'vitrine', 'ingressos', 'programacao', 'competicoes', 'inscricoes', 'convidados', 'espacos', 'expositores', 'publicacao'];
 
 // Pocket é a edição menor: em geral só ingressos, e às vezes alguns expositores
 // (o servidor aceita candidatura em qualquer edição publicada, então a diretoria
@@ -25,7 +24,7 @@ const ABAS_PRINCIPAL = ['dados', 'vitrine', 'ingressos', 'programacao', 'competi
 export const ABAS_POR_TIPO = {
   Pocket: ['dados', 'ingressos', 'espacos', 'expositores', 'publicacao'],
   Principal: ABAS_PRINCIPAL,
-  // A edição passada continua editável até ser esquecida: programação, fotos,
+  // A edição passada continua editável até ser esquecida: programação,
   // convidados e expositores ainda recebem ajustes depois do evento.
   PrincipalAnterior: ABAS_PRINCIPAL
 };
@@ -35,7 +34,7 @@ export const ABAS_POR_TIPO = {
 // os expositores se candidatam.
 export const PASSOS_GUIADOS = {
   Pocket: ['dados', 'ingressos', 'publicacao'],
-  Principal: ['dados', 'vitrine', 'ingressos', 'programacao', 'competicoes', 'convidados', 'fotos', 'publicacao']
+  Principal: ['dados', 'vitrine', 'ingressos', 'programacao', 'competicoes', 'convidados', 'publicacao']
 };
 
 export const ROTULO_TIPO = {

@@ -13,7 +13,6 @@ import { AbaInscricoes } from '../components/edicao/AbaInscricoes';
 import { AbaConvidados } from '../components/edicao/AbaConvidados';
 import { AbaEspacos } from '../components/edicao/AbaEspacos';
 import { AbaExpositores } from '../components/edicao/AbaExpositores';
-import { AbaFotos } from '../components/edicao/AbaFotos';
 import { AbaPublicacao } from '../components/edicao/AbaPublicacao';
 import '../style/AdminEdicao.css';
 
@@ -27,11 +26,10 @@ const COMPONENTES = {
   convidados: AbaConvidados,
   espacos: AbaEspacos,
   expositores: AbaExpositores,
-  fotos: AbaFotos,
   publicacao: AbaPublicacao
 };
 
-const RESUMO_VAZIO = { lotes: 0, programacao: 0, competicoes: 0, convidados: 0, fotos: 0 };
+const RESUMO_VAZIO = { lotes: 0, programacao: 0, competicoes: 0, convidados: 0 };
 
 // Painel de uma edição: uma página com abas, uma por assunto. Serve para
 // criar (modo guiado, logo após o formulário de criação) e para editar depois.
@@ -42,14 +40,13 @@ const RESUMO_VAZIO = { lotes: 0, programacao: 0, competicoes: 0, convidados: 0, 
 // só alimenta contadores e o checklist).
 async function buscarResumo(id) {
   try {
-    const [l, p, c, cv, f] = await Promise.all([
+    const [l, p, c, cv] = await Promise.all([
       api.get(`/geektopia/admin/${id}/lotes`),
       api.get(`/geektopia/admin/${id}/programacao`),
       api.get(`/geektopia/admin/${id}/competicoes`),
-      api.get(`/geektopia/admin/${id}/convidados`),
-      api.get(`/geektopia/admin/${id}/fotos`)
+      api.get(`/geektopia/admin/${id}/convidados`)
     ]);
-    return { lotes: l.data.length, programacao: p.data.length, competicoes: c.data.length, convidados: cv.data.length, fotos: f.data.length };
+    return { lotes: l.data.length, programacao: p.data.length, competicoes: c.data.length, convidados: cv.data.length };
   } catch {
     return null;
   }
@@ -178,7 +175,7 @@ function PainelDaEdicao() {
         {abasVisiveis.map((chave) => {
           const { rotulo, Icone } = ABAS[chave];
           const ativa = chave === aba;
-          const contagem = { ingressos: resumo.lotes, programacao: resumo.programacao, competicoes: resumo.competicoes, convidados: resumo.convidados, fotos: resumo.fotos }[chave];
+          const contagem = { ingressos: resumo.lotes, programacao: resumo.programacao, competicoes: resumo.competicoes, convidados: resumo.convidados }[chave];
           return (
             <Link
               key={chave} to={caminho(chave)}
