@@ -2,7 +2,7 @@ import { useState } from 'react';
 import api from '../services/api';
 import '../style/Login.css';
 import ccpopLogo from '../assets/LOGO_CCPOP.png';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 export function Login() {
   const [senha, setSenha] = useState('');
@@ -24,7 +24,10 @@ export function Login() {
       localStorage.setItem('@Geektopia:token', response.data.token);
       localStorage.setItem('@Geektopia:user', JSON.stringify(response.data.user));
 
-      navigate('/perfil');
+      // Volta para onde a pessoa estava (ex.: a competição que queria disputar);
+      // administrador não tem perfil de participante, vai direto ao painel.
+      const destino = response.data.user.administrador ? '/admin' : (location.state?.from || '/perfil');
+      navigate(destino, { replace: true });
 
       setTipoMensagem('success');
       setMensagem(`Sucesso! Bem-vindo, ${response.data.user.nome_completo}`);
@@ -112,7 +115,7 @@ export function Login() {
             <li>Exponha seus produtos nos eventos</li>
             <li>Acompanhe o status das suas inscrições</li>
           </ul>
-          <a href="/cadastro" className="btn btn-outline-accent login-side-cta">Cadastrar</a>
+          <Link to="/cadastro" state={{ from: location.state?.from }} className="btn btn-outline-accent login-side-cta">Cadastrar</Link>
         </div>
       </div>
     </div>

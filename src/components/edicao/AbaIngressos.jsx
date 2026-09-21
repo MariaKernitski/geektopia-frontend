@@ -5,8 +5,9 @@ import { useAviso, mensagemDeErro } from '../../hooks/useAviso';
 import { avisoDaTela, useCarga } from '../../hooks/useCarga';
 import { AvisoBox } from './AvisoBox';
 import { formatarMoeda } from '../../utils/datas';
+import { CATEGORIAS, ROTULO_CATEGORIA } from '../../utils/evento';
 
-const VAZIO = { nome_lote: '', valor_ingresso: '', quantidade_total: '' };
+const VAZIO = { nome_lote: '', categoria: 'Inteira', valor_ingresso: '', quantidade_total: '' };
 
 export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
   const id = evento.id_geektopia;
@@ -39,6 +40,7 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
     setEditando(lote);
     setForm({
       nome_lote: lote.nome_lote || '',
+      categoria: lote.categoria || 'Inteira',
       valor_ingresso: String(lote.valor_ingresso ?? ''),
       quantidade_total: String(lote.quantidade_total ?? '')
     });
@@ -61,7 +63,7 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
     setErros(novos);
     if (Object.keys(novos).length) return;
 
-    const corpo = { nome_lote: form.nome_lote.trim(), valor_ingresso: valor, quantidade_total: qtd };
+    const corpo = { nome_lote: form.nome_lote.trim(), categoria: form.categoria, valor_ingresso: valor, quantidade_total: qtd };
 
     setEnviando(true);
     try {
@@ -101,7 +103,7 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
   return (
     <section className="ed-painel" aria-labelledby="t-ing">
       <h2 id="t-ing" className="ed-titulo">Lotes de ingresso</h2>
-      <p className="ed-ajuda-topo">Cada lote é um tipo de ingresso com preço e quantidade próprios (ex.: Inteira, Meia, Meet&amp;Greet). Os lotes aparecem na página do evento assim que as vendas forem abertas.</p>
+      <p className="ed-ajuda-topo">Cada lote é um ingresso com preço e quantidade próprios (ex.: "Inteira - 1º Lote", "Meia - 2º Lote", "Meet &amp; Greet Tiga"). O <strong>tipo</strong> agrupa os lotes em abas na página do evento; o nome é o que o visitante lê. Os lotes aparecem assim que as vendas forem abertas.</p>
       <AvisoBox aviso={avisoDaTela(aviso, erroCarga)} />
 
       <form onSubmit={salvar} className="ed-form ed-form-inline" noValidate>
@@ -111,6 +113,12 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
             <label htmlFor="l-nome">Nome *</label>
             <input id="l-nome" name="nome_lote" value={form.nome_lote} onChange={alterar} placeholder="Ex: Inteira - 1º Lote" maxLength={50} {...aria('nome_lote')} />
             {erroCampo('nome_lote')}
+          </div>
+          <div className="ed-campo">
+            <label htmlFor="l-cat">Tipo de ingresso</label>
+            <select id="l-cat" name="categoria" value={form.categoria} onChange={alterar}>
+              {CATEGORIAS.map((c) => <option key={c.chave} value={c.chave}>{c.rotulo}</option>)}
+            </select>
           </div>
           <div className="ed-campo">
             <label htmlFor="l-valor">Valor (R$) *</label>
@@ -146,6 +154,7 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
                 <div className="ed-item-info">
                   <span className="ed-item-nome">
                     {lote.nome_lote}
+                    <span className="ed-badge">{ROTULO_CATEGORIA[lote.categoria] || 'Inteira'}</span>
                     {lote.esgotado && <span className="ed-badge is-erro">Esgotado</span>}
                   </span>
                   <span className="ed-item-detalhe">

@@ -84,12 +84,17 @@ function lerData(valor) {
   return data.getUTCFullYear() === a && data.getUTCMonth() === m - 1 && data.getUTCDate() === d ? data : null;
 }
 
+// Igual ao backend (utils/validacaoUsuario.js). Portaria MJ 502/2021: a partir dos 12 anos
+// a pessoa pode ir sozinha a eventos com termo de autorização do responsável.
+export const IDADE_MINIMA_CADASTRO = 12;
+
 export function dataNascimento(valor) {
   if (!valor) return 'Informe a data de nascimento.';
   const data = lerData(valor);
   if (!data) return 'Data inválida. Confira dia, mês e ano.';
   if (data > new Date()) return 'A data de nascimento não pode ser no futuro.';
   if (data.getUTCFullYear() < new Date().getUTCFullYear() - 120) return 'Data inválida: ano muito antigo.';
+  if (idadeEmAnos(valor) < IDADE_MINIMA_CADASTRO) return `É preciso ter pelo menos ${IDADE_MINIMA_CADASTRO} anos para criar uma conta.`;
   return '';
 }
 

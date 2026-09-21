@@ -8,6 +8,7 @@ import { AbaVitrine } from '../components/edicao/AbaVitrine';
 import { AbaIngressos } from '../components/edicao/AbaIngressos';
 import { AbaProgramacao } from '../components/edicao/AbaProgramacao';
 import { AbaCompeticoes } from '../components/edicao/AbaCompeticoes';
+import { AbaInscricoes } from '../components/edicao/AbaInscricoes';
 import { AbaConvidados } from '../components/edicao/AbaConvidados';
 import { AbaExpositores } from '../components/edicao/AbaExpositores';
 import { AbaFotos } from '../components/edicao/AbaFotos';
@@ -20,6 +21,7 @@ const COMPONENTES = {
   ingressos: AbaIngressos,
   programacao: AbaProgramacao,
   competicoes: AbaCompeticoes,
+  inscricoes: AbaInscricoes,
   convidados: AbaConvidados,
   expositores: AbaExpositores,
   fotos: AbaFotos,

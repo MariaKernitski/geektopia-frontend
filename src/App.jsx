@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
+import { CompetidorArea } from './pages/CompetidorArea';
+import { CompeticaoDetalhe } from './pages/CompeticaoDetalhe';
 import { PrivateRoute } from './components/PrivateRoute';
 import { AdminRoute } from './components/AdminRoute';
 import { LandingPage } from './pages/LandingPage';
@@ -34,7 +36,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
+        <Route path="/perfil" element={<PrivateRoute apenasCliente><Perfil /></PrivateRoute>} />
         <Route path="/pedido/:id/confirmacao" element={<PrivateRoute><PedidoConfirmacao /></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><AdminHub /></AdminRoute>} />
         <Route path="/admin/usuarios" element={<AdminRoute><Admin /></AdminRoute>} />
@@ -44,14 +46,16 @@ export default function App() {
         <Route path="/admin/eventos/criar" element={<AdminRoute><AdminEventoTipoEscolha /></AdminRoute>} />
         <Route path="/admin/eventos/criar/:tipo" element={<AdminRoute><AdminCriarEvento /></AdminRoute>} />
         <Route path="/admin/espacos" element={<AdminRoute><AdminEspacos /></AdminRoute>} />
-        <Route path="/participar" element={<PrivateRoute><Participar /></PrivateRoute>} />
-        <Route path="/expositor" element={<PrivateRoute><ExpositorArea /></PrivateRoute>} />
-        <Route path="/expositor/perfil" element={<PrivateRoute><ExpositorPerfil /></PrivateRoute>} />
-        <Route path="/expositor/solicitar" element={<PrivateRoute><ExpositorSolicitar /></PrivateRoute>} />
-        <Route path="/expositor/solicitacoes/:id" element={<PrivateRoute><ExpositorSolicitacao /></PrivateRoute>} />
+        <Route path="/participar" element={<PrivateRoute apenasCliente><Participar /></PrivateRoute>} />
+        <Route path="/expositor" element={<PrivateRoute apenasCliente><ExpositorArea /></PrivateRoute>} />
+        <Route path="/expositor/perfil" element={<PrivateRoute apenasCliente><ExpositorPerfil /></PrivateRoute>} />
+        <Route path="/expositor/solicitar" element={<PrivateRoute apenasCliente><ExpositorSolicitar /></PrivateRoute>} />
+        <Route path="/expositor/solicitacoes/:id" element={<PrivateRoute apenasCliente><ExpositorSolicitacao /></PrivateRoute>} />
         <Route path="/admin/eventos" element={<AdminRoute><AdminEventosHub /></AdminRoute>} />
         <Route path="/admin/eventos/lista" element={<AdminRoute><AdminEventosLista /></AdminRoute>} />
         <Route path="/admin/eventos/:id/:aba?" element={<AdminRoute><AdminEdicao /></AdminRoute>} />
+        <Route path="/competidor" element={<PrivateRoute apenasCliente><CompetidorArea /></PrivateRoute>} />
+        <Route path="/competicoes/:id" element={<CompeticaoDetalhe />} />
         <Route path="/geektopia" element={<GeektopiaPage />} />
         <Route path="/geektopia/:id" element={<GeektopiaDetalhe />} />
       </Routes>

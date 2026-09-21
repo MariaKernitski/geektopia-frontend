@@ -17,11 +17,11 @@ export function Participar() {
           <span className="pt-cartao-texto">Tenha uma loja, um estande ou uma mesa de artista nas edições. Crie o perfil, peça o espaço e acompanhe a análise.</span>
         </Link>
 
-        <div className="pt-cartao pt-cartao-link is-desabilitado is-bloqueado" aria-disabled="true">
+        <Link to="/competidor" className="pt-cartao pt-cartao-link">
           <FiAward size={28} aria-hidden="true" />
           <span className="pt-cartao-titulo">Quero competir</span>
-          <span className="pt-cartao-texto">Inscreva-se nas competições das edições. <strong>Em breve.</strong></span>
-        </div>
+          <span className="pt-cartao-texto">Inscreva-se nas competições das edições e acompanhe a análise, o pagamento da taxa e a confirmação da vaga.</span>
+        </Link>
       </div>
     </div>
   );

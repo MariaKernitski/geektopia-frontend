@@ -1,200 +1,386 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { FiAlertCircle, FiCalendar, FiClock, FiInfo, FiMapPin, FiShoppingCart } from 'react-icons/fi';
 import api from '../services/api';
+import { useCarga } from '../hooks/useCarga';
+import { Carrossel } from '../components/publico/Carrossel';
+import { Contagem } from '../components/publico/Contagem';
+import { NavInterna } from '../components/publico/NavInterna';
+import { AvisoMenores } from '../components/publico/AvisoMenores';
+import { CartaoCompeticao } from '../components/publico/CartaoCompeticao';
+import { SeletorIngressos } from '../components/publico/SeletorIngressos';
 import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
+import { chaveDoDia, eventoPassou, horaCurta, horarioEvento, linkMapa, moeda, periodoEvento, tituloDoDia } from '../utils/evento';
+import { COR_PADRAO, ehHexValido } from '../utils/cores';
+import '../style/Publico.css';
 import '../style/GeektopiaDetalhe.css';
+
+const iniciais = (nome = '') => nome.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join('');
+
+function Secao({ id, titulo, texto, alt, children }) {
+  return (
+    <section className={`pb-secao dt-secao ${alt ? 'is-alt' : ''}`} id={id} aria-labelledby={`${id}-t`}>
+      <header className="pb-cabecalho">
+        <h2 className="pb-titulo" id={`${id}-t`}>{titulo}</h2>
+        {texto && <p className="pb-lead">{texto}</p>}
+      </header>
+      {children}
+    </section>
+  );
+}
 
 export function GeektopiaDetalhe() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [evento, setEvento] = useState(null);
-  const [lotes, setLotes] = useState([]);
-  const [quantidades, setQuantidades] = useState({});
-  const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
-  const [carregando, setCarregando] = useState(true);
-  const [comprando, setComprando] = useState(false);
 
-  useEffect(() => {
-    Promise.all([
-      api.get(`/geektopia/${id}`),
-      api.get(`/geektopia/${id}/lotes`)
-    ])
-      .then(([evRes, lotesRes]) => {
-        setEvento(evRes.data);
-        setLotes(lotesRes.data);
-      })
-      .catch(() => setMensagem({ tipo: 'erro', texto: 'Evento não encontrado.' }))
-      .finally(() => setCarregando(false));
+  const buscar = useCallback(async () => {
+    // Só o evento e os lotes são essenciais; o resto é conteúdo opcional e uma
+    // falha nele não pode derrubar a página inteira.
+    const opcional = (rota) => api.get(`/geektopia/${id}/${rota}`).then((r) => r.data).catch(() => []);
+    const [evento, lotes, programacao, competicoes, convidados, fotos, expositores] = await Promise.all([
+      api.get(`/geektopia/${id}`).then((r) => r.data),
+      api.get(`/geektopia/${id}/lotes`).then((r) => r.data),
+      opcional('programacao'), opcional('competicoes'), opcional('convidados'), opcional('fotos'), opcional('expositores-confirmados')
+    ]);
+    return { evento, lotes, programacao, competicoes, convidados, fotos, expositores };
   }, [id]);
+  const { dados, erro, carregando, recarregar } = useCarga(buscar);
 
-  const alterarQuantidade = (idLote, valor) => {
-    const n = Math.max(0, Number(valor) || 0);
-    setQuantidades({ ...quantidades, [idLote]: n });
+  // A seleção fica guardada na sessão do navegador: quem vai entrar na conta (e
+  // volta) encontra os mesmos ingressos escolhidos.
+  const chaveCarrinho = `@Geektopia:carrinho:${id}`;
+  const [quantidades, setQuantidades] = useState(() => {
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem(chaveCarrinho) || '{}');
+      return salvo && typeof salvo === 'object' ? salvo : {};
+    } catch { return {}; }
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem(chaveCarrinho, JSON.stringify(quantidades)); } catch { /* sem armazenamento: a seleção só não sobrevive à navegação */ }
+  }, [chaveCarrinho, quantidades]);
+  const [mensagem, setMensagem] = useState('');
+  const [comprando, setComprando] = useState(false);
+  const logado = Boolean(localStorage.getItem('@Geektopia:token'));
+
+  const lotes = useMemo(() => dados?.lotes ?? [], [dados]);
+  // Só entra no pedido o que ainda existe e cabe no estoque de agora (a seleção
+  // guardada pode ser antiga: lote apagado, ingressos que esgotaram no meio-tempo).
+  const itens = useMemo(
+    () => lotes
+      .filter((l) => !l.esgotado)
+      .map((l) => ({ lote: l, qtd: Math.min(Number(quantidades[l.id_lote]) || 0, l.restantes ?? 99) }))
+      .filter((i) => i.qtd > 0),
+    [lotes, quantidades]
+  );
+  const totalIngressos = itens.reduce((s, i) => s + i.qtd, 0);
+  const totalValor = itens.reduce((s, i) => s + i.qtd * (i.lote.valor_ingresso || 0), 0);
+
+  // Incremento sobre o valor mais recente (cliques rápidos não se perdem), limitado ao estoque do lote.
+  const alterarQuantidade = (idLote, delta) => {
+    const lote = lotes.find((l) => l.id_lote === idLote);
+    const max = lote?.restantes ?? 99;
+    setQuantidades((q) => ({ ...q, [idLote]: Math.min(max, Math.max(0, (q[idLote] || 0) + delta)) }));
   };
 
-  const totalSelecionado = Object.values(quantidades).reduce((soma, q) => soma + q, 0);
-
-  const valorTotalSelecionado = lotes.reduce((soma, lote) => {
-    const qtd = quantidades[lote.id_lote] || 0;
-    const preco = lote.valor_ingresso || 0;
-    return soma + qtd * preco;
-  }, 0);
-
   const finalizarCompra = async () => {
-    setMensagem({ tipo: '', texto: '' });
-    const itens = Object.entries(quantidades)
-      .filter(([, qtd]) => qtd > 0)
-      .map(([id_lote, quantidade]) => ({ id_lote: Number(id_lote), quantidade }));
-
+    setMensagem('');
     if (itens.length === 0) return;
+
+    // Antes de abrir qualquer aba de pagamento: quem não entrou não tem como comprar.
+    if (!logado) {
+      setMensagem('Entre na sua conta para finalizar a compra. Seus ingressos escolhidos ficam salvos neste navegador.');
+      return;
+    }
 
     setComprando(true);
 
-    // Abre a aba (ainda vazia) já aqui, dentro do clique do usuário — se
-    // esperássemos a resposta do servidor pra abrir, o navegador trata como
-    // pop-up "não pedido pelo usuário" e bloqueia. Só trocamos o endereço
-    // dela depois que o Mercado Pago responder.
-    const abaPagamento = window.open('', '_blank');
-
+    // Vai para o Mercado Pago NA MESMA ABA. Antes abríamos uma segunda aba antes da
+    // resposta do servidor; se o pop-up fosse bloqueado ou a resposta demorasse, a
+    // pessoa via uma aba em branco e achava que nada tinha acontecido. Ao pagar, o
+    // botão "Voltar ao site" do Mercado Pago traz de volta para a tela de confirmação.
     try {
-      const res = await api.post('/pedidos', { itens });
-
-      if (!abaPagamento) {
-        // Pop-up bloqueado mesmo assim: usa a aba atual como reserva.
-        window.location.href = res.data.init_point;
-        return;
-      }
-
-      abaPagamento.location.href = res.data.init_point;
-      // A aba do site fica esperando a confirmação — ela mesma consulta o
-      // pagamento sozinha, sem precisar que o Mercado Pago redirecione de volta.
-      navigate(`/pedido/${res.data.id_pedido}/confirmacao`);
+      const res = await api.post(
+        '/pedidos',
+        { itens: itens.map((i) => ({ id_lote: i.lote.id_lote, quantidade: i.qtd })) },
+        { timeout: 30000 }
+      );
+      try { sessionStorage.removeItem(chaveCarrinho); } catch { /* ignora */ }
+      window.location.href = res.data.init_point;
     } catch (err) {
-      if (abaPagamento) abaPagamento.close();
-
-      if (err.response?.status === 401) {
-        setMensagem({ tipo: 'erro', texto: 'Faça login para comprar seu ingresso.' });
-      } else {
-        setMensagem({ tipo: 'erro', texto: err.response?.data?.error || 'Erro ao iniciar a compra.' });
-      }
+      setMensagem(
+        err.response?.status === 401
+          ? 'Sua sessão expirou. Entre novamente para comprar.'
+          : err.code === 'ECONNABORTED'
+            ? 'O Mercado Pago demorou para responder. Nenhuma cobrança foi feita; tente novamente.'
+            : err.response?.data?.error || 'Não foi possível iniciar a compra. Tente de novo.'
+      );
       setComprando(false);
     }
   };
 
   if (carregando) {
-    return <div className="geektopia-detalhe-page"><p className="geektopia-loading">Carregando...</p></div>;
+    return <main className="pb-pagina dt-pagina" aria-busy="true"><div className="dt-esqueleto" aria-hidden="true" /><p className="pb-carregando">Carregando o evento...</p></main>;
   }
 
-  if (!evento) {
+  if (erro || !dados) {
     return (
-      <div className="geektopia-detalhe-page">
-        <p className="geektopia-erro">{mensagem.texto || 'Evento não encontrado.'}</p>
-      </div>
+      <main className="pb-pagina dt-pagina">
+        <div className="pb-carregando" role="alert">
+          <p>{erro?.includes('não encontrada') || erro?.includes('encontrad') ? 'Não encontramos este evento.' : 'Não foi possível carregar o evento agora.'}</p>
+          <div className="dt-erro-acoes">
+            <Link to="/geektopia" className="btn btn-secondary">← Ver todos os eventos</Link>
+            <button type="button" className="btn btn-primary" onClick={recarregar}>Tentar de novo</button>
+          </div>
+        </div>
+      </main>
     );
   }
 
-  return (
-    <div className="geektopia-detalhe-page">
-      <div className="geektopia-detalhe-hero">
-        {evento.banner_url ? (
-          <img src={evento.banner_url} alt={evento.nome_edicao} className="geektopia-detalhe-banner" />
-        ) : (
-          <div className="geektopia-detalhe-banner geektopia-detalhe-banner-vazio" />
-        )}
-        <div className="geektopia-detalhe-hero-overlay" />
+  const { evento, programacao, competicoes, convidados, fotos, expositores } = dados;
+  const cor = ehHexValido(evento.cor_destaque) ? evento.cor_destaque : COR_PADRAO;
+  const passou = eventoPassou(evento);
+  const vendaAberta = evento.status_evento === 'VendasAbertas' && !passou;
+  const selo = seloClassificacao(evento.classificacao_etaria);
+  const horario = horarioEvento(evento.data_inicio, evento.data_fim);
+  const paragrafos = (evento.texto_sobre || evento.descricao || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const destaques = Array.isArray(evento.destaques) ? evento.destaques : [];
+  const principal = evento.tipo_edicao !== 'Pocket';
+  const temSobre = paragrafos.length > 0 || destaques.length > 0;
 
-        <button type="button" className="btn btn-secondary geektopia-detalhe-voltar" onClick={() => navigate('/geektopia')}>
-          ← Voltar
-        </button>
+  const semVendaTexto = passou
+    ? 'Este evento já aconteceu. Os ingressos estão listados só para consulta.'
+    : evento.status_evento === 'VendasEncerradas' ? 'As vendas online estão encerradas. Consulte a organização sobre ingressos na portaria.' : '';
 
-        <div className="geektopia-detalhe-hero-info">
-          <h1 className="geektopia-detalhe-title">{evento.nome_edicao}</h1>
-          <div className="geektopia-detalhe-meta">
-            {seloClassificacao(evento.classificacao_etaria) && (
-              <span className="selo-idade" title={descricaoClassificacao(evento.classificacao_etaria)} aria-label={descricaoClassificacao(evento.classificacao_etaria)}>
-                {seloClassificacao(evento.classificacao_etaria)}
-              </span>
-            )}
-            {evento.local && <span>📍 {evento.local}</span>}
-            {evento.data_inicio && (
-              <span>
-                🗓️ {new Date(evento.data_inicio).toLocaleDateString('pt-BR')}
-                {evento.data_fim && ` a ${new Date(evento.data_fim).toLocaleDateString('pt-BR')}`}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+  // Programação agrupada por dia.
+  const dias = [];
+  programacao.forEach((a) => {
+    const chave = chaveDoDia(a.data_hora_inicio);
+    let dia = dias.find((d) => d.chave === chave);
+    if (!dia) { dia = { chave, titulo: tituloDoDia(a.data_hora_inicio), itens: [] }; dias.push(dia); }
+    dia.itens.push(a);
+  });
 
-      <div className="geektopia-detalhe-content">
-        {evento.descricao && <p className="geektopia-detalhe-descricao">{evento.descricao}</p>}
+  const secoes = [
+    ...(temSobre ? [{ id: 'sobre', rotulo: 'Sobre' }] : []),
+    { id: 'ingressos', rotulo: 'Ingressos' },
+    ...(dias.length ? [{ id: 'programacao', rotulo: 'Programação' }] : []),
+    ...(convidados.length ? [{ id: 'convidados', rotulo: 'Convidados' }] : []),
+    ...(competicoes.length ? [{ id: 'competicoes', rotulo: 'Competições' }] : []),
+    ...(expositores.length ? [{ id: 'expositores', rotulo: 'Expositores' }] : []),
+    ...(fotos.length ? [{ id: 'galeria', rotulo: 'Fotos' }] : [])
+  ];
 
-        <h2 className="geektopia-detalhe-subtitulo">Ingressos</h2>
+  const mostraCarrinho = vendaAberta && lotes.length > 0;
 
-        <div className={`admin-list-feedback is-${mensagem.tipo} ${!mensagem.texto ? 'is-hidden' : ''}`} role="status">
-          {mensagem.texto}
-        </div>
+  const blocoCarrinho = (
+    <>
+      <h2 className="dt-carrinho-titulo"><FiShoppingCart aria-hidden="true" /> Seu pedido</h2>
 
-        {lotes.length === 0 ? (
-          <p className="geektopia-vazio">Nenhum lote de ingresso disponível ainda para este evento.</p>
-        ) : (
-          <div className="geektopia-lotes pixel-cut">
-            {lotes.map(lote => {
-              const qtd = quantidades[lote.id_lote] || 0;
-              return (
-                <div className={`geektopia-lote-row ${lote.esgotado ? 'is-esgotado' : ''}`} key={lote.id_lote}>
-                  <div className="geektopia-lote-info">
-                    <span className="geektopia-lote-nome">{lote.nome_lote}</span>
-                    <span className="geektopia-lote-preco">
-                      {lote.valor_ingresso != null
-                        ? `R$ ${lote.valor_ingresso.toFixed(2)}`
-                        : 'Preço a definir'}
-                    </span>
-                    {lote.esgotado && <span className="geektopia-lote-esgotado-badge">Esgotado</span>}
-                  </div>
+      {itens.length === 0 ? (
+        <p className="dt-carrinho-vazio">Escolha os ingressos ao lado para ver o total aqui.</p>
+      ) : (
+        <ul className="dt-carrinho-itens">
+          {itens.map(({ lote, qtd }) => (
+            <li key={lote.id_lote}>
+              <span>{qtd} × {lote.nome_lote}</span>
+              <strong>{moeda(qtd * lote.valor_ingresso)}</strong>
+            </li>
+          ))}
+        </ul>
+      )}
 
-                  <div className="geektopia-lote-stepper">
-                    <button
-                      type="button"
-                      className="geektopia-stepper-btn"
-                      disabled={lote.esgotado || qtd === 0}
-                      onClick={() => alterarQuantidade(lote.id_lote, qtd - 1)}
-                    >
-                      −
-                    </button>
-                    <span className="geektopia-stepper-valor">{qtd}</span>
-                    <button
-                      type="button"
-                      className="geektopia-stepper-btn"
-                      disabled={lote.esgotado}
-                      onClick={() => alterarQuantidade(lote.id_lote, qtd + 1)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+      <div className="dt-carrinho-total"><span>Total</span><strong>{moeda(totalValor)}</strong></div>
 
-            <div className="geektopia-lote-resumo">
-              <div className="geektopia-lote-resumo-texto">
-                <span>
-                  {totalSelecionado} ingresso{totalSelecionado === 1 ? '' : 's'} selecionado{totalSelecionado === 1 ? '' : 's'}
-                </span>
-                <strong>Total: R$ {valorTotalSelecionado.toFixed(2)}</strong>
+      {mensagem && (
+        <div className="dt-alerta" role="alert">
+          <FiAlertCircle aria-hidden="true" />
+          <div>
+            {mensagem}
+            {!logado && (
+              <div className="dt-alerta-acoes">
+                <Link to="/login" className="btn btn-primary">Entrar</Link>
+                <Link to="/cadastro" className="btn btn-secondary">Criar conta</Link>
               </div>
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={totalSelecionado === 0 || comprando}
-                onClick={finalizarCompra}
-              >
-                {comprando ? 'Redirecionando...' : 'Finalizar compra'}
-              </button>
-            </div>
+            )}
           </div>
-        )}
+        </div>
+      )}
+
+      <button type="button" className="btn btn-primary dt-finalizar" disabled={totalIngressos === 0 || comprando} onClick={finalizarCompra}>
+        {comprando ? 'Abrindo o pagamento...' : totalIngressos === 0 ? 'Escolha um ingresso' : `Finalizar compra (${totalIngressos})`}
+      </button>
+      <p className="dt-carrinho-nota">Pagamento seguro pelo Mercado Pago.</p>
+    </>
+  );
+
+  return (
+    <main className="pb-pagina dt-pagina" style={{ '--cor-edicao': cor }}>
+      {/* ---------------- HERO ---------------- */}
+      <header className="dt-hero">
+        {evento.banner_url && <img className="dt-hero-fundo" src={evento.banner_url} alt="" />}
+        <div className="dt-hero-veu" />
+        <div className="pb-container dt-hero-conteudo">
+          <Link to="/geektopia" className="dt-voltar">← Todos os eventos</Link>
+
+          <div className="pb-chips">
+            <span className="pb-chip is-destaque">{principal ? 'Geektopia Principal' : 'Geektopia Pocket'}</span>
+            {passou ? <span className="pb-chip is-escuro">Evento encerrado</span>
+              : vendaAberta ? <span className="pb-chip is-ok">Vendas abertas</span>
+                : <span className="pb-chip is-aviso">Vendas encerradas</span>}
+          </div>
+
+          <h1 className="dt-titulo">{evento.nome_edicao}</h1>
+          {evento.tagline && <p className="dt-tagline">{evento.tagline}</p>}
+
+          <ul className="dt-fatos">
+            <li>
+              <FiCalendar aria-hidden="true" />
+              <span><small>Quando</small><strong>{periodoEvento(evento.data_inicio, evento.data_fim)}</strong>{horario && <em>{horario}</em>}</span>
+            </li>
+            {evento.local && (
+              <li>
+                <FiMapPin aria-hidden="true" />
+                <span><small>Onde</small><strong>{evento.local}</strong><a href={linkMapa(evento.local)} target="_blank" rel="noreferrer">Ver no mapa ↗</a></span>
+              </li>
+            )}
+            {selo && (
+              <li>
+                <span className="selo-idade dt-selo" aria-hidden="true">{selo}</span>
+                <span><small>Classificação</small><strong>{descricaoClassificacao(evento.classificacao_etaria)}</strong></span>
+              </li>
+            )}
+          </ul>
+
+          {!passou && evento.data_inicio && <div className="dt-hero-contagem"><Contagem dataAlvo={evento.data_inicio} /></div>}
+        </div>
+      </header>
+
+      {evento.tipo_edicao !== 'Pocket' && <AvisoMenores />}
+
+      <NavInterna secoes={secoes} cta={vendaAberta && <a href="#ingressos" className="btn btn-primary pb-nav-cta">Ver ingressos</a>} />
+
+      <div className="pb-container dt-corpo">
+        <div className="dt-principal">
+          {temSobre && (
+            <Secao id="sobre" titulo="Sobre o evento">
+              <div className="dt-sobre">
+                {paragrafos.map((p, i) => <p key={i} className={i === 0 ? 'is-primeiro' : undefined}>{p}</p>)}
+              </div>
+              {destaques.length > 0 && (
+                <ul className="dt-destaques">
+                  {destaques.map((d, i) => (
+                    <li className="pb-cartao dt-destaque" key={i}><strong>{d.titulo}</strong>{d.descricao && <span>{d.descricao}</span>}</li>
+                  ))}
+                </ul>
+              )}
+            </Secao>
+          )}
+
+          {/* ---------------- INGRESSOS ---------------- */}
+          <Secao id="ingressos" titulo="Ingressos" texto={vendaAberta ? 'Escolha o tipo e a quantidade. Você confere tudo antes de pagar.' : undefined}>
+            {(evento.regras_idade_minima || evento.aviso_documentacao) && (
+              <div className="dt-avisos" role="note">
+                <FiInfo aria-hidden="true" />
+                <div>
+                  <strong>Antes de comprar</strong>
+                  {evento.regras_idade_minima && <p>{evento.regras_idade_minima}</p>}
+                  {evento.aviso_documentacao && <p>{evento.aviso_documentacao}</p>}
+                </div>
+              </div>
+            )}
+
+            {lotes.length === 0 ? (
+              <p className="pb-vazio">Os ingressos deste evento ainda não foram publicados. Volte em breve.</p>
+            ) : (
+              <SeletorIngressos lotes={lotes} quantidades={quantidades} onAlterar={alterarQuantidade} vendaAberta={vendaAberta} semVendaTexto={semVendaTexto} />
+            )}
+          </Secao>
+
+          {dias.length > 0 && (
+            <Secao id="programacao" titulo="Programação" alt>
+              {dias.map((d) => (
+                <div className="dt-dia" key={d.chave}>
+                  <h3>{d.titulo}</h3>
+                  <ol className="dt-linha-tempo">
+                    {d.itens.map((a) => (
+                      <li key={a.id_programacao}>
+                        <span className="dt-hora"><FiClock aria-hidden="true" />{horaCurta(a.data_hora_inicio)}{a.data_hora_fim && <small>até {horaCurta(a.data_hora_fim)}</small>}</span>
+                        <span className="dt-atividade">{a.titulo_atividade}{a.competicao && <span className="pb-chip is-destaque">Competição</span>}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+            </Secao>
+          )}
+
+          {convidados.length > 0 && (
+            <Secao id="convidados" titulo="Convidados">
+              <ul className="dt-convidados">
+                {convidados.map((c) => (
+                  <li className="pb-cartao dt-convidado" key={c.id_convidado}>
+                    <div className="dt-convidado-foto">{c.foto_url ? <img src={c.foto_url} alt={`Foto de ${c.nome}`} loading="lazy" /> : <span aria-hidden="true">{iniciais(c.nome)}</span>}</div>
+                    <div className="dt-convidado-info">
+                      {c.titulo_papel && <span className="pb-chip is-destaque">{c.titulo_papel}</span>}
+                      <h3>{c.nome}</h3>
+                      {c.descricao && <p>{c.descricao}</p>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Secao>
+          )}
+
+          {competicoes.length > 0 && (
+            <Secao id="competicoes" titulo="Competições" alt>
+              <ul className="dt-competicoes">
+                {competicoes.map((c) => <CartaoCompeticao key={c.id_competicao} c={c} classe="dt-competicao" />)}
+              </ul>
+            </Secao>
+          )}
+
+          {expositores.length > 0 && (
+            <Secao id="expositores" titulo="Expositores confirmados">
+              <Carrossel
+                rotulo="Expositores confirmados" itens={expositores.map((e) => ({ ...e, id: e.id_solicitacao }))} classeItem="dt-expo-item"
+                renderItem={(e) => {
+                  const miolo = (
+                    <>
+                      <span className="dt-expo-logo">{e.logo_url ? <img src={e.logo_url} alt="" loading="lazy" /> : <span aria-hidden="true">{iniciais(e.nome)}</span>}</span>
+                      <strong>{e.nome}</strong>
+                      {(e.tipo || e.tipo_espaco) && <small>{e.tipo || e.tipo_espaco}</small>}
+                    </>
+                  );
+                  return e.link
+                    ? <a className="pb-cartao dt-expo" href={e.link} target="_blank" rel="noreferrer noopener" aria-label={`${e.nome} (abre em nova aba)`}>{miolo}</a>
+                    : <div className="pb-cartao dt-expo">{miolo}</div>;
+                }}
+              />
+            </Secao>
+          )}
+
+          {fotos.length > 0 && (
+            <Secao id="galeria" titulo="Fotos" alt>
+              <Carrossel
+                rotulo="Fotos do evento" itens={fotos.map((f) => ({ ...f, id: f.id_foto }))} classeItem="dt-foto-item"
+                renderItem={(f) => (
+                  <figure className="dt-foto"><img src={f.url_foto} alt={f.legenda || `Foto de ${evento.nome_edicao}`} loading="lazy" />{f.legenda && <figcaption>{f.legenda}</figcaption>}</figure>
+                )}
+              />
+            </Secao>
+          )}
+        </div>
+
+        {/* Carrinho: fixo ao lado no desktop; barra inferior no celular */}
+        {mostraCarrinho && <aside className="dt-carrinho" aria-label="Resumo do pedido">{blocoCarrinho}</aside>}
       </div>
-    </div>
+
+      {mostraCarrinho && totalIngressos > 0 && (
+        <div className="dt-barra" role="region" aria-label="Resumo do pedido">
+          <div><small>{totalIngressos} ingresso{totalIngressos === 1 ? '' : 's'}</small><strong>{moeda(totalValor)}</strong></div>
+          <button type="button" className="btn btn-primary" disabled={comprando} onClick={finalizarCompra}>{comprando ? 'Abrindo...' : 'Finalizar compra'}</button>
+          {mensagem && <p className="dt-barra-msg" role="alert">{mensagem} {!logado && <Link to="/login">Entrar</Link>}</p>}
+        </div>
+      )}
+    </main>
   );
 }
