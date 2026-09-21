@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { AvisoBox } from '../components/edicao/AvisoBox';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
 import { avisoDaTela, useCarga } from '../hooks/useCarga';
 import { useAviso, mensagemDeErro } from '../hooks/useAviso';
 import { ROTULO_MODALIDADE, situacaoDaInscricao } from '../utils/competicao';
@@ -26,6 +27,13 @@ export function CompetidorArea() {
 
   const inicial = location.state?.sucesso ? { tipo: 'sucesso', texto: location.state.sucesso } : { tipo: '', texto: '' };
   const inscricoes = dados?.inscricoes ?? [];
+
+  // Pagamentos já iniciados: a tela confirma sozinha, sem depender do "Voltar ao site" do Mercado Pago.
+  const pendentes = inscricoes.filter((i) => i.status_inscricao === 'Aprovado' && i.pedido?.status_pedido === 'Pendente').map((i) => i.pedido.id_pedido);
+  const pagamento = usePagamentosPendentes(pendentes, () => {
+    mostrar('sucesso', 'Pagamento confirmado! Sua vaga está garantida.');
+    recarregar();
+  });
 
   const pagar = async (i) => {
     limpar();
@@ -107,12 +115,19 @@ export function CompetidorArea() {
                           {i.equipe && ` · equipe ${i.equipe.nome_equipe}`}
                         </span>
                         <span className="ed-item-detalhe">{sit.passo}</span>
+                        {sit.pagar && !i.pedido && <span className="ed-item-detalhe"><strong>Como funciona:</strong> você vai ao Mercado Pago, paga e clica em “Voltar ao site”; a confirmação aparece aqui sozinha.</span>}
+                        {sit.pagar && i.pedido && <span className="ed-item-detalhe">{pagamento.mensagem || 'Aguardando a confirmação do pagamento. Esta tela atualiza sozinha.'}</span>}
                         {i.observacao_admin && <span className="ed-item-detalhe"><strong>Recado da organização:</strong> {i.observacao_admin}</span>}
                       </div>
                       <div className="ed-item-acoes">
                         {sit.pagar && (
                           <button type="button" className="btn btn-primary ed-btn-sm" disabled={trabalhando === i.id_inscricao} onClick={() => pagar(i)}>
-                            {trabalhando === i.id_inscricao ? 'Abrindo...' : 'Pagar taxa'}
+                            {trabalhando === i.id_inscricao ? 'Abrindo...' : i.pedido ? 'Continuar pagamento' : `Pagar taxa · ${formatarMoeda(taxa)}`}
+                          </button>
+                        )}
+                        {sit.pagar && i.pedido && (
+                          <button type="button" className="btn btn-secondary ed-btn-sm" disabled={pagamento.verificando} onClick={pagamento.verificar}>
+                            {pagamento.verificando ? 'Verificando...' : 'Já paguei — verificar'}
                           </button>
                         )}
                         <Link to={`/competicoes/${i.id_competicao}`} className="btn btn-secondary ed-btn-sm">Ver competição</Link>

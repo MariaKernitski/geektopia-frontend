@@ -3,21 +3,24 @@ import api from '../../services/api';
 import { useAviso, mensagemDeErro } from '../../hooks/useAviso';
 import { avisoDaTela, useCarga } from '../../hooks/useCarga';
 import { AvisoBox } from './AvisoBox';
+import { FichaSolicitante } from './FichaSolicitante';
+import { FiltroStatus } from './FiltroStatus';
+import { contarPorStatus } from '../../utils/contagem';
 import { ROTULO_MODALIDADE, situacaoDaInscricao } from '../../utils/competicao';
 import { formatarMoeda } from '../../utils/datas';
 
 // Fila de análise das inscrições em competições desta edição. O competidor só
 // paga (quando há taxa) depois que a organização aprova.
 export function AbaInscricoes({ evento, recarregarResumo }) {
-  const id = evento.id_geektopia;
+  const id = evento?.id_geektopia; // sem edição = visão geral de todas (tela Solicitações)
   const { aviso, mostrar, limpar } = useAviso();
-  const [filtro, setFiltro] = useState('');
+  const [filtro, setFiltro] = useState(id ? '' : 'EmAnalise');
   const [motivo, setMotivo] = useState(null); // { inscricao, texto, status }
   const [erroMotivo, setErroMotivo] = useState('');
   const [trabalhando, setTrabalhando] = useState(null);
 
   const buscar = useCallback(
-    () => api.get('/inscricoes/admin/todas', { params: { id_geektopia: id } }).then((r) => r.data),
+    () => api.get('/inscricoes/admin/todas', { params: id ? { id_geektopia: id } : {} }).then((r) => r.data),
     [id]
   );
   const { dados, erro, carregando, recarregar } = useCarga(buscar);
@@ -43,23 +46,15 @@ export function AbaInscricoes({ evento, recarregarResumo }) {
   const abrirMotivo = (inscricao, status) => { setErroMotivo(''); setMotivo({ inscricao, status, texto: '' }); };
 
   return (
-    <section className="ed-painel" aria-labelledby="t-insc">
-      <h2 id="t-insc" className="ed-titulo">Inscrições</h2>
-      <p className="ed-ajuda-topo">
-        Inscrições dos competidores nas competições desta edição. Ao aprovar, o competidor pode pagar a taxa (se houver) e a vaga fica confirmada.
+    <section className={evento ? 'ed-painel' : 'sol-conteudo'} aria-labelledby="t-insc">
+      <h2 id="t-insc" className={evento ? 'ed-titulo' : 'ed-sr-only'}>Inscrições</h2>
+      <p className={evento ? 'ed-ajuda-topo' : 'ed-sr-only'}>
+        Inscrições dos competidores nas competições {evento ? 'desta edição' : 'de todas as edições'}. Ao aprovar, o competidor pode pagar a taxa (se houver) e a vaga fica confirmada.
         Ao reprovar, explique o motivo: ele aparece para a pessoa.
       </p>
       <AvisoBox aviso={avisoDaTela(aviso, erro)} />
 
-      <div className="ed-campo" style={{ maxWidth: 240 }}>
-        <label htmlFor="insc-filtro">Mostrar</label>
-        <select id="insc-filtro" value={filtro} onChange={(e) => setFiltro(e.target.value)}>
-          <option value="">Todas</option>
-          <option value="EmAnalise">Em análise</option>
-          <option value="Aprovado">Aprovadas</option>
-          <option value="Reprovado">Reprovadas</option>
-        </select>
-      </div>
+      <FiltroStatus valor={filtro} onChange={setFiltro} contagens={contarPorStatus(dados ?? [], 'status_inscricao')} />
 
       {carregando ? (
         <p className="ed-vazio">Carregando inscrições...</p>
@@ -84,10 +79,9 @@ export function AbaInscricoes({ evento, recarregarResumo }) {
                       <span className={`ed-badge ${sit.tipo === 'ok' ? 'is-ok' : sit.tipo === 'erro' ? 'is-erro' : ''}`}>{sit.rotulo}</span>
                     </span>
                     <span className="ed-item-detalhe">
-                      {i.competicao?.nome_competicao} · {ROTULO_MODALIDADE[i.competicao?.modalidade]}
+                      {!evento && i.competicao?.geektopia?.nome_edicao && <strong>{i.competicao.geektopia.nome_edicao} · </strong>}{i.competicao?.nome_competicao} · {ROTULO_MODALIDADE[i.competicao?.modalidade]}
                       {Number(i.competicao?.valor_taxa_inscricao) > 0 && ` · taxa ${formatarMoeda(i.competicao.valor_taxa_inscricao)}`}
                     </span>
-                    {usuario && <span className="ed-item-detalhe">{usuario.nome_completo} · {usuario.email}{usuario.telefone && ` · ${usuario.telefone}`}</span>}
                     {i.equipe && (
                       <span className="ed-item-detalhe">
                         Equipe <strong>{i.equipe.nome_equipe}</strong>
@@ -95,10 +89,15 @@ export function AbaInscricoes({ evento, recarregarResumo }) {
                         {i.equipe.link_portfolio_grupo && <> · <a href={i.equipe.link_portfolio_grupo} target="_blank" rel="noopener noreferrer">portfólio da equipe</a></>}
                       </span>
                     )}
-                    <span className="ed-item-detalhe">
-                      {i.url_portfolio_apresentacao ? <a href={i.url_portfolio_apresentacao} target="_blank" rel="noopener noreferrer">Material de apresentação</a> : 'Sem material de apresentação'}
-                      {i.link_audio_apresentacao && <> · <a href={i.link_audio_apresentacao} target="_blank" rel="noopener noreferrer">Áudio/vídeo</a></>}
-                    </span>
+                    <FichaSolicitante
+                      foto={usuario?.perfil?.avatar_url} titulo={i.competidor?.nickname_competidor || usuario?.nome_completo || 'Competidor'} pessoa={usuario}
+                      links={[
+                        { rotulo: 'Material de apresentação', url: i.url_portfolio_apresentacao },
+                        { rotulo: 'Áudio/vídeo', url: i.link_audio_apresentacao },
+                        { rotulo: 'Portfólio do perfil', url: i.competidor?.url_portfolio },
+                        { rotulo: 'Redes sociais', url: i.competidor?.link_redes_sociais }
+                      ]}
+                    />
                     {i.status_inscricao === 'Aprovado' && Number(i.competicao?.valor_taxa_inscricao) > 0 && (
                       <span className={`ed-pagamento is-${i.pedido?.status_pedido === 'Pago' ? 'ok' : 'neutro'}`}>
                         {i.pedido?.status_pedido === 'Pago' ? 'Taxa paga' : i.pedido ? 'Cobrança gerada · aguardando pagamento' : 'Aguardando o competidor gerar a cobrança'}

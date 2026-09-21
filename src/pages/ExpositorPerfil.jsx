@@ -92,7 +92,7 @@ function FormularioPerfil({ expositor, erroCarga }) {
 
       <h1 className="ed-titulo-pagina">{editando ? 'Perfil de expositor' : 'Criar perfil de expositor'}</h1>
       <p className="ed-subtitulo" style={{ marginBottom: 20 }}>
-        Estas informações identificam a sua loja ou projeto para a diretoria e, se você for confirmado, aparecem na página da edição.
+        Estas informações (com a logo, o link de portfólio e o seu e-mail e telefone do cadastro) ajudam a diretoria a avaliar o seu pedido. Se você for confirmado, a logo e o link aparecem na página da edição.
       </p>
 
       <div className="ed-painel">

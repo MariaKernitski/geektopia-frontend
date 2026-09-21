@@ -82,7 +82,7 @@
 .pt-perfil-info strong { display: block; font-family: var(--font-title); font-size: 17px; overflow-wrap: anywhere; }
 .pt-perfil-info span { font-size: 13.5px; color: var(--soft-txt-color); overflow-wrap: anywhere; }
 
-.pt-cartoes-participar { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.pt-cartoes-participar { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; max-width: 1040px; }
 a.pt-cartao-link { text-decoration: none; color: inherit; }
 .pt-cartao-link.is-desabilitado { pointer-events: none; }
 
@@ -94,3 +94,51 @@ a.pt-cartao-link { text-decoration: none; color: inherit; }
   .pt-etapa { font-size: 11px; }
   .pt-perfil-card { flex-wrap: wrap; }
 }
+
+/* ---------- Status e pagamento (expositor e competidor) ---------- */
+.pt-status { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; padding: 16px 18px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-color); }
+.pt-status > svg { flex-shrink: 0; margin-top: 2px; font-size: 26px; }
+.pt-status strong { display: block; font-family: var(--font-title); font-size: 17px; }
+.pt-status p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.5; }
+.pt-status.is-ok { background: var(--light-green); border-color: rgba(39, 138, 91, 0.45); color: #14532D; }
+.pt-status.is-ok > svg { color: var(--dark-green); }
+.pt-status.is-aviso { background: #FBF0CF; border-color: var(--light-yellow); }
+.pt-status.is-erro { background: var(--light-red); border-color: rgba(228, 64, 95, 0.4); color: #7F1D2D; }
+.pt-status.is-neutro > svg { color: var(--soft-txt-color); }
+
+.pt-pagamento { margin-bottom: 20px; padding: 22px; background: var(--surface-color); border: 2px solid var(--dark-yellow); border-radius: 12px; box-shadow: 0 4px 18px rgba(247, 197, 49, 0.25); }
+.pt-pagamento-topo { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.pt-pagamento-topo > svg { flex-shrink: 0; font-size: 30px; color: var(--main-txt-color); }
+.pt-pagamento-topo h2 { margin: 0 0 2px; font-family: var(--font-title); font-size: 19px; }
+.pt-pagamento-topo p { margin: 0; font-size: 15px; }
+.pt-pagamento-passos { margin: 0 0 16px; padding-left: 22px; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.5; color: var(--soft-txt-color); }
+.pt-pagamento-botao { width: 100%; padding: 14px 20px; font-size: 16px; }
+.pt-pagamento-estado { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-weight: 600; font-size: 15px; }
+.pt-pagamento-msg { margin: 0 0 8px; font-size: 14px; color: var(--main-txt-color); padding: 8px 12px; background: var(--bg-alt-color); border-radius: 6px; }
+.pt-pagamento-ajuda { margin: 0 0 12px; font-size: 13.5px; color: var(--soft-txt-color); line-height: 1.5; }
+.pt-girando { animation: pt-giro 1s linear infinite; }
+@keyframes pt-giro { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .pt-girando { animation: none; } }
+.pt-pago { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; padding: 18px 20px; background: var(--light-green); border: 1px solid rgba(39, 138, 91, 0.45); border-radius: 10px; color: #14532D; }
+.pt-pago > svg { flex-shrink: 0; font-size: 28px; color: var(--dark-green); }
+.pt-pago strong { font-family: var(--font-title); font-size: 17px; }
+.pt-pago p { margin: 2px 0 0; font-size: 14.5px; }
+
+/* Selo do topo da página, colorido conforme a situação */
+.ed-selo.is-cor-ok { background: var(--light-green); color: var(--dark-green); }
+.ed-selo.is-cor-aviso { background: #FBF0CF; color: #6B4E00; }
+.ed-selo.is-cor-erro { background: var(--light-red); color: #B02545; }
+
+/* Cartões grandes da tela "Como participar" */
+.pt-cartao-grande { gap: 10px; padding: 26px 24px; cursor: pointer; }
+.pt-cartao-grande .pt-cartao-titulo { font-size: 19px; }
+.pt-cartao-grande .pt-cartao-texto { font-size: 14.5px; line-height: 1.55; }
+.pt-cartao-icone { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 12px; background: var(--bg-alt-color); color: var(--main-txt-color); }
+.pt-cartao-grande.is-principal .pt-cartao-icone { background: var(--light-yellow); }
+.pt-cartao-grande.is-principal { border-color: var(--dark-yellow); }
+.pt-cartao-acao { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 10px; font-family: var(--font-title); font-weight: 600; font-size: 14.5px; color: var(--dark-cyan); }
+.pt-cartao-grande:hover { border-color: var(--dark-yellow); box-shadow: 0 8px 22px rgba(22, 21, 26, 0.1); transform: translateY(-3px); }
+.pt-cartao-grande:hover .pt-cartao-acao svg { transform: translateX(4px); }
+.pt-cartao-acao svg { transition: transform 0.15s ease; }
+.pt-cartao-grande:focus-visible { outline: 3px solid var(--dark-cyan); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .pt-cartao-grande:hover { transform: none; } }

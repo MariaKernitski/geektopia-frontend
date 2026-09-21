@@ -18,7 +18,7 @@ export function situacaoDaSolicitacao(s) {
   if (s.pedido) {
     return { rotulo: 'Aguardando pagamento', tipo: 'aviso', etapa: 2, passo: 'Aprovada! Falta concluir o pagamento da taxa.' };
   }
-  return { rotulo: 'Aprovada', tipo: 'aviso', etapa: 2, passo: 'Aprovada! Gere o pagamento da taxa para confirmar sua presença.' };
+  return { rotulo: 'Aprovada', tipo: 'ok', etapa: 2, passo: 'A diretoria aprovou o seu pedido. Falta pagar a taxa para confirmar sua presença.' };
 }
 
 // Mesma conta do backend (calcularTotal): serve só para a prévia; o valor

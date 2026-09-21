@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
-import { FiUsers, FiCalendar, FiFileText, FiBarChart2 } from 'react-icons/fi';
+import { FiUsers, FiCalendar, FiFileText, FiBarChart2, FiInbox } from 'react-icons/fi';
+import { usePendencias } from '../hooks/usePendencias';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
 import '../style/AdminHub.css';
 
 const OPCOES = [
   { to: '/admin/usuarios', Icone: FiUsers, titulo: 'Administrar Usuários' },
   { to: '/admin/eventos', Icone: FiCalendar, titulo: 'Administrar Eventos' },
+  { to: '/admin/solicitacoes', Icone: FiInbox, titulo: 'Solicitações (expositores e competições)', pendencias: true },
   { to: '/admin/paginas', Icone: FiFileText, titulo: 'Administrar Páginas Informativas' },
   { to: '/admin/dashboard', Icone: FiBarChart2, titulo: 'Dashboards e Relatórios' },
 ];
@@ -13,6 +15,7 @@ const OPCOES = [
 export function AdminHub() {
   const userRaw = localStorage.getItem('@Geektopia:user');
   const user = userRaw ? JSON.parse(userRaw) : null;
+  const { total: pendentes } = usePendencias();
   const primeiroNome = user?.nome_completo?.split(' ')[0] || 'Admin';
 
   return (
@@ -28,10 +31,11 @@ export function AdminHub() {
         </div>
 
         <div className="admin-hub-grid">
-          {OPCOES.map(({ to, Icone, titulo }) => (
+          {OPCOES.map(({ to, Icone, titulo, pendencias }) => (
             <Link to={to} key={to} className="admin-hub-card">
               <Icone className="admin-hub-card-icon" />
               <span className="admin-hub-card-label">{titulo}</span>
+              {pendencias && pendentes > 0 && <span className="admin-hub-pendente">{pendentes} em análise</span>}
             </Link>
           ))}
         </div>

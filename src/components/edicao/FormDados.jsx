@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ImagemUpload } from './ImagemUpload';
+import { BannerEditor } from './BannerEditor';
+import { fundoInicial, fundoParaTexto } from '../../utils/fundo';
 import { OPCOES_CLASSIFICACAO } from '../../utils/idade';
 import { localParaIso, paraInputData, paraInputDataHora, paraInputHora } from '../../utils/datas';
 
@@ -12,7 +13,7 @@ import { localParaIso, paraInputData, paraInputDataHora, paraInputHora } from '.
 // e devolve uma Promise. O botão fica desabilitado enquanto ela roda.
 
 const VAZIO = {
-  nome_edicao: '', local: '', descricao: '', classificacao_etaria: '', regras_idade_minima: '', aviso_documentacao: '',
+  nome_edicao: '', local: '', descricao: '', classificacao_etaria: '', regras_idade_minima: '', aviso_documentacao: '', objetos_proibidos: '',
   data_evento: '', hora_inicio: '', hora_fim: '', inicio_multi: '', fim_multi: ''
 };
 
@@ -34,6 +35,7 @@ function doEvento(evento) {
       classificacao_etaria: evento.classificacao_etaria === null || evento.classificacao_etaria === undefined ? '' : String(evento.classificacao_etaria),
       regras_idade_minima: evento.regras_idade_minima || '',
       aviso_documentacao: evento.aviso_documentacao || '',
+      objetos_proibidos: evento.objetos_proibidos || '',
       data_evento: paraInputData(evento.data_inicio),
       hora_inicio: paraInputHora(evento.data_inicio),
       hora_fim: paraInputHora(evento.data_fim),
@@ -50,6 +52,7 @@ export function FormDados({ evento, rotuloEnvio, onSubmit, onAlterado, enviando 
   const [form, setForm] = useState(inicial.form);
   const [diaUnico, setDiaUnico] = useState(inicial.diaUnico);
   const [foto, setFoto] = useState(null);
+  const [fundo, setFundo] = useState(() => fundoInicial(evento));
   const [erros, setErros] = useState({});
 
   const alterar = (e) => {
@@ -91,7 +94,9 @@ export function FormDados({ evento, rotuloEnvio, onSubmit, onAlterado, enviando 
       descricao: form.descricao.trim(),
       classificacao_etaria: form.classificacao_etaria === '' ? null : Number(form.classificacao_etaria),
       regras_idade_minima: form.regras_idade_minima.trim(),
-      aviso_documentacao: form.aviso_documentacao.trim()
+      aviso_documentacao: form.aviso_documentacao.trim(),
+      objetos_proibidos: form.objetos_proibidos.trim(),
+      banner_fundo: fundoParaTexto(fundo) // null = usa a imagem de capa
     };
     if (inicio) campos.data_inicio = inicio;
     if (fim) campos.data_fim = fim;
@@ -166,8 +171,11 @@ export function FormDados({ evento, rotuloEnvio, onSubmit, onAlterado, enviando 
         <textarea id="f-desc" name="descricao" value={form.descricao} onChange={alterar} rows={4} placeholder="Conte do que se trata o evento..." />
       </div>
 
-      <div className="ed-linha">
-        <div className="ed-campo">
+      <fieldset className="ed-fieldset">
+        <legend>Regras de entrada</legend>
+        <p className="ed-ajuda">Aparecem na página do evento, na seção “Regras de entrada”. Tudo é opcional.</p>
+
+        <div className="ed-campo ed-campo-medio">
           <label htmlFor="f-faixa">Classificação indicativa</label>
           <select id="f-faixa" name="classificacao_etaria" value={form.classificacao_etaria} onChange={alterar} aria-describedby="ajuda-faixa">
             {OPCOES_CLASSIFICACAO.map((o) => <option key={o.valor} value={o.valor}>{o.rotulo}</option>)}
@@ -182,14 +190,17 @@ export function FormDados({ evento, rotuloEnvio, onSubmit, onAlterado, enviando 
           <label htmlFor="f-doc">Aviso sobre documentação</label>
           <textarea id="f-doc" name="aviso_documentacao" value={form.aviso_documentacao} onChange={alterar} rows={2} placeholder="Ex: Leve um documento com foto." />
         </div>
-      </div>
+        <div className="ed-campo">
+          <label htmlFor="f-proib">Objetos e itens proibidos</label>
+          <textarea id="f-proib" name="objetos_proibidos" value={form.objetos_proibidos} onChange={alterar} rows={4} placeholder={'Armas e réplicas\nBebidas alcoólicas\nBastões de selfie grandes'} />
+          <small className="ed-ajuda">Um item por linha: no site aparecem como uma lista.</small>
+        </div>
+      </fieldset>
 
-      <ImagemUpload
-        rotulo="Foto de capa"
-        urlAtual={evento?.banner_url}
-        arquivo={foto}
-        onEscolher={(f) => { setFoto(f); onAlterado?.(true); }}
-        ajuda="Aparece no topo da página do evento. JPEG, PNG ou WEBP, até 4MB. Imagens largas (16:9) ficam melhores."
+      <BannerEditor
+        evento={evento} nome={form.nome_edicao} fundo={fundo} foto={foto}
+        onFundo={(f) => { setFundo(f); onAlterado?.(true); }}
+        onFoto={(f) => { setFoto(f); onAlterado?.(true); }}
       />
 
       <div className="ed-acoes">

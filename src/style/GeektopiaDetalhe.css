@@ -29,7 +29,7 @@
 /* ---------------- CORPO: conteúdo + carrinho ---------------- */
 .dt-corpo { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start; padding-bottom: 72px; }
 .dt-principal { min-width: 0; }
-.dt-secao { padding: 48px 0 8px; scroll-margin-top: 136px; }
+.dt-secao { padding: 48px 0 8px; scroll-margin-top: 150px; }
 .dt-secao .pb-cabecalho { margin-bottom: 24px; }
 .dt-secao .pb-titulo { font-size: 28px; }
 .dt-secao.is-alt { margin-top: 40px; padding: 36px 32px 32px; background: var(--bg-alt-color); border-radius: 12px; }
@@ -113,7 +113,7 @@
 .dt-foto figcaption { padding: 10px 14px; font-size: 13.5px; color: var(--soft-txt-color); }
 
 /* ---------------- CARRINHO ---------------- */
-.dt-carrinho { position: sticky; top: 136px; margin-top: 48px; padding: 24px; background: var(--surface-color); border: 1.5px solid var(--main-txt-color); border-radius: 10px; box-shadow: 6px 6px 0 var(--cor-edicao, var(--light-yellow)); }
+.dt-carrinho { position: sticky; top: 148px; margin-top: 48px; padding: 24px; background: var(--surface-color); border: 1.5px solid var(--main-txt-color); border-radius: 10px; box-shadow: 6px 6px 0 var(--cor-edicao, var(--light-yellow)); }
 .dt-carrinho-titulo { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-family: var(--font-title); font-size: 20px; }
 .dt-carrinho-vazio { margin: 0 0 16px; font-size: 14.5px; line-height: 1.5; color: var(--soft-txt-color); }
 .dt-carrinho-itens { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -160,3 +160,36 @@
   .dt-aba { white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) { .dt-esqueleto { animation: none; } .dt-lote { transition: none; } }
+
+.dt-fatos li:has(.dt-selo) { align-items: center; }
+.dt-fatos .dt-selo { margin-top: 0; align-self: center; display: inline-flex; flex-direction: row; justify-content: center; min-width: 40px; box-sizing: border-box; }
+
+/* Banner com cor/gradiente escolhido pelo admin: véu leve */
+.dt-hero-cor .dt-hero-veu { background: linear-gradient(180deg, rgba(22, 21, 26, 0) 50%, rgba(22, 21, 26, 0.35) 100%); }
+
+/* ---------- Regras de entrada ---------- */
+.dt-regras { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.dt-regra { padding: 20px 22px; background: var(--surface-color); border: 1px solid var(--border-color); border-top: 4px solid var(--dark-cyan); border-radius: 10px; }
+.dt-regra h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-family: var(--font-title); font-size: 17px; color: var(--main-txt-color); }
+.dt-regra h3 svg { font-size: 20px; color: var(--dark-cyan); }
+.dt-regra p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--soft-txt-color); }
+.dt-regra.is-proibido { border-top-color: var(--dark-red); }
+.dt-regra.is-proibido h3 svg { color: var(--dark-red); }
+.dt-regra ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.dt-regra li { position: relative; padding-left: 22px; font-size: 15px; line-height: 1.5; color: var(--main-txt-color); }
+.dt-regra li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--dark-red); box-sizing: border-box; }
+
+/* ---------- Resumo lateral (quando não há venda de ingressos) ---------- */
+.dt-resumo { position: sticky; top: 148px; margin-top: 48px; padding: 24px; background: var(--surface-color); border: 1.5px solid var(--main-txt-color); border-radius: 10px; box-shadow: 6px 6px 0 var(--cor-edicao, var(--light-yellow)); }
+.dt-resumo-titulo { margin: 0 0 16px; font-family: var(--font-title); font-size: 20px; }
+.dt-resumo-lista { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 16px; }
+.dt-resumo-lista li { display: flex; gap: 12px; align-items: flex-start; }
+.dt-resumo-lista svg { flex-shrink: 0; margin-top: 3px; font-size: 20px; color: var(--dark-cyan); }
+.dt-resumo-lista span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dt-resumo-lista small { font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft-txt-color); }
+.dt-resumo-lista strong { font-size: 15.5px; color: var(--main-txt-color); }
+.dt-resumo-lista em { font-style: normal; font-size: 13.5px; line-height: 1.45; color: var(--soft-txt-color); }
+.dt-resumo-lista a { font-size: 13.5px; color: var(--dark-cyan); }
+.dt-resumo-acoes { display: grid; gap: 10px; }
+.dt-resumo-acoes .btn { text-align: center; }
+@media (max-width: 900px) { .dt-resumo { display: none; } }

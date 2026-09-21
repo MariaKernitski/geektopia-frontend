@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { FiAlertCircle, FiCheck } from 'react-icons/fi';
+import { FiAlertCircle, FiCheck, FiCircle } from 'react-icons/fi';
 import * as v from '../../utils/validacao';
 import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../../utils/mascaras';
 import { useLocalidades } from '../../hooks/useLocalidades';
@@ -332,7 +332,7 @@ export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }
                     ['especial', 'Um caractere especial (!@#$%...)']
                   ].map(([chave, texto]) => (
                     <li key={chave} className={requisitos[chave] ? 'is-valido' : ''}>
-                      <span aria-hidden="true">{requisitos[chave] ? '✓' : '○'}</span> {texto}
+                      {requisitos[chave] ? <FiCheck aria-hidden="true" /> : <FiCircle aria-hidden="true" />} {texto}
                       <span className="ed-sr-only">{requisitos[chave] ? ' (atendido)' : ' (pendente)'}</span>
                     </li>
                   ))}

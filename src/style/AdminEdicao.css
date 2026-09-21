@@ -422,3 +422,55 @@ label.btn.is-desabilitado { opacity: 0.55; cursor: not-allowed; }
 .usr-filtros .usr-busca { flex: 1 1 280px; }
 .usr-atualizando { opacity: 0.55; transition: opacity 0.15s ease; }
 .usr-item .ed-item-info { gap: 2px; }
+
+/* Chamada de destaque para encerrar o evento (aba Publicação) */
+.ed-encerrar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 20px; padding: 16px 18px; background: #FBF0CF; border: 1px solid var(--light-yellow); border-left: 5px solid var(--dark-yellow); border-radius: 8px; }
+.ed-encerrar-icone { flex-shrink: 0; font-size: 26px; color: #6B4E00; }
+.ed-encerrar-texto { flex: 1 1 320px; display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; line-height: 1.5; color: var(--main-txt-color); }
+.ed-encerrar-texto strong { font-family: var(--font-title); font-size: 15px; }
+.ed-selo { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Ficha do solicitante (foto + contato + links) nas telas de análise */
+.ed-ficha { display: flex; align-items: flex-start; gap: 14px; margin-top: 10px; padding: 12px 14px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; }
+.ed-ficha-foto { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; background: var(--bg-alt-color); border: 1px solid var(--border-color); font-family: var(--font-title); font-weight: 700; font-size: 20px; color: var(--soft-txt-color); text-decoration: none; }
+.ed-ficha-foto img { width: 100%; height: 100%; object-fit: cover; }
+.ed-ficha-dados { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ed-ficha-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 0; font-size: 13.5px; }
+.ed-ficha-linha a { display: inline-flex; align-items: center; gap: 6px; color: var(--dark-cyan); text-decoration: none; overflow-wrap: anywhere; }
+.ed-ficha-linha a:hover { text-decoration: underline; }
+.ed-ficha-falta { display: inline-flex; align-items: center; gap: 6px; color: var(--soft-txt-color); font-style: italic; }
+
+/* ---------- Central de solicitações: abas, filtro e lista ---------- */
+.sol-abas { display: flex; gap: 8px; margin: 20px 0 22px; padding: 5px; width: fit-content; max-width: 100%; background: var(--bg-alt-color); border-radius: 12px; }
+.sol-aba { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 20px; border: 0; border-radius: 9px; background: none; font-family: var(--font-title); font-size: 15px; font-weight: 600; color: var(--soft-txt-color); cursor: pointer; transition: background 0.12s ease, color 0.12s ease; }
+.sol-aba svg { font-size: 18px; }
+.sol-aba:hover { color: var(--main-txt-color); }
+.sol-aba.is-ativa { background: var(--surface-color); color: var(--main-txt-color); box-shadow: 0 1px 5px rgba(22, 21, 26, 0.14); }
+.sol-aba:focus-visible, .sol-filtro-btn:focus-visible { outline: 3px solid var(--dark-cyan); outline-offset: 2px; }
+.sol-aba-qtd { min-width: 22px; padding: 1px 7px; border-radius: 999px; text-align: center; font-size: 12.5px; font-weight: 700; background: var(--light-yellow); color: var(--main-txt-color); }
+
+.sol-conteudo { display: block; }
+.sol-filtro { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.sol-filtro-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 14px; border: 1.5px solid var(--border-color); border-radius: 999px; background: var(--surface-color); font-family: var(--font-body); font-size: 13.5px; font-weight: 600; color: var(--soft-txt-color); cursor: pointer; }
+.sol-filtro-btn:hover { border-color: var(--dark-yellow); color: var(--main-txt-color); }
+.sol-filtro-btn.is-ativo { background: var(--main-txt-color); border-color: var(--main-txt-color); color: #fff; }
+.sol-filtro-qtd { min-width: 20px; padding: 0 6px; border-radius: 999px; text-align: center; font-size: 12px; background: rgba(22, 21, 26, 0.09); }
+.sol-filtro-btn.is-ativo .sol-filtro-qtd { background: rgba(255, 255, 255, 0.22); }
+
+/* Na central, os pedidos são cartões soltos (sem caixa em volta da lista) */
+.sol-conteudo .ed-lista { display: grid; gap: 14px; }
+.sol-conteudo .ed-item { background: var(--surface-color); border: 1px solid var(--border-color); border-left: 4px solid var(--dark-yellow); border-radius: 10px; padding: 16px 18px; }
+.sol-conteudo .ed-ficha { background: var(--bg-alt-color); border-color: transparent; }
+@media (max-width: 640px) { .sol-abas { width: 100%; } .sol-aba { flex: 1; justify-content: center; padding: 8px 10px; } }
+
+/* Fundo do banner (aba Vitrine) */
+.ed-fundo-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; margin: 6px 0 16px; }
+.ed-fundo-preset { position: relative; min-height: 60px; padding: 8px; border: 2px solid transparent; border-radius: 8px; color: #fff; font-family: var(--font-title); font-size: 12.5px; font-weight: 600; text-align: left; display: flex; align-items: flex-end; cursor: pointer; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
+.ed-fundo-preset:hover { transform: translateY(-2px); }
+.ed-fundo-preset.is-ativo { border-color: var(--main-txt-color); box-shadow: 0 0 0 3px var(--light-yellow); }
+.ed-fundo-preset:focus-visible { outline: 3px solid var(--dark-cyan); outline-offset: 2px; }
+.ed-fundo-previa { display: flex; flex-direction: column; gap: 4px; margin: 14px 0 8px; padding: 26px 24px; border-radius: 10px; color: #fff; min-height: 110px; justify-content: center; }
+.ed-fundo-previa strong { font-family: var(--font-title); font-size: 22px; }
+.ed-fundo-previa-eyebrow { font-family: var(--font-title); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--light-yellow); }
+
+.ed-campo-medio { max-width: 360px; }

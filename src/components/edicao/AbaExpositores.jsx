@@ -4,6 +4,9 @@ import { ConfirmModal } from '../ConfirmModal';
 import { useAviso, mensagemDeErro } from '../../hooks/useAviso';
 import { avisoDaTela, useCarga } from '../../hooks/useCarga';
 import { AvisoBox } from './AvisoBox';
+import { FichaSolicitante } from './FichaSolicitante';
+import { FiltroStatus } from './FiltroStatus';
+import { contarPorStatus } from '../../utils/contagem';
 import { formatarMoeda } from '../../utils/datas';
 
 const ROTULO_STATUS = { EmAnalise: 'Em análise', Aprovado: 'Aprovado', Reprovado: 'Reprovado' };
@@ -19,17 +22,19 @@ function situacaoPagamento(s) {
 // Fila de análise de expositores desta edição. Um expositor só aparece no
 // carrossel público quando a solicitação está Aprovada E a taxa está paga.
 export function AbaExpositores({ evento, recarregarResumo }) {
-  const id = evento.id_geektopia;
+  const id = evento?.id_geektopia; // sem edição = visão geral de todas (tela Solicitações)
+  const [filtro, setFiltro] = useState(id ? '' : 'EmAnalise');
   const { aviso, mostrar, limpar } = useAviso();
   const [reprovar, setReprovar] = useState(null);
   const [trabalhando, setTrabalhando] = useState(null);
 
   const buscar = useCallback(
-    () => api.get('/solicitacoes-espaco/admin/todas', { params: { id_geektopia: id } }).then((r) => r.data),
+    () => api.get('/solicitacoes-espaco/admin/todas', { params: id ? { id_geektopia: id } : {} }).then((r) => r.data),
     [id]
   );
   const { dados, erro: erroCarga, carregando, recarregar: carregar } = useCarga(buscar);
-  const lista = dados ?? [];
+  const todas = dados ?? [];
+  const lista = todas.filter((s) => !filtro || s.status_solicitacao === filtro);
 
   const mudarStatus = async (solicitacao, status) => {
     limpar();
@@ -38,7 +43,7 @@ export function AbaExpositores({ evento, recarregarResumo }) {
       const res = await api.patch(`/solicitacoes-espaco/${solicitacao.id_solicitacao}/status`, { status_solicitacao: status });
       mostrar('sucesso', res.data.message || 'Status atualizado.');
       carregar();
-      recarregarResumo();
+      recarregarResumo?.();
     } catch (err) {
       mostrar('erro', mensagemDeErro(err, 'Não foi possível alterar o status.'));
     } finally {
@@ -46,27 +51,29 @@ export function AbaExpositores({ evento, recarregarResumo }) {
     }
   };
 
-  const confirmados = lista.filter((s) => s.status_solicitacao === 'Aprovado' && s.pedido?.status_pedido === 'Pago').length;
+  const confirmados = todas.filter((s) => s.status_solicitacao === 'Aprovado' && s.pedido?.status_pedido === 'Pago').length;
 
   return (
-    <section className="ed-painel" aria-labelledby="t-expo">
-      <h2 id="t-expo" className="ed-titulo">Expositores</h2>
-      <p className="ed-ajuda-topo">
-        Candidaturas de expositores a espaços nesta edição. Ao aprovar, o expositor recebe a possibilidade de gerar a cobrança;
+    <section className={evento ? 'ed-painel' : 'sol-conteudo'} aria-labelledby="t-expo">
+      <h2 id="t-expo" className={evento ? 'ed-titulo' : 'ed-sr-only'}>Expositores</h2>
+      <p className={evento ? 'ed-ajuda-topo' : 'ed-sr-only'}>
+        Candidaturas de expositores a espaços {evento ? 'nesta edição' : 'em todas as edições'}. Ao aprovar, o expositor recebe a possibilidade de gerar a cobrança;
         depois que a taxa é paga, ele passa a aparecer no carrossel público.
       </p>
       <AvisoBox aviso={avisoDaTela(aviso, erroCarga)} />
 
-      {lista.length > 0 && (
-        <p className="ed-resumo">{lista.length} solicitação(ões) · {confirmados} confirmado(s) no site</p>
+      {evento && todas.length > 0 && (
+        <p className="ed-resumo">{todas.length} solicitação(ões) · {confirmados} confirmado(s) no site</p>
       )}
+
+      <FiltroStatus valor={filtro} onChange={setFiltro} contagens={contarPorStatus(todas, 'status_solicitacao')} />
 
       {carregando ? (
         <p className="ed-vazio">Carregando solicitações...</p>
       ) : lista.length === 0 ? (
         <div className="ed-vazio">
-          <strong>Nenhuma solicitação de espaço para esta edição.</strong>
-          <span>Quando um expositor se candidatar, ela aparece aqui para análise.</span>
+          <strong>{filtro ? 'Nenhuma solicitação neste filtro.' : 'Nenhuma solicitação de espaço por aqui.'}</strong>
+          {!filtro && <span>Quando um expositor se candidatar, ela aparece aqui para análise.</span>}
         </div>
       ) : (
         <ul className="ed-lista">
@@ -84,10 +91,13 @@ export function AbaExpositores({ evento, recarregarResumo }) {
                       </span>
                     </span>
                     <span className="ed-item-detalhe">
-                      {s.espaco?.tipo_espaco || 'Espaço'} · {formatarMoeda(s.valor_total_final)}
-                      {s.expositor?.usuario && ` · ${s.expositor.usuario.nome_completo} (${s.expositor.usuario.email})`}
+                      {!evento && s.geektopia?.nome_edicao && <strong>{s.geektopia.nome_edicao} · </strong>}{s.espaco?.tipo_espaco || 'Espaço'} · {formatarMoeda(s.valor_total_final)}
                     </span>
                     {pagamento && <span className={`ed-pagamento is-${pagamento.tipo}`}>{pagamento.texto}</span>}
+                    <FichaSolicitante
+                      foto={s.expositor?.url_logo} titulo={s.expositor?.nome_loja_projeto || 'Expositor'} pessoa={s.expositor?.usuario}
+                      links={[{ rotulo: 'Portfólio / rede social', url: s.expositor?.url_portfolio }]}
+                    />
                   </div>
                   <div className="ed-item-acoes">
                     {s.status_solicitacao !== 'Aprovado' && (

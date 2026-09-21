@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { CompetidorArea } from './pages/CompetidorArea';
 import { CompeticaoDetalhe } from './pages/CompeticaoDetalhe';
@@ -19,7 +19,7 @@ import { AdminEventosLista } from './pages/AdminEventosLista';
 import { AdminEdicao } from './pages/AdminEdicao';
 import { PedidoConfirmacao } from './pages/PedidoConfirmacao';
 import { Dashboard } from './pages/Dashboard';
-import { AdminEspacos } from './pages/AdminEspacos';
+import { AdminSolicitacoes } from './pages/AdminSolicitacoes';
 import { AdminUsuarioForm } from './pages/AdminUsuarioForm';
 import { Participar } from './pages/Participar';
 import { ExpositorArea } from './pages/ExpositorArea';
@@ -45,7 +45,8 @@ export default function App() {
         <Route path="/admin/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
         <Route path="/admin/eventos/criar" element={<AdminRoute><AdminEventoTipoEscolha /></AdminRoute>} />
         <Route path="/admin/eventos/criar/:tipo" element={<AdminRoute><AdminCriarEvento /></AdminRoute>} />
-        <Route path="/admin/espacos" element={<AdminRoute><AdminEspacos /></AdminRoute>} />
+        <Route path="/admin/solicitacoes" element={<AdminRoute><AdminSolicitacoes /></AdminRoute>} />
+        <Route path="/admin/espacos" element={<Navigate to="/admin/eventos/lista" replace />} />
         <Route path="/participar" element={<PrivateRoute apenasCliente><Participar /></PrivateRoute>} />
         <Route path="/expositor" element={<PrivateRoute apenasCliente><ExpositorArea /></PrivateRoute>} />
         <Route path="/expositor/perfil" element={<PrivateRoute apenasCliente><ExpositorPerfil /></PrivateRoute>} />

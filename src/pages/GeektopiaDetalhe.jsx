@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { FiAlertCircle, FiCalendar, FiClock, FiInfo, FiMapPin, FiShoppingCart } from 'react-icons/fi';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { FiAlertCircle, FiAward, FiCalendar, FiClock, FiFileText, FiInfo, FiMapPin, FiShield, FiShoppingBag, FiShoppingCart, FiSlash, FiTag, FiUsers } from 'react-icons/fi';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
 import { Carrossel } from '../components/publico/Carrossel';
 import { Contagem } from '../components/publico/Contagem';
 import { NavInterna } from '../components/publico/NavInterna';
-import { AvisoMenores } from '../components/publico/AvisoMenores';
+import { AvisoMenores, URL_TERMO_MENORES } from '../components/publico/AvisoMenores';
 import { CartaoCompeticao } from '../components/publico/CartaoCompeticao';
 import { SeletorIngressos } from '../components/publico/SeletorIngressos';
 import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
 import { chaveDoDia, eventoPassou, horaCurta, horarioEvento, linkMapa, moeda, periodoEvento, tituloDoDia } from '../utils/evento';
+import { cssDoFundo } from '../utils/fundo';
 import { COR_PADRAO, ehHexValido } from '../utils/cores';
 import '../style/Publico.css';
 import '../style/GeektopiaDetalhe.css';
@@ -36,14 +37,22 @@ export function GeektopiaDetalhe() {
     // Só o evento e os lotes são essenciais; o resto é conteúdo opcional e uma
     // falha nele não pode derrubar a página inteira.
     const opcional = (rota) => api.get(`/geektopia/${id}/${rota}`).then((r) => r.data).catch(() => []);
-    const [evento, lotes, programacao, competicoes, convidados, fotos, expositores] = await Promise.all([
+    const [evento, lotes, programacao, competicoes, convidados, expositores] = await Promise.all([
       api.get(`/geektopia/${id}`).then((r) => r.data),
       api.get(`/geektopia/${id}/lotes`).then((r) => r.data),
-      opcional('programacao'), opcional('competicoes'), opcional('convidados'), opcional('fotos'), opcional('expositores-confirmados')
+      opcional('programacao'), opcional('competicoes'), opcional('convidados'), opcional('expositores-confirmados')
     ]);
-    return { evento, lotes, programacao, competicoes, convidados, fotos, expositores };
+    return { evento, lotes, programacao, competicoes, convidados, expositores };
   }, [id]);
   const { dados, erro, carregando, recarregar } = useCarga(buscar);
+
+  // Links como /geektopia/5#programacao: os dados chegam depois da página, então o
+  // navegador sozinho não acha a seção; rolamos até ela quando o conteúdo aparece.
+  const { hash } = useLocation();
+  const pronto = Boolean(dados);
+  useEffect(() => {
+    if (pronto && hash) document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [pronto, hash]);
 
   // A seleção fica guardada na sessão do navegador: quem vai entrar na conta (e
   // volta) encontra os mesmos ingressos escolhidos.
@@ -135,11 +144,12 @@ export function GeektopiaDetalhe() {
     );
   }
 
-  const { evento, programacao, competicoes, convidados, fotos, expositores } = dados;
+  const { evento, programacao, competicoes, convidados, expositores } = dados;
   const cor = ehHexValido(evento.cor_destaque) ? evento.cor_destaque : COR_PADRAO;
   const passou = eventoPassou(evento);
   const vendaAberta = evento.status_evento === 'VendasAbertas' && !passou;
   const selo = seloClassificacao(evento.classificacao_etaria);
+  const fundoCor = cssDoFundo(evento.banner_fundo);
   const horario = horarioEvento(evento.data_inicio, evento.data_fim);
   const paragrafos = (evento.texto_sobre || evento.descricao || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
   const destaques = Array.isArray(evento.destaques) ? evento.destaques : [];
@@ -159,14 +169,18 @@ export function GeektopiaDetalhe() {
     dia.itens.push(a);
   });
 
+  // Regras de entrada: classificação/idade, documentação e objetos proibidos (um por linha).
+  const proibidos = (evento.objetos_proibidos || '').split('\n').map((l) => l.trim()).filter(Boolean);
+  const temRegras = Boolean(evento.regras_idade_minima || evento.aviso_documentacao || proibidos.length);
+
   const secoes = [
-    ...(temSobre ? [{ id: 'sobre', rotulo: 'Sobre' }] : []),
-    { id: 'ingressos', rotulo: 'Ingressos' },
-    ...(dias.length ? [{ id: 'programacao', rotulo: 'Programação' }] : []),
-    ...(convidados.length ? [{ id: 'convidados', rotulo: 'Convidados' }] : []),
-    ...(competicoes.length ? [{ id: 'competicoes', rotulo: 'Competições' }] : []),
-    ...(expositores.length ? [{ id: 'expositores', rotulo: 'Expositores' }] : []),
-    ...(fotos.length ? [{ id: 'galeria', rotulo: 'Fotos' }] : [])
+    ...(temSobre ? [{ id: 'sobre', rotulo: 'Sobre', Icone: FiInfo }] : []),
+    { id: 'ingressos', rotulo: 'Ingressos', Icone: FiTag },
+    ...(dias.length ? [{ id: 'programacao', rotulo: 'Programação', Icone: FiClock }] : []),
+    ...(convidados.length ? [{ id: 'convidados', rotulo: 'Convidados', Icone: FiUsers }] : []),
+    ...(competicoes.length ? [{ id: 'competicoes', rotulo: 'Competições', Icone: FiAward }] : []),
+    ...(expositores.length ? [{ id: 'expositores', rotulo: 'Expositores', Icone: FiShoppingBag }] : []),
+    ...(temRegras ? [{ id: 'regras', rotulo: 'Regras de entrada', Icone: FiShield }] : [])
   ];
 
   const mostraCarrinho = vendaAberta && lotes.length > 0;
@@ -215,8 +229,8 @@ export function GeektopiaDetalhe() {
   return (
     <main className="pb-pagina dt-pagina" style={{ '--cor-edicao': cor }}>
       {/* ---------------- HERO ---------------- */}
-      <header className="dt-hero">
-        {evento.banner_url && <img className="dt-hero-fundo" src={evento.banner_url} alt="" />}
+      <header className={`dt-hero ${fundoCor ? 'dt-hero-cor' : ''}`} style={fundoCor ? { background: fundoCor } : undefined}>
+        {!fundoCor && evento.banner_url && <img className="dt-hero-fundo" src={evento.banner_url} alt="" />}
         <div className="dt-hero-veu" />
         <div className="pb-container dt-hero-conteudo">
           <Link to="/geektopia" className="dt-voltar">← Todos os eventos</Link>
@@ -277,13 +291,12 @@ export function GeektopiaDetalhe() {
 
           {/* ---------------- INGRESSOS ---------------- */}
           <Secao id="ingressos" titulo="Ingressos" texto={vendaAberta ? 'Escolha o tipo e a quantidade. Você confere tudo antes de pagar.' : undefined}>
-            {(evento.regras_idade_minima || evento.aviso_documentacao) && (
+            {temRegras && (
               <div className="dt-avisos" role="note">
-                <FiInfo aria-hidden="true" />
+                <FiShield aria-hidden="true" />
                 <div>
                   <strong>Antes de comprar</strong>
-                  {evento.regras_idade_minima && <p>{evento.regras_idade_minima}</p>}
-                  {evento.aviso_documentacao && <p>{evento.aviso_documentacao}</p>}
+                  <p>Confira as <a href="#regras">regras de entrada</a> (idade, documentação e o que não pode levar).</p>
                 </div>
               </div>
             )}
@@ -358,20 +371,50 @@ export function GeektopiaDetalhe() {
             </Secao>
           )}
 
-          {fotos.length > 0 && (
-            <Secao id="galeria" titulo="Fotos" alt>
-              <Carrossel
-                rotulo="Fotos do evento" itens={fotos.map((f) => ({ ...f, id: f.id_foto }))} classeItem="dt-foto-item"
-                renderItem={(f) => (
-                  <figure className="dt-foto"><img src={f.url_foto} alt={f.legenda || `Foto de ${evento.nome_edicao}`} loading="lazy" />{f.legenda && <figcaption>{f.legenda}</figcaption>}</figure>
+          {temRegras && (
+            <Secao id="regras" titulo="Regras de entrada" texto="Leia antes de ir ao evento, para a entrada ser tranquila." alt>
+              <div className="dt-regras">
+                {evento.regras_idade_minima && (
+                  <article className="dt-regra">
+                    <h3><FiUsers aria-hidden="true" /> Idade</h3>
+                    <p>{evento.regras_idade_minima}</p>
+                  </article>
                 )}
-              />
+                {evento.aviso_documentacao && (
+                  <article className="dt-regra">
+                    <h3><FiFileText aria-hidden="true" /> Documentação</h3>
+                    <p>{evento.aviso_documentacao}</p>
+                  </article>
+                )}
+                {proibidos.length > 0 && (
+                  <article className="dt-regra is-proibido">
+                    <h3><FiSlash aria-hidden="true" /> Não é permitido levar</h3>
+                    <ul>{proibidos.map((item) => <li key={item}>{item}</li>)}</ul>
+                  </article>
+                )}
+              </div>
             </Secao>
           )}
         </div>
 
-        {/* Carrinho: fixo ao lado no desktop; barra inferior no celular */}
-        {mostraCarrinho && <aside className="dt-carrinho" aria-label="Resumo do pedido">{blocoCarrinho}</aside>}
+        {/* Coluna lateral: o carrinho quando há venda; senão, um resumo útil do evento (nunca fica vazia) */}
+        {mostraCarrinho ? (
+          <aside className="dt-carrinho" aria-label="Resumo do pedido">{blocoCarrinho}</aside>
+        ) : (
+          <aside className="dt-resumo" aria-label="Resumo do evento">
+            <h2 className="dt-resumo-titulo">Resumo do evento</h2>
+            <ul className="dt-resumo-lista">
+              <li><FiCalendar aria-hidden="true" /><span><small>Quando</small><strong>{periodoEvento(evento.data_inicio, evento.data_fim)}</strong>{horarioEvento(evento.data_inicio, evento.data_fim) && <em>{horarioEvento(evento.data_inicio, evento.data_fim)}</em>}</span></li>
+              {evento.local && <li><FiMapPin aria-hidden="true" /><span><small>Onde</small><strong>{evento.local}</strong><a href={linkMapa(evento.local)} target="_blank" rel="noreferrer">Ver no mapa ↗</a></span></li>}
+              <li><FiTag aria-hidden="true" /><span><small>Ingressos</small><strong>{passou ? 'Evento encerrado' : evento.status_evento === 'VendasEncerradas' ? 'Vendas encerradas' : lotes.length === 0 ? 'Em breve' : 'Consulte a organização'}</strong>{semVendaTexto && <em>{semVendaTexto}</em>}</span></li>
+            </ul>
+            <div className="dt-resumo-acoes">
+              {temRegras && <a href="#regras" className="btn btn-secondary">Ver regras de entrada</a>}
+              {evento.tipo_edicao !== 'Pocket' && <a href={URL_TERMO_MENORES} className="btn btn-secondary" target="_blank" rel="noopener noreferrer" download>Termo para menores (PDF)</a>}
+              <Link to="/geektopia" className="btn btn-secondary">Ver outras edições</Link>
+            </div>
+          </aside>
+        )}
       </div>
 
       {mostraCarrinho && totalIngressos > 0 && (

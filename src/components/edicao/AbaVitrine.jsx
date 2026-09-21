@@ -35,6 +35,7 @@ export function AbaVitrine({ evento, recarregarEvento, marcarAlterado }) {
   const contrasteBotao = contraste(corEfetiva, '#16151A'); // texto escuro sobre o botão
   const contrasteFundo = contraste(corEfetiva, '#FCFAF6'); // título/realce sobre o fundo claro
 
+
   const alterarDestaque = (indice, parcial) => {
     atualizar({ destaques: form.destaques.map((d, i) => (i === indice ? { ...d, ...parcial } : d)) });
   };
@@ -75,7 +76,7 @@ export function AbaVitrine({ evento, recarregarEvento, marcarAlterado }) {
   return (
     <section className="ed-painel" aria-labelledby="t-vitrine">
       <h2 id="t-vitrine" className="ed-titulo">Vitrine pública</h2>
-      <p className="ed-ajuda-topo">Textos e cor que aparecem na página desta edição. Tudo é opcional: o que ficar em branco simplesmente não aparece.</p>
+      <p className="ed-ajuda-topo">Textos e cor que aparecem na página desta edição. Tudo é opcional: o que ficar em branco simplesmente não aparece. A imagem ou cor do topo da página fica na aba Dados.</p>
       <AvisoBox aviso={aviso} />
 
       <div className="ed-duas-colunas">
