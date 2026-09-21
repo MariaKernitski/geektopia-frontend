@@ -9,7 +9,7 @@ import { mover } from '../../utils/ordem';
 
 const TIPOS = ['image/jpeg', 'image/png', 'image/webp'];
 const TAMANHO_MAXIMO = 4 * 1024 * 1024;
-const MAX_FOTOS = 40; // mesmo teto do backend
+const MAX_FOTOS = 12; // mesmo teto do backend
 
 export function AbaFotos({ evento, recarregarResumo }) {
   const id = evento.id_geektopia;

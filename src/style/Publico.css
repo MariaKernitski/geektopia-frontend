@@ -1,0 +1,164 @@
+/* ==========================================================
+   Páginas públicas do evento (vitrine e detalhe) — componentes
+   compartilhados. Prefixo .pb-  Usa só os tokens de tokens.css.
+   A cor da edição vem de --cor-edicao (definida na página).
+   ========================================================== */
+
+.pb-container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+.pb-secao { padding: 72px 0; scroll-margin-top: 72px; }
+.pb-secao.is-alt { background: var(--bg-alt-color); }
+.pb-secao.is-escura { background: var(--main-txt-color); color: #fff; }
+
+.pb-cabecalho { max-width: 62ch; margin-bottom: 36px; }
+.pb-titulo {
+  position: relative;
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-family: var(--font-title);
+  font-size: 32px;
+  line-height: 1.15;
+  color: var(--main-txt-color);
+}
+.pb-titulo::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.12em; bottom: 0.12em;
+  width: 6px;
+  background: var(--cor-edicao, var(--light-yellow));
+  border-radius: 2px;
+}
+.is-escura .pb-titulo { color: #fff; }
+.pb-lead { margin: 0; font-size: 16px; line-height: 1.6; color: var(--soft-txt-color); }
+.is-escura .pb-lead { color: #B9B8C0; }
+
+/* ---------- Chips ---------- */
+.pb-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.pb-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--bg-alt-color);
+  color: var(--main-txt-color);
+  font-size: 12.5px; font-weight: 600; line-height: 1.4;
+}
+.pb-chip.is-destaque { background: var(--cor-edicao, var(--light-yellow)); color: var(--main-txt-color); }
+.pb-chip.is-ok { background: var(--light-green); color: var(--dark-green); }
+.pb-chip.is-aviso { background: #FBF0CF; color: #6B4E00; }
+.pb-chip.is-erro { background: var(--light-red); color: #B02545; }
+.pb-chip.is-escuro { background: rgba(255, 255, 255, 0.14); color: #fff; }
+
+/* ---------- Botões da edição ---------- */
+.pb-pagina .btn-primary { background: var(--cor-edicao, var(--light-yellow)); border-color: var(--cor-edicao, var(--light-yellow)); color: var(--main-txt-color); }
+.pb-pagina .btn-primary:hover:not(:disabled) { filter: brightness(0.92); background: var(--cor-edicao, var(--dark-yellow)); border-color: var(--cor-edicao, var(--dark-yellow)); }
+.pb-btn-grande { padding: 14px 28px; font-size: 16px; }
+.pb-btn-claro { background: transparent; border-color: rgba(255, 255, 255, 0.55); color: #fff; }
+.pb-btn-claro:hover:not(:disabled) { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+
+.pb-pagina a:focus-visible, .pb-pagina button:focus-visible, .pb-pagina [tabindex]:focus-visible { outline: 3px solid var(--dark-cyan); outline-offset: 2px; }
+.is-escura a:focus-visible, .is-escura button:focus-visible, .pb-hero a:focus-visible, .pb-hero button:focus-visible { outline-color: var(--light-cyan); }
+
+/* ---------- Contagem regressiva ---------- */
+.pb-contagem { display: inline-flex; gap: 10px; }
+.pb-contagem-bloco {
+  min-width: 68px;
+  padding: 10px 8px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+}
+.pb-contagem-bloco strong { display: block; font-family: var(--font-title); font-size: 28px; line-height: 1.1; color: var(--cor-edicao, var(--light-yellow)); }
+.pb-contagem-bloco span { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #B9B8C0; }
+
+/* ---------- Carrossel ---------- */
+.pb-carrossel { position: relative; }
+.pb-carrossel-trilho {
+  display: flex; gap: 16px;
+  margin: 0; padding: 6px 2px 14px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+  border-radius: 8px;
+}
+.is-escura .pb-carrossel-trilho { scrollbar-color: rgba(255, 255, 255, 0.35) transparent; }
+.pb-carrossel-item { flex: 0 0 auto; scroll-snap-align: start; }
+.pb-carrossel-seta {
+  position: absolute; top: 42%; z-index: 2;
+  width: 44px; height: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--main-txt-color);
+  border-radius: 50%;
+  background: var(--surface-color); color: var(--main-txt-color);
+  font-size: 22px; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(22, 21, 26, 0.25);
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+.pb-carrossel-seta:hover:not(:disabled) { transform: scale(1.08); background: var(--cor-edicao, var(--light-yellow)); }
+.pb-carrossel-seta:disabled { opacity: 0; pointer-events: none; }
+.pb-carrossel-seta.is-voltar { left: -14px; }
+.pb-carrossel-seta.is-avancar { right: -14px; }
+
+/* ---------- Estados ---------- */
+.pb-carregando { padding: 120px 24px; text-align: center; color: var(--soft-txt-color); }
+.pb-vazio { padding: 48px 24px; text-align: center; color: var(--soft-txt-color); border: 1px dashed var(--border-color); border-radius: 8px; }
+
+/* ---------- Cartão base ---------- */
+.pb-cartao {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+/* :where() zera a especificidade: cada tipo de cartão pode definir o próprio display (flex) sem perder para esta regra */
+:where(a.pb-cartao) { display: block; }
+a.pb-cartao { color: inherit; text-decoration: none; }
+a.pb-cartao:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(22, 21, 26, 0.13); border-color: var(--cor-edicao, var(--dark-yellow)); }
+
+@media (max-width: 720px) {
+  .pb-container { padding: 0 16px; }
+  .pb-secao { padding: 48px 0; }
+  .pb-titulo { font-size: 26px; }
+  .pb-carrossel-seta.is-voltar { left: -6px; }
+  .pb-carrossel-seta.is-avancar { right: -6px; }
+  .pb-contagem-bloco { min-width: 58px; }
+  .pb-contagem-bloco strong { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-cartao, .pb-carrossel-seta { transition: none; }
+  a.pb-cartao:hover { transform: none; }
+}
+
+/* ---------------- NAVEGAÇÃO INTERNA ---------------- */
+.pb-nav { position: sticky; top: 64px; z-index: 9; background: rgba(252, 250, 246, 0.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); }
+.pb-nav-interno { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
+.pb-nav ul { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.pb-nav ul::-webkit-scrollbar { display: none; }
+.pb-nav li a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; font-family: var(--font-title); font-weight: 500; font-size: 14.5px; color: var(--soft-txt-color); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+.pb-nav li a:hover { color: var(--main-txt-color); }
+.pb-nav li a.is-ativa { color: var(--main-txt-color); font-weight: 600; border-bottom-color: var(--cor-edicao, var(--light-yellow)); }
+.pb-nav-cta { flex-shrink: 0; padding: 8px 20px; font-size: 14px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (max-width: 720px) { .pb-nav-cta { display: none; } }
+
+
+/* Cartão-link de competição (li > a): o link ocupa toda a altura do item da grade. */
+.pb-cartao-item { display: flex; list-style: none; }
+.pb-cartao-item > a.pb-cartao { flex: 1; }
+.pb-cartao-resumo { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.pb-cartao-cta { margin-top: auto; padding-top: 6px; font-family: var(--font-title); font-weight: 600; font-size: 14px; color: var(--main-txt-color); border-bottom: 2px solid var(--cor-edicao, var(--light-yellow)); align-self: flex-start; }
+a.pb-cartao:focus-visible { outline: 3px solid var(--dark-cyan); outline-offset: 3px; }
+
+/* ---------- Aviso de menores (Geektopia Principal) ---------- */
+.pb-aviso-menores { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 16px 20px; background: #FBF0CF; border-bottom: 1px solid var(--light-yellow); color: var(--main-txt-color); }
+.pb-aviso-menores-icone { flex-shrink: 0; font-size: 26px; color: #6B4E00; }
+.pb-aviso-menores-texto { flex: 1 1 340px; min-width: 0; }
+.pb-aviso-menores-texto strong { font-family: var(--font-title); font-size: 15.5px; }
+.pb-aviso-menores-texto p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; }
+.pb-aviso-menores-acao { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.pb-aviso-menores.is-caixa { border: 1px solid var(--light-yellow); border-radius: 8px; }

@@ -1,9 +1,8 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
 import '../style/Header.css';
 
 export function Header() {
-  const navigate = useNavigate();
   const location = useLocation();
 
   const userRaw = localStorage.getItem('@Geektopia:user');
@@ -37,8 +36,13 @@ export function Header() {
             {isAdmin && (
               <Link to="/admin" className="btn btn-secondary">Painel ADM</Link>
             )}
-            <Link to="/participar" className="btn btn-secondary">Participar</Link>
-            <Link to="/perfil" className="btn btn-secondary">Meu Perfil</Link>
+            {/* Administrador só tem o painel: participar e perfil são de conta cliente. */}
+            {!isAdmin && (
+              <>
+                <Link to="/participar" className="btn btn-secondary">Participar</Link>
+                <Link to="/perfil" className="btn btn-secondary">Meu Perfil</Link>
+              </>
+            )}
             <button onClick={handleLogout} className="btn btn-primary">Sair</button>
           </>
         ) : (
