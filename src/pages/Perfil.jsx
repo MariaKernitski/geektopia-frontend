@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   FiAward, FiCalendar, FiCamera, FiCheckCircle, FiChevronRight, FiClock, FiCircle, FiCreditCard, FiEdit2,
   FiLock, FiMail, FiMapPin, FiPhone, FiShoppingBag, FiTag, FiUser, FiXCircle, FiCheck
@@ -11,6 +12,7 @@ import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../utils/mascaras';
 import { formatarData, formatarMoeda } from '../utils/datas';
 import { eventoPassou } from '../utils/evento';
 import { requisitosSenha, senha as validarSenha } from '../utils/validacao';
+import { BotaoPdf } from '../components/BotaoPdf';
 import { situacaoDaInscricao, ROTULO_MODALIDADE } from '../utils/competicao';
 import { situacaoDaSolicitacao } from '../utils/solicitacao';
 import '../style/Perfil.css';
@@ -263,21 +265,53 @@ function FormEdicao({ user, onCancelar, onSalvo }) {
 // ------------------------------------------------------------------ INGRESSOS
 function CartaoIngresso({ ing }) {
   const st = STATUS_INGRESSO[ing.status_ingresso] || { rotulo: ing.status_ingresso, Icone: FiCircle };
+  const valido = ing.status_ingresso === 'Valido';
   return (
     <li className={`perfil-ingresso is-${ing.status_ingresso.toLowerCase()}`}>
       <div className="perfil-ingresso-info">
         <span className={`perfil-status is-${ing.status_ingresso.toLowerCase()}`}><st.Icone aria-hidden="true" /> {st.rotulo}</span>
         <h3>{ing.geektopia.nome_edicao}</h3>
         <p className="perfil-ingresso-lote">{ing.lote.nome_lote}</p>
-        <p className="perfil-ingresso-meta"><FiMapPin aria-hidden="true" /> {ing.geektopia.local || 'Local a definir'}</p>
+        <p className="perfil-ingresso-meta"><FiUser aria-hidden="true" /> {ing.nome_titular}{ing.documento_titular ? ` · ${ing.documento_titular}` : ''}</p>
         {ing.geektopia.data_inicio && <p className="perfil-ingresso-meta"><FiCalendar aria-hidden="true" /> {formatarData(ing.geektopia.data_inicio)}</p>}
-        <p className="perfil-ingresso-meta"><FiUser aria-hidden="true" /> Titular: {ing.nome_titular}</p>
+        <p className="perfil-ingresso-meta"><FiMapPin aria-hidden="true" /> {ing.geektopia.local || 'Local a definir'}</p>
+        <div className="perfil-ingresso-acoes">
+          <BotaoPdf url={`/ingressos/${ing.id_ingresso}/pdf`} nome={`ingresso-${ing.id_ingresso}.pdf`}>Baixar PDF</BotaoPdf>
+        </div>
       </div>
       <div className="perfil-ingresso-qr">
-        <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(ing.codigo_qr)}`} alt={`QR code do ingresso ${ing.id_ingresso}`} width="110" height="110" />
+        <div className={`perfil-qr ${valido ? '' : 'is-inativo'}`}>
+          <QRCodeSVG value={ing.codigo_qr} size={128} level="M" marginSize={2} title={`QR code do ingresso ${ing.id_ingresso}`} />
+        </div>
         <span className="perfil-ingresso-codigo">{ing.codigo_qr}</span>
       </div>
     </li>
+  );
+}
+
+// Ingressos da mesma compra ficam juntos (e podem ser baixados de uma vez).
+function ListaIngressos({ ingressos }) {
+  const grupos = [];
+  ingressos.forEach((i) => {
+    const chave = i.id_pedido ?? `solto-${i.id_ingresso}`;
+    let g = grupos.find((x) => x.chave === chave);
+    if (!g) { g = { chave, id_pedido: i.id_pedido, itens: [] }; grupos.push(g); }
+    g.itens.push(i);
+  });
+  return (
+    <div className="perfil-grupos">
+      {grupos.map((g) => (
+        <section key={g.chave} className="perfil-grupo">
+          {g.id_pedido && g.itens.length > 1 && (
+            <header className="perfil-grupo-topo">
+              <strong>Compra #{g.id_pedido} · {g.itens.length} ingressos</strong>
+              <BotaoPdf url={`/ingressos/pedido/${g.id_pedido}/pdf`} nome={`ingressos-compra-${g.id_pedido}.pdf`}>Baixar todos (PDF)</BotaoPdf>
+            </header>
+          )}
+          <ul className="perfil-ingressos">{g.itens.map((i) => <CartaoIngresso key={i.id_ingresso} ing={i} />)}</ul>
+        </section>
+      ))}
+    </div>
   );
 }
 
@@ -287,7 +321,7 @@ function SecaoIngressos({ proximos, anteriores }) {
       <section className="perfil-vazio" aria-labelledby="perfil-t-ing">
         <FiTag aria-hidden="true" />
         <h2 id="perfil-t-ing">Você ainda não tem ingressos</h2>
-        <p>Quando comprar, eles aparecem aqui com o QR code para a entrada.</p>
+        <p>Quando comprar, eles aparecem aqui com o QR code para a entrada e podem ser baixados em PDF.</p>
         <Link to="/geektopia" className="btn btn-primary">Ver eventos</Link>
       </section>
     );
@@ -295,8 +329,9 @@ function SecaoIngressos({ proximos, anteriores }) {
   return (
     <section aria-labelledby="perfil-t-ing">
       <div className="perfil-secao-topo"><h2 id="perfil-t-ing">Meus ingressos</h2></div>
-      {proximos.length > 0 && (<><h3 className="perfil-subtitulo">Próximos eventos</h3><ul className="perfil-ingressos">{proximos.map((i) => <CartaoIngresso key={i.id_ingresso} ing={i} />)}</ul></>)}
-      {anteriores.length > 0 && (<><h3 className="perfil-subtitulo">Anteriores e cancelados</h3><ul className="perfil-ingressos">{anteriores.map((i) => <CartaoIngresso key={i.id_ingresso} ing={i} />)}</ul></>)}
+      <p className="perfil-ajuda perfil-ajuda-ing">Guarde o PDF no celular: na entrada, basta mostrar o QR code e um documento com foto.</p>
+      {proximos.length > 0 && (<><h3 className="perfil-subtitulo">Próximos eventos</h3><ListaIngressos ingressos={proximos} /></>)}
+      {anteriores.length > 0 && (<><h3 className="perfil-subtitulo">Anteriores e cancelados</h3><ListaIngressos ingressos={anteriores} /></>)}
     </section>
   );
 }

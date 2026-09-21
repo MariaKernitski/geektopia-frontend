@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiUsers, FiCalendar, FiFileText, FiBarChart2, FiInbox } from 'react-icons/fi';
+import { FiUsers, FiCalendar, FiFileText, FiBarChart2, FiInbox, FiCheckSquare } from 'react-icons/fi';
 import { usePendencias } from '../hooks/usePendencias';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
 import '../style/AdminHub.css';
@@ -8,7 +8,8 @@ const OPCOES = [
   { to: '/admin/usuarios', Icone: FiUsers, titulo: 'Administrar Usuários' },
   { to: '/admin/eventos', Icone: FiCalendar, titulo: 'Administrar Eventos' },
   { to: '/admin/solicitacoes', Icone: FiInbox, titulo: 'Solicitações (expositores e competições)', pendencias: true },
-  { to: '/admin/paginas', Icone: FiFileText, titulo: 'Administrar Páginas Informativas' },
+  { to: '/admin/checkin', Icone: FiCheckSquare, titulo: 'Check-in de ingressos (portaria)' },
+  { to: '/admin/paginas', Icone: FiFileText, titulo: 'Página inicial e textos do site' },
   { to: '/admin/dashboard', Icone: FiBarChart2, titulo: 'Dashboards e Relatórios' },
 ];
 

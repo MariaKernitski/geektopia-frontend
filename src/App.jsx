@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { CompetidorArea } from './pages/CompetidorArea';
 import { CompeticaoDetalhe } from './pages/CompeticaoDetalhe';
+import { Checkout } from './pages/Checkout';
 import { PrivateRoute } from './components/PrivateRoute';
 import { AdminRoute } from './components/AdminRoute';
 import { LandingPage } from './pages/LandingPage';
@@ -19,6 +20,8 @@ import { AdminEventosLista } from './pages/AdminEventosLista';
 import { AdminEdicao } from './pages/AdminEdicao';
 import { PedidoConfirmacao } from './pages/PedidoConfirmacao';
 import { Dashboard } from './pages/Dashboard';
+import { AdminPaginas } from './pages/AdminPaginas';
+import { AdminCheckin } from './pages/AdminCheckin';
 import { AdminSolicitacoes } from './pages/AdminSolicitacoes';
 import { AdminUsuarioForm } from './pages/AdminUsuarioForm';
 import { Participar } from './pages/Participar';
@@ -45,6 +48,8 @@ export default function App() {
         <Route path="/admin/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
         <Route path="/admin/eventos/criar" element={<AdminRoute><AdminEventoTipoEscolha /></AdminRoute>} />
         <Route path="/admin/eventos/criar/:tipo" element={<AdminRoute><AdminCriarEvento /></AdminRoute>} />
+        <Route path="/admin/paginas" element={<AdminRoute><AdminPaginas /></AdminRoute>} />
+        <Route path="/admin/checkin" element={<AdminRoute><AdminCheckin /></AdminRoute>} />
         <Route path="/admin/solicitacoes" element={<AdminRoute><AdminSolicitacoes /></AdminRoute>} />
         <Route path="/admin/espacos" element={<Navigate to="/admin/eventos/lista" replace />} />
         <Route path="/participar" element={<PrivateRoute apenasCliente><Participar /></PrivateRoute>} />
@@ -59,6 +64,7 @@ export default function App() {
         <Route path="/competicoes/:id" element={<CompeticaoDetalhe />} />
         <Route path="/geektopia" element={<GeektopiaPage />} />
         <Route path="/geektopia/:id" element={<GeektopiaDetalhe />} />
+        <Route path="/geektopia/:id/comprar" element={<PrivateRoute><Checkout /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );
