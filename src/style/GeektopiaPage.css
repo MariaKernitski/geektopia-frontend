@@ -40,6 +40,9 @@
 .vt-aviso-edicao { background: var(--cor-edicao, var(--light-yellow)); color: var(--main-txt-color); }
 .vt-aviso-edicao .pb-container { padding-top: 12px; padding-bottom: 12px; font-size: 14.5px; font-weight: 500; }
 
+/* Banner com cor/gradiente escolhido pelo admin (sem imagem): véu leve, só para dar leitura ao texto */
+.vt-hero-cor .vt-hero-veu { background: linear-gradient(180deg, rgba(22, 21, 26, 0) 55%, rgba(22, 21, 26, 0.35) 100%); }
+
 /* ---------------- COMO PARTICIPAR ---------------- */
 .vt-caminhos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .vt-caminho { display: flex; flex-direction: column; gap: 8px; padding: 26px; height: 100%; box-sizing: border-box; }
@@ -63,8 +66,8 @@ a.pb-cartao:hover .vt-caminho-acao svg { transform: translateX(4px); }
 .vt-destaque-num { font-family: var(--font-pixel); font-size: 13px; color: var(--cor-edicao, var(--light-yellow)); }
 .vt-destaque strong { font-family: var(--font-title); font-size: 18px; color: #fff; }
 .vt-destaque span:last-child { font-size: 14.5px; line-height: 1.55; color: #B9B8C0; }
-.vt-numeros { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin: 52px 0 0; padding: 28px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.16); }
-.vt-numeros li { display: flex; flex-direction: column; gap: 4px; }
+.vt-numeros { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 64px; margin: 52px 0 0; padding: 32px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+.vt-numeros li { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 130px; text-align: center; }
 .vt-numeros strong { font-family: var(--font-pixel); font-size: 34px; line-height: 1.2; color: var(--cor-edicao, var(--light-yellow)); }
 .vt-numeros span { font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: #B9B8C0; }
 
@@ -157,3 +160,7 @@ a.pb-cartao:hover .vt-caminho-acao svg { transform: translateX(4px); }
   .vt-esqueleto { animation: none; }
   .vt-convidado-foto img, .vt-pocket-capa > img, .vt-caminho-acao svg { transition: none; }
 }
+
+/* Selo de classificação alinhado ao meio do texto ao lado */
+.vt-fatos li:has(.vt-selo) { align-items: center; }
+.vt-fatos .vt-selo { margin-top: 0; align-self: center; display: inline-flex; flex-direction: row; justify-content: center; min-width: 40px; box-sizing: border-box; }

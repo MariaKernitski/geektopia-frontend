@@ -20,7 +20,7 @@ export function NavInterna({ secoes, cta }) {
         <ul>
           {secoes.map((s) => (
             <li key={s.id}>
-              <a href={`#${s.id}`} className={ativa === s.id ? 'is-ativa' : undefined} aria-current={ativa === s.id ? 'location' : undefined}>{s.rotulo}</a>
+              <a href={`#${s.id}`} className={ativa === s.id ? 'is-ativa' : undefined} aria-current={ativa === s.id ? 'location' : undefined}>{s.Icone && <s.Icone aria-hidden="true" />}{s.rotulo}</a>
             </li>
           ))}
         </ul>

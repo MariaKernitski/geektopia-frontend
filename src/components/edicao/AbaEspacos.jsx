@@ -1,12 +1,10 @@
 import { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../services/api';
-import { ConfirmModal } from '../components/ConfirmModal';
-import { AvisoBox } from '../components/edicao/AvisoBox';
-import { avisoDaTela, useCarga } from '../hooks/useCarga';
-import { useAviso, mensagemDeErro } from '../hooks/useAviso';
-import { formatarMoeda } from '../utils/datas';
-import '../style/AdminEdicao.css';
+import api from '../../services/api';
+import { ConfirmModal } from '../ConfirmModal';
+import { AvisoBox } from './AvisoBox';
+import { avisoDaTela, useCarga } from '../../hooks/useCarga';
+import { useAviso, mensagemDeErro } from '../../hooks/useAviso';
+import { formatarMoeda } from '../../utils/datas';
 
 // Campos numéricos do catálogo. `dec` = aceita casas decimais.
 const NUMERICOS = [
@@ -31,9 +29,11 @@ const doEspaco = (e) => Object.fromEntries([
   ...NUMERICOS.map((n) => [n.nome, e[n.nome] === null || e[n.nome] === undefined ? '' : String(e[n.nome])])
 ]);
 
-// Catálogo dos tipos de espaço que os expositores podem pedir. Sem ele ninguém
-// consegue se candidatar: o formulário do expositor lista estes espaços.
-export function AdminEspacos() {
+// Espaços de exposição DESTA edição (mesa, barraca, estande...). Cada edição tem os
+// seus: mudam o local, o layout e os preços. Sem eles ninguém consegue pedir espaço,
+// porque o expositor escolhe a edição e vê só os espaços dela.
+export function AbaEspacos({ evento, recarregarResumo }) {
+  const idEdicao = evento.id_geektopia;
   const { aviso, mostrar, limpar } = useAviso();
   const [form, setForm] = useState(VAZIO);
   const [formAberto, setFormAberto] = useState(false);
@@ -42,7 +42,10 @@ export function AdminEspacos() {
   const [excluir, setExcluir] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
-  const buscar = useCallback(() => api.get('/espacos').then((r) => r.data), []);
+  const buscar = useCallback(() => api.get('/espacos', { params: { id_geektopia: idEdicao } }).then((r) => r.data), [idEdicao]);
+  const buscarOutras = useCallback(() => api.get('/geektopia/admin/todas').then((r) => r.data.filter((e) => e.id_geektopia !== idEdicao)), [idEdicao]);
+  const { dados: outras } = useCarga(buscarOutras);
+  const [origemCopia, setOrigemCopia] = useState('');
   const { dados, erro: erroCarga, carregando, recarregar } = useCarga(buscar);
   const espacos = dados ?? [];
 
@@ -73,7 +76,7 @@ export function AdminEspacos() {
       return;
     }
 
-    const corpo = { tipo_espaco: form.tipo_espaco.trim(), descricao: form.descricao.trim() || null };
+    const corpo = { id_geektopia: idEdicao, tipo_espaco: form.tipo_espaco.trim(), descricao: form.descricao.trim() || null };
     NUMERICOS.forEach((n) => { corpo[n.nome] = form[n.nome] === '' ? null : Number(form[n.nome]); });
 
     setEnviando(true);
@@ -82,10 +85,24 @@ export function AdminEspacos() {
       mostrar('sucesso', res.data.message || 'Espaço salvo.');
       fechar();
       recarregar();
+      recarregarResumo?.();
     } catch (err) {
       mostrar('erro', mensagemDeErro(err, 'Não foi possível salvar o espaço.'));
     } finally {
       setEnviando(false);
+    }
+  };
+
+  const copiar = async () => {
+    limpar();
+    try {
+      const res = await api.post('/espacos/copiar', { de_geektopia: Number(origemCopia), para_geektopia: idEdicao });
+      mostrar('sucesso', res.data.message);
+      setOrigemCopia('');
+      recarregar();
+      recarregarResumo?.();
+    } catch (err) {
+      mostrar('erro', mensagemDeErro(err, 'Não foi possível copiar os espaços.'));
     }
   };
 
@@ -115,22 +132,20 @@ export function AdminEspacos() {
   const grupo = (g) => <div className="ed-linha ed-linha-quebra">{NUMERICOS.filter((n) => n.grupo === g).map(campo)}</div>;
 
   return (
-    <div className="ed-pagina">
-      <Link to="/admin/eventos" className="btn btn-secondary ed-voltar">← Voltar</Link>
-
+    <section className="ed-painel" aria-labelledby="t-esp">
       <div className="ed-lista-cabecalho">
-        <h1 className="ed-titulo-pagina">Espaços de exposição</h1>
+        <h2 id="t-esp" className="ed-titulo">Espaços de exposição</h2>
         {!formAberto && <button type="button" className="btn btn-primary" onClick={abrirNovo}>+ Novo espaço</button>}
       </div>
       <p className="ed-ajuda-topo">
-        Os tipos de estande que os expositores podem solicitar (ex.: barraca, mesa de artista, estande grande). O valor e as taxas
+        Os espaços que expositores podem pedir <strong>nesta edição</strong> (ex.: barraca, mesa de artista, estande). O valor e as taxas
         são <strong>congelados no momento da candidatura</strong>: mudar o preço aqui não altera o que quem já se candidatou vai pagar.
       </p>
 
       <AvisoBox aviso={avisoDaTela(aviso, erroCarga)} />
 
       {formAberto && (
-        <form onSubmit={salvar} className="ed-painel ed-form-espaco" noValidate>
+        <form onSubmit={salvar} className="ed-form-espaco" noValidate>
           <h2 className="ed-titulo">{editando ? `Editando "${editando.tipo_espaco}"` : 'Novo espaço'}</h2>
 
           <div className="ed-campo">
@@ -167,7 +182,17 @@ export function AdminEspacos() {
       ) : espacos.length === 0 ? (
         <div className="ed-vazio">
           <strong>Nenhum espaço cadastrado.</strong>
-          <span>Cadastre ao menos um para que os expositores consigam se candidatar.</span>
+          <span>Cadastre ao menos um para que os expositores consigam se candidatar a esta edição.</span>
+          {(outras ?? []).length > 0 && (
+            <div className="ed-campo" style={{ maxWidth: 360, margin: '12px auto 0', textAlign: 'left' }}>
+              <label htmlFor="esp-copia">Ou reaproveite os espaços de outra edição</label>
+              <select id="esp-copia" value={origemCopia} onChange={(e) => setOrigemCopia(e.target.value)}>
+                <option value="">Escolha uma edição...</option>
+                {outras.map((o) => <option key={o.id_geektopia} value={o.id_geektopia}>{o.nome_edicao}</option>)}
+              </select>
+              <button type="button" className="btn btn-secondary" disabled={!origemCopia} onClick={copiar} style={{ marginTop: 8 }}>Copiar espaços</button>
+            </div>
+          )}
         </div>
       ) : (
         <ul className="ed-lista">
@@ -203,6 +228,6 @@ export function AdminEspacos() {
         onConfirm={confirmarExclusao}
         onCancel={() => setExcluir(null)}
       />
-    </div>
+    </section>
   );
 }

@@ -83,3 +83,5 @@
   .fu-rodape { flex-direction: column-reverse; align-items: stretch; }
   .fu-rodape > div { flex-direction: column-reverse; }
 }
+
+.fu-checklist li { display: flex; align-items: center; gap: 6px; }

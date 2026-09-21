@@ -1,7 +1,10 @@
 import { useCallback, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { FiAlertCircle, FiCheckCircle, FiClock, FiXCircle } from 'react-icons/fi';
 import api from '../services/api';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { PagamentoCard } from '../components/PagamentoCard';
+import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
 import { AvisoBox } from '../components/edicao/AvisoBox';
 import { avisoDaTela, useCarga } from '../hooks/useCarga';
 import { useAviso, mensagemDeErro } from '../hooks/useAviso';
@@ -49,6 +52,16 @@ function Detalhe({ carga }) {
   const [trabalhando, setTrabalhando] = useState(false);
 
   const sit = situacaoDaSolicitacao(s);
+  const aprovada = s.status_solicitacao === 'Aprovado';
+  const paga = s.pedido?.status_pedido === 'Pago';
+  const devendo = aprovada && !paga;
+
+  // Se já começou a pagar, a tela confirma sozinha (não depende de voltar pelo botão do Mercado Pago).
+  const pendentes = devendo && s.pedido?.status_pedido === 'Pendente' ? [s.pedido.id_pedido] : [];
+  const pagamento = usePagamentosPendentes(pendentes, () => {
+    mostrar('sucesso', 'Pagamento confirmado! Sua presença na edição está garantida.');
+    carga.recarregar();
+  });
   const emAnalise = s.status_solicitacao === 'EmAnalise';
   const limite = s.qtd_ajudantes_extras || 0;
   const podeAddAjudante = emAnalise && ajudantes.length < limite;
@@ -61,7 +74,7 @@ function Detalhe({ carga }) {
     setTrabalhando(true);
     try {
       const res = await api.post(`/solicitacoes-espaco/${s.id_solicitacao}/pagamento`);
-      window.location.href = res.data.init_point; // vai para o Mercado Pago
+      window.location.assign(res.data.init_point); // vai para o Mercado Pago
     } catch (err) {
       mostrar('erro', mensagemDeErro(err, 'Não foi possível gerar o pagamento. Tente de novo.'));
       setTrabalhando(false);
@@ -140,7 +153,7 @@ function Detalhe({ carga }) {
 
       <header className="ed-cabecalho">
         <div className="ed-selos">
-          <span className={`ed-selo ${sit.tipo === 'ok' ? 'is-status-VendasAbertas' : ''}`}>{sit.rotulo}</span>
+          <span className={`ed-selo is-cor-${sit.tipo}`}>{sit.rotulo}</span>
         </div>
         <h1 className="ed-titulo-pagina">{s.geektopia?.nome_edicao}</h1>
         <p className="ed-subtitulo">{s.espaco?.tipo_espaco}</p>
@@ -156,26 +169,27 @@ function Detalhe({ carga }) {
         </ol>
       ) : null}
 
-      <div className={`pt-destaque ${sit.tipo === 'ok' ? 'is-ok' : sit.tipo === 'erro' ? 'is-erro' : ''}`}>
-        <strong>{sit.passo}</strong>
+      <div className={`pt-status is-${sit.tipo}`}>
+        {sit.tipo === 'ok' ? <FiCheckCircle aria-hidden="true" /> : sit.tipo === 'erro' ? <FiXCircle aria-hidden="true" /> : sit.tipo === 'aviso' ? <FiAlertCircle aria-hidden="true" /> : <FiClock aria-hidden="true" />}
+        <div><strong>{paga ? 'Confirmada' : sit.rotulo}</strong><p>{sit.passo}</p></div>
+      </div>
 
-        {s.status_solicitacao === 'Aprovado' && s.pedido?.status_pedido !== 'Pago' && (
-          <div className="ed-acoes ed-acoes-esquerda ed-acoes-quebra">
-            <button type="button" className="btn btn-primary" disabled={trabalhando} onClick={pagar}>
-              {s.pedido ? 'Continuar pagamento' : `Pagar taxa · ${formatarMoeda(s.valor_total_final)}`}
-            </button>
-            {s.pedido && <Link to={`/pedido/${s.pedido.id_pedido}/confirmacao`} className="btn btn-secondary">Já paguei — verificar</Link>}
-          </div>
-        )}
-        {s.status_solicitacao === 'Aprovado' && s.pedido?.status_pedido === 'Pago' && (
-          <div className="ed-acoes ed-acoes-esquerda">
+      {devendo && (
+        <PagamentoCard
+          valor={s.valor_total_final} temPedido={Boolean(s.pedido)} pagando={trabalhando}
+          verificando={pagamento.verificando} mensagem={pagamento.mensagem} onPagar={pagar} onVerificar={pagamento.verificar}
+        />
+      )}
+      {aprovada && paga && (
+        <>
+          <div className="ed-acoes ed-acoes-esquerda" style={{ marginBottom: 20 }}>
             <Link to={`/pedido/${s.pedido.id_pedido}/confirmacao`} className="btn btn-secondary">Ver comprovante</Link>
           </div>
-        )}
-        {s.status_solicitacao === 'Reprovado' && (
-          <div className="ed-acoes ed-acoes-esquerda"><Link to="/expositor/solicitar" className="btn btn-primary">Fazer nova solicitação</Link></div>
-        )}
-      </div>
+        </>
+      )}
+      {s.status_solicitacao === 'Reprovado' && (
+        <div className="ed-acoes ed-acoes-esquerda" style={{ marginBottom: 20 }}><Link to="/expositor/solicitar" className="btn btn-primary">Fazer nova solicitação</Link></div>
+      )}
 
       <section className="ed-painel" aria-labelledby="t-val" style={{ marginBottom: 20 }}>
         <h2 className="ed-titulo" id="t-val">Valores</h2>

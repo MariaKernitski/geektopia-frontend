@@ -1,27 +1,40 @@
 import { Link } from 'react-router-dom';
-import { FiAward, FiShoppingBag } from 'react-icons/fi';
+import { FiArrowRight, FiAward, FiShoppingBag, FiTag } from 'react-icons/fi';
 import '../style/AdminEdicao.css';
 import '../style/Parceiro.css';
 
-// Porta de entrada para quem quer participar da Geektopia além de visitar.
+const OPCOES = [
+  {
+    to: '/geektopia', Icone: FiTag, titulo: 'Quero visitar', acao: 'Ver eventos e ingressos',
+    texto: 'Só quer curtir? Escolha o evento, compre o seu ingresso e receba o QR code no perfil. Não precisa de mais nada.'
+  },
+  {
+    to: '/competidor', Icone: FiAward, titulo: 'Quero competir', acao: 'Ver minhas inscrições',
+    texto: 'Inscreva-se nas competições das edições e acompanhe a análise, o pagamento da taxa e a confirmação da vaga.'
+  },
+  {
+    to: '/expositor', Icone: FiShoppingBag, titulo: 'Quero expor', acao: 'Abrir a área do expositor',
+    texto: 'Tenha uma loja, um estande ou uma mesa de artista nas edições. Crie o perfil, peça o espaço e acompanhe a análise.'
+  }
+];
+
+// Porta de entrada: visitar (o caminho mais comum, sem burocracia), competir ou expor.
+// A pessoa pode fazer mais de um.
 export function Participar() {
   return (
-    <div className="ed-pagina ed-pagina-estreita">
-      <h1 className="ed-titulo-pagina" style={{ marginBottom: 6 }}>Participe da Geektopia</h1>
-      <p className="ed-subtitulo" style={{ marginBottom: 24 }}>Além de visitar, você pode expor o seu trabalho ou competir. Escolha como quer participar.</p>
+    <div className="ed-pagina">
+      <h1 className="ed-titulo-pagina" style={{ marginBottom: 6 }}>Como você quer participar?</h1>
+      <p className="ed-subtitulo" style={{ marginBottom: 24 }}>Escolha um caminho. Você pode fazer mais de um e voltar aqui quando quiser.</p>
 
       <div className="pt-cartoes-participar">
-        <Link to="/expositor" className="pt-cartao pt-cartao-link">
-          <FiShoppingBag size={28} aria-hidden="true" />
-          <span className="pt-cartao-titulo">Quero expor</span>
-          <span className="pt-cartao-texto">Tenha uma loja, um estande ou uma mesa de artista nas edições. Crie o perfil, peça o espaço e acompanhe a análise.</span>
-        </Link>
-
-        <Link to="/competidor" className="pt-cartao pt-cartao-link">
-          <FiAward size={28} aria-hidden="true" />
-          <span className="pt-cartao-titulo">Quero competir</span>
-          <span className="pt-cartao-texto">Inscreva-se nas competições das edições e acompanhe a análise, o pagamento da taxa e a confirmação da vaga.</span>
-        </Link>
+        {OPCOES.map(({ to, Icone, titulo, texto, acao }, i) => (
+          <Link key={to} to={to} className={`pt-cartao pt-cartao-link pt-cartao-grande ${i === 0 ? 'is-principal' : ''}`}>
+            <span className="pt-cartao-icone"><Icone size={26} aria-hidden="true" /></span>
+            <span className="pt-cartao-titulo">{titulo}</span>
+            <span className="pt-cartao-texto">{texto}</span>
+            <span className="pt-cartao-acao">{acao} <FiArrowRight aria-hidden="true" /></span>
+          </Link>
+        ))}
       </div>
     </div>
   );

@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { FiCheckCircle } from 'react-icons/fi';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import '../style/PedidoConfirmacao.css';
 
 // Tenta confirmar automaticamente algumas vezes antes de deixar só no botão
 // manual — o Mercado Pago às vezes leva alguns segundos para processar.
-const TENTATIVAS_AUTOMATICAS = 4;
+const TENTATIVAS_AUTOMATICAS = 15;
 const INTERVALO_MS = 4000;
 
 export function PedidoConfirmacao() {
@@ -103,7 +104,7 @@ export function PedidoConfirmacao() {
 
         {!erro && status === 'Pago' && (
           <>
-            <h2 className="confirmacao-title is-sucesso">Pagamento confirmado! 🎉</h2>
+            <h2 className="confirmacao-title is-sucesso"><FiCheckCircle aria-hidden="true" className="confirmacao-icone" /> Pagamento confirmado!</h2>
             <p className="confirmacao-sub">{mensagem || 'Seu pedido foi aprovado.'}</p>
             {resumo}
             <Link to={destino.to} className="btn btn-primary">{destino.rotulo}</Link>

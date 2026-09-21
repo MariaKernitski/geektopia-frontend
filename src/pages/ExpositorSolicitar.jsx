@@ -32,17 +32,15 @@ export function ExpositorSolicitar() {
   const { aviso, mostrar, limpar } = useAviso();
 
   const buscar = useCallback(async () => {
-    const [perfil, edicoes, espacos, minhas] = await Promise.all([
+    const [perfil, edicoes, minhas] = await Promise.all([
       api.get('/parceiros/meu-perfil'),
       api.get('/geektopia'),
-      api.get('/espacos'),
       api.get('/solicitacoes-espaco/minhas')
     ]);
     return {
       temPerfil: Boolean(perfil.data.papeis?.expositor),
       // Edição encerrada não recebe candidatura (regra do servidor).
       edicoes: edicoes.data.filter((e) => e.status_evento !== 'Encerrado'),
-      espacos: espacos.data,
       // Quem já tem candidatura aberta na edição não pode abrir outra.
       abertas: Object.fromEntries(
         minhas.data.filter((s) => s.status_solicitacao !== 'Reprovado').map((s) => [s.id_geektopia, s.id_solicitacao])
@@ -53,12 +51,20 @@ export function ExpositorSolicitar() {
 
   const [idEdicao, setIdEdicao] = useState('');
   const [idEspaco, setIdEspaco] = useState('');
+
+  // Os espaços são de cada edição: só carregamos (e mostramos) os da edição escolhida.
+  const buscarEspacos = useCallback(
+    () => (idEdicao ? api.get('/espacos', { params: { id_geektopia: idEdicao } }).then((r) => r.data) : Promise.resolve([])),
+    [idEdicao]
+  );
+  const { dados: espacosDaEdicao, atualizando: carregandoEspacos, erro: erroEspacos } = useCarga(buscarEspacos);
   const [extras, setExtras] = useState({ ajudantes: 0, mesas: 0, cadeiras: 0 });
   const [enviando, setEnviando] = useState(false);
 
   if (carregando) return <div className="ed-pagina"><p className="ed-vazio">Carregando...</p></div>;
 
-  const { temPerfil, edicoes = [], espacos = [], abertas = {} } = dados || {};
+  const { temPerfil, edicoes = [], abertas = {} } = dados || {};
+  const espacos = idEdicao ? (espacosDaEdicao ?? []) : [];
   const espaco = espacos.find((e) => String(e.id_espaco) === idEspaco);
   const total = espaco ? calcularPrevia(espaco, extras) : 0;
 
@@ -113,7 +119,7 @@ export function ExpositorSolicitar() {
               const jaTem = abertas[ed.id_geektopia];
               return (
                 <label key={ed.id_geektopia} className={`pt-cartao ${jaTem ? 'is-bloqueado' : ''}`}>
-                  <input type="radio" className="ed-sr-only" name="edicao" value={ed.id_geektopia} disabled={Boolean(jaTem)} checked={idEdicao === String(ed.id_geektopia)} onChange={(e) => setIdEdicao(e.target.value)} />
+                  <input type="radio" className="ed-sr-only" name="edicao" value={ed.id_geektopia} disabled={Boolean(jaTem)} checked={idEdicao === String(ed.id_geektopia)} onChange={(e) => { setIdEdicao(e.target.value); setIdEspaco(''); setExtras({ ajudantes: 0, mesas: 0, cadeiras: 0 }); }} />
                   <span className="pt-cartao-titulo">{ed.nome_edicao}</span>
                   <span className="pt-cartao-texto">
                     {ed.data_inicio ? formatarData(ed.data_inicio) : 'Data a definir'}{ed.local ? ` · ${ed.local}` : ''}
@@ -126,7 +132,8 @@ export function ExpositorSolicitar() {
 
           <fieldset className="pt-secao pt-cartoes">
             <legend className="pt-secao-titulo"><span className="pt-numero">2</span> Qual espaço?</legend>
-            {espacos.length === 0 && <p className="ed-vazio" style={{ gridColumn: '1 / -1' }}>Os espaços ainda não foram cadastrados pela organização. Volte em breve.</p>}
+            {!idEdicao && <p className="ed-ajuda" style={{ gridColumn: '1 / -1' }}>Escolha primeiro a edição: cada uma tem os seus espaços e preços.</p>}
+            {idEdicao && !carregandoEspacos && espacos.length === 0 && <p className="ed-vazio" style={{ gridColumn: '1 / -1' }}>{erroEspacos || 'A organização ainda não cadastrou espaços para esta edição. Volte em breve.'}</p>}
             {espacos.map((e) => (
               <label key={e.id_espaco} className="pt-cartao">
                 <input type="radio" className="ed-sr-only" name="espaco" value={e.id_espaco} checked={idEspaco === String(e.id_espaco)} onChange={(ev) => setIdEspaco(ev.target.value)} />

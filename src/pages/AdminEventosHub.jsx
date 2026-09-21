@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
-import { FiPlusCircle, FiList, FiShoppingBag } from 'react-icons/fi';
+import { FiPlusCircle, FiList } from 'react-icons/fi';
 import '../style/AdminHub.css';
 
 const OPCOES = [
   { to: '/admin/eventos/criar', Icone: FiPlusCircle, titulo: 'Criar evento' },
   { to: '/admin/eventos/lista', Icone: FiList, titulo: 'Gerenciar eventos' },
-  { to: '/admin/espacos', Icone: FiShoppingBag, titulo: 'Espaços de exposição' },
 ];
 
 export function AdminEventosHub() {

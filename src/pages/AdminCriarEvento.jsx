@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FiStar } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { ConfirmModal } from '../components/ConfirmModal';
@@ -70,7 +71,7 @@ export function AdminCriarEvento() {
 
       <header className="ed-cabecalho">
         <span className={`ed-selo ${ehPrincipal ? 'is-destaque' : ''}`}>
-          {ehPrincipal ? '★ Geektopia Principal' : 'Edição Pocket'}
+          {ehPrincipal && <FiStar aria-hidden="true" />} {ehPrincipal ? 'Geektopia Principal' : 'Edição Pocket'}
         </span>
         <h1 className="ed-titulo-pagina">Nova edição</h1>
         <p className="ed-passo">Passo 1 de {passos.length} · Dados do evento</p>

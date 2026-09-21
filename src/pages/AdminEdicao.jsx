@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FiStar } from 'react-icons/fi';
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { ConfirmModal } from '../components/ConfirmModal';
@@ -10,6 +11,7 @@ import { AbaProgramacao } from '../components/edicao/AbaProgramacao';
 import { AbaCompeticoes } from '../components/edicao/AbaCompeticoes';
 import { AbaInscricoes } from '../components/edicao/AbaInscricoes';
 import { AbaConvidados } from '../components/edicao/AbaConvidados';
+import { AbaEspacos } from '../components/edicao/AbaEspacos';
 import { AbaExpositores } from '../components/edicao/AbaExpositores';
 import { AbaFotos } from '../components/edicao/AbaFotos';
 import { AbaPublicacao } from '../components/edicao/AbaPublicacao';
@@ -23,6 +25,7 @@ const COMPONENTES = {
   competicoes: AbaCompeticoes,
   inscricoes: AbaInscricoes,
   convidados: AbaConvidados,
+  espacos: AbaEspacos,
   expositores: AbaExpositores,
   fotos: AbaFotos,
   publicacao: AbaPublicacao
@@ -157,7 +160,7 @@ function PainelDaEdicao() {
       <header className="ed-cabecalho">
         <div className="ed-selos">
           <span className={`ed-selo ${tipo === 'Principal' ? 'is-destaque' : ''}`}>
-            {tipo === 'Principal' ? '★ ' : ''}{ROTULO_TIPO[tipo]}
+            {tipo === 'Principal' && <FiStar aria-hidden="true" />} {ROTULO_TIPO[tipo]}
           </span>
           <span className={`ed-selo is-status-${evento.status_evento}`}>{ROTULO_STATUS[evento.status_evento]}</span>
         </div>

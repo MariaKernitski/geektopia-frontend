@@ -230,7 +230,7 @@
 
   .login-form-side {
     border-right: none;
-    border-bottom: 1px solid var(--border-color);  /* 👈 linha horizontal no lugar da vertical */
+    border-bottom: 1px solid var(--border-color);  /* linha horizontal no lugar da vertical */
   }
 
   /* "order: -1" faz o painel de marca aparecer ACIMA

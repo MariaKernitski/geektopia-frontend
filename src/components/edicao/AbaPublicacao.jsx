@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiAlertCircle, FiCheckCircle, FiCircle } from 'react-icons/fi';
+import { FiAlertCircle, FiCheckCircle, FiCircle, FiFlag } from 'react-icons/fi';
 import api from '../../services/api';
 import { ConfirmModal } from '../ConfirmModal';
 import { useAviso, mensagemDeErro } from '../../hooks/useAviso';
@@ -28,7 +28,6 @@ const TRANSICOES = {
   ],
   VendasEncerradas: [
     { para: 'VendasAbertas', rotulo: 'Reabrir vendas', variante: 'btn-primary', exigeLote: true },
-    { para: 'Encerrado', rotulo: 'Marcar como encerrado', variante: 'btn-secondary' },
     { para: 'Bloqueado', rotulo: 'Voltar para rascunho', variante: 'btn-secondary', confirmar: 'A edição some do site.' }
   ],
   Encerrado: [
@@ -137,6 +136,19 @@ export function AbaPublicacao({ evento, resumo, recarregarEvento }) {
             );
           })}
         </div>
+        {['VendasAbertas', 'VendasEncerradas'].includes(evento.status_evento) && (
+          <div className="ed-encerrar" role="group" aria-labelledby="ed-encerrar-t">
+            <FiFlag className="ed-encerrar-icone" aria-hidden="true" />
+            <div className="ed-encerrar-texto">
+              <strong id="ed-encerrar-t">O evento já aconteceu?</strong>
+              <span>Ao encerrar, o site passa a mostrar a edição como encerrada: some o cronômetro e o rótulo “próxima edição”, e as vendas ficam fechadas. Você pode reabrir depois, se precisar.</span>
+            </div>
+            <button type="button" className="btn btn-primary" disabled={trabalhando}
+              onClick={() => setConfirmar({ para: 'Encerrado', rotulo: 'Encerrar evento', confirmar: 'A edição continua no site como registro (edição encerrada), sem vendas e sem cronômetro. Ingressos já vendidos continuam válidos.' })}>
+              Encerrar evento
+            </button>
+          </div>
+        )}
         {!temLote && TRANSICOES[evento.status_evento].some((t) => t.exigeLote) && (
           <p className="ed-alerta" id="motivo-lote" role="status">Para abrir as vendas, cadastre ao menos um lote na aba Ingressos.</p>
         )}
@@ -148,7 +160,7 @@ export function AbaPublicacao({ evento, resumo, recarregarEvento }) {
           <Item ok={temLote}>Pelo menos um lote de ingressos <strong>(necessário para vender)</strong></Item>
           <Item ok={temDatas} aviso>Data e horário do evento</Item>
           <Item ok={Boolean(evento.local)} aviso>Local</Item>
-          <Item ok={Boolean(evento.banner_url)} aviso>Foto de capa</Item>
+          <Item ok={Boolean(evento.banner_url || evento.banner_fundo)} aviso>Foto de capa ou fundo colorido do banner</Item>
           <Item ok={Boolean(evento.descricao)} aviso>Descrição</Item>
           {ehPrincipalLike && (
             <>

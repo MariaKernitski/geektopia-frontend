@@ -84,3 +84,5 @@
   border-top: 1px dashed var(--border-color);
   font-weight: 600;
 }
+
+.confirmacao-icone { vertical-align: -0.15em; margin-right: 6px; }

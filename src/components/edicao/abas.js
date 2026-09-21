@@ -1,4 +1,4 @@
-import { FiAward, FiFlag, FiClock, FiEdit3, FiGlobe, FiImage, FiLayout, FiShoppingBag, FiTag, FiUsers } from 'react-icons/fi';
+import { FiAward, FiFlag, FiGrid, FiClock, FiEdit3, FiGlobe, FiImage, FiLayout, FiShoppingBag, FiTag, FiUsers } from 'react-icons/fi';
 
 // Catálogo das abas do painel de uma edição. Fica num arquivo próprio para o
 // painel (AdminEdicao) e o assistente de criação (AdminCriarEvento) lerem a
@@ -11,18 +11,19 @@ export const ABAS = {
   competicoes: { rotulo: 'Competições', Icone: FiAward },
   inscricoes: { rotulo: 'Inscrições', Icone: FiFlag },
   convidados: { rotulo: 'Convidados', Icone: FiUsers },
+  espacos: { rotulo: 'Espaços', Icone: FiGrid },
   expositores: { rotulo: 'Expositores', Icone: FiShoppingBag },
   fotos: { rotulo: 'Fotos', Icone: FiImage },
   publicacao: { rotulo: 'Publicação', Icone: FiGlobe }
 };
 
-const ABAS_PRINCIPAL = ['dados', 'vitrine', 'ingressos', 'programacao', 'competicoes', 'inscricoes', 'convidados', 'expositores', 'fotos', 'publicacao'];
+const ABAS_PRINCIPAL = ['dados', 'vitrine', 'ingressos', 'programacao', 'competicoes', 'inscricoes', 'convidados', 'espacos', 'expositores', 'fotos', 'publicacao'];
 
 // Pocket é a edição menor: em geral só ingressos, e às vezes alguns expositores
 // (o servidor aceita candidatura em qualquer edição publicada, então a diretoria
 // precisa da aba para analisá-las).
 export const ABAS_POR_TIPO = {
-  Pocket: ['dados', 'ingressos', 'expositores', 'fotos', 'publicacao'],
+  Pocket: ['dados', 'ingressos', 'espacos', 'expositores', 'publicacao'],
   Principal: ABAS_PRINCIPAL,
   // A edição passada continua editável até ser esquecida: programação, fotos,
   // convidados e expositores ainda recebem ajustes depois do evento.

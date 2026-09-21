@@ -15,7 +15,7 @@ export function situacaoDaInscricao(i) {
       return { rotulo: 'Confirmada', tipo: 'ok', passo: 'Inscrição confirmada. É só comparecer no dia da competição!' };
     }
     if (i.pedido) return { rotulo: 'Aguardando pagamento', tipo: 'aviso', passo: 'Aprovada! Falta concluir o pagamento da taxa para garantir a vaga.', pagar: true };
-    return { rotulo: 'Aprovada', tipo: 'aviso', passo: 'Aprovada! Pague a taxa de inscrição para garantir a vaga.', pagar: true };
+    return { rotulo: 'Aprovada', tipo: 'ok', passo: 'A organização aprovou a sua inscrição. Pague a taxa para garantir a vaga.', pagar: true };
   }
   return { rotulo: 'Em análise', tipo: 'neutro', passo: 'A organização está avaliando o seu material. Volte aqui para acompanhar.' };
 }

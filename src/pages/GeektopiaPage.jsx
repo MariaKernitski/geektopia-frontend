@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiCalendar, FiMapPin, FiShoppingBag, FiTag, FiAward } from 'react-icons/fi';
+import { FiArrowRight, FiCalendar, FiImage, FiInfo, FiMapPin, FiShoppingBag, FiTag, FiAward, FiUsers } from 'react-icons/fi';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
 import { CartaoCompeticao } from '../components/publico/CartaoCompeticao';
@@ -11,6 +11,7 @@ import { NavInterna } from '../components/publico/NavInterna';
 import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
 import { eventoPassou, horarioEvento, linkMapa, moeda, periodoEvento, seloDeData } from '../utils/evento';
 import { COR_PADRAO, ehHexValido } from '../utils/cores';
+import { cssDoFundo } from '../utils/fundo';
 import letreiro from '../assets/GEEKTOPIA-title.png';
 import '../style/Publico.css';
 import '../style/GeektopiaPage.css';
@@ -44,16 +45,17 @@ function Hero({ edicao, temSobre }) {
   const selo = seloClassificacao(edicao.classificacao_etaria);
   const horario = horarioEvento(edicao.data_inicio, edicao.data_fim);
   const mostraNome = edicao.nome_edicao.trim().toUpperCase() !== 'GEEKTOPIA';
+  const fundoCor = cssDoFundo(edicao.banner_fundo); // cor/gradiente escolhido no lugar da imagem
 
   return (
-    <section className="pb-hero vt-hero" aria-labelledby="vt-titulo">
-      {edicao.banner_url && <img className="vt-hero-fundo" src={edicao.banner_url} alt="" />}
+    <section className={`pb-hero vt-hero ${fundoCor ? 'vt-hero-cor' : ''}`} style={fundoCor ? { background: fundoCor } : undefined} aria-labelledby="vt-titulo">
+      {fundoCor ? <span className="vt-pixels" aria-hidden="true" /> : edicao.banner_url && <img className="vt-hero-fundo" src={edicao.banner_url} alt="" />}
       <div className="vt-hero-veu" />
 
       <div className="pb-container vt-hero-conteudo">
         <div className="vt-hero-texto">
           <p className="vt-eyebrow">
-            Próxima edição
+            {passou ? 'Edição encerrada' : 'Próxima edição'}
             {venda.tipo === 'ok' && <span className="pb-chip is-destaque">Vendas abertas</span>}
           </p>
 
@@ -253,13 +255,13 @@ function Galeria({ fotos }) {
   return (
     <section className="pb-secao is-escura" id="galeria" aria-labelledby="vt-gal-t">
       <div className="pb-container">
-        <CabecalhoSecao id="vt-gal-t" titulo="Galeria das edições anteriores" texto="Um gostinho do que já rolou. Arraste ou use as setas." />
+        <CabecalhoSecao id="vt-gal-t" titulo="Galeria de fotos" texto="Um gostinho do que já rolou na Geektopia. Arraste ou use as setas." />
         <Carrossel
-          rotulo="Fotos das edições anteriores" itens={fotos.map((f) => ({ ...f, id: f.id_foto }))} classeItem="vt-foto-item"
+          rotulo="Fotos da Geektopia" autoplay={5000} itens={fotos.map((f) => ({ ...f, id: f.id_foto }))} classeItem="vt-foto-item"
           renderItem={(f) => (
             <figure className="vt-foto">
               <img src={f.url_foto} alt={f.legenda || `Foto da ${f.edicao}`} loading="lazy" />
-              <figcaption><strong>{f.edicao}</strong>{f.legenda && <span>{f.legenda}</span>}</figcaption>
+              {f.legenda && <figcaption><span>{f.legenda}</span></figcaption>}
             </figure>
           )}
         />
@@ -320,7 +322,7 @@ function CartaoPocket({ p }) {
 
   return (
     <Link to={`/geektopia/${p.id_geektopia}`} className={`pb-cartao vt-pocket ${venda.tipo === 'neutro' && eventoPassou(p) ? 'is-passado' : ''}`}>
-      <div className="vt-pocket-capa">
+      <div className="vt-pocket-capa" style={!p.banner_url && cssDoFundo(p.banner_fundo) ? { background: cssDoFundo(p.banner_fundo) } : undefined}>
         {p.banner_url ? <img src={p.banner_url} alt="" loading="lazy" /> : <img className="vt-pocket-letreiro" src={letreiro} alt="" />}
         <span className={`pb-chip vt-pocket-status is-${venda.tipo === 'neutro' ? 'escuro' : venda.tipo}`}>{venda.texto}</span>
         {selo && <span className="vt-selo-data" aria-hidden="true"><strong>{selo.dia}</strong>{selo.mes}</span>}
@@ -338,28 +340,15 @@ function CartaoPocket({ p }) {
   );
 }
 function Pockets({ pockets }) {
-  const [verEncerrados, setVerEncerrados] = useState(false);
-  const proximos = pockets.filter((p) => !eventoPassou(p)).sort((a, b) => new Date(a.data_inicio || 0) - new Date(b.data_inicio || 0));
-  const passados = pockets.filter((p) => eventoPassou(p));
-
   return (
     <section className="pb-secao is-alt" id="pockets" aria-labelledby="vt-pk-t">
       <div className="pb-container">
         <CabecalhoSecao id="vt-pk-t" titulo="Geektopia Pocket" texto="Edições menores ao longo do ano. Confira data, local e ingressos e escolha a sua." />
 
-        {proximos.length === 0 ? (
+        {pockets.length === 0 ? (
           <p className="pb-vazio">Nenhum Pocket aberto agora. Em breve novas datas por aqui.</p>
         ) : (
-          <ul className="vt-pockets">{proximos.map((p) => <li key={p.id_geektopia}><CartaoPocket p={p} /></li>)}</ul>
-        )}
-
-        {passados.length > 0 && (
-          <div className="vt-encerrados">
-            <button type="button" className="btn btn-secondary" onClick={() => setVerEncerrados((v) => !v)} aria-expanded={verEncerrados}>
-              {verEncerrados ? 'Ocultar' : 'Ver'} edições encerradas ({passados.length})
-            </button>
-            {verEncerrados && <ul className="vt-pockets">{passados.map((p) => <li key={p.id_geektopia}><CartaoPocket p={p} /></li>)}</ul>}
-          </div>
+          <ul className="vt-pockets">{pockets.map((p) => <li key={p.id_geektopia}><CartaoPocket p={p} /></li>)}</ul>
         )}
       </div>
     </section>
@@ -373,19 +362,23 @@ export function GeektopiaPage() {
 
   const edicao = dados?.destaque || null;
   const galeria = dados?.galeria ?? [];
-  const pockets = dados?.pockets ?? [];
+  // Só os Pockets que ainda vão acontecer, do mais próximo ao mais distante: os encerrados saem da página.
+  const pockets = useMemo(
+    () => (dados?.pockets ?? []).filter((p) => !eventoPassou(p)).sort((a, b) => new Date(a.data_inicio || 8.64e15) - new Date(b.data_inicio || 8.64e15)),
+    [dados]
+  );
 
   const temSobreEdicao = Boolean(edicao && (edicao.texto_sobre || edicao.descricao || (Array.isArray(edicao.destaques) && edicao.destaques.length > 0)));
   const secoes = useMemo(() => {
     const lista = [];
     if (edicao) {
-      if (temSobreEdicao) lista.push({ id: 'sobre', rotulo: 'Sobre' });
-      if (edicao.convidados.length) lista.push({ id: 'convidados', rotulo: 'Convidados' });
-      if (galeria.length) lista.push({ id: 'galeria', rotulo: 'Galeria' });
-      if (edicao.expositores.length) lista.push({ id: 'expositores', rotulo: 'Expositores' });
-      if (edicao.competicoes.length) lista.push({ id: 'competicoes', rotulo: 'Competições' });
+      if (temSobreEdicao) lista.push({ id: 'sobre', rotulo: 'Sobre', Icone: FiInfo });
+      if (edicao.convidados.length) lista.push({ id: 'convidados', rotulo: 'Convidados', Icone: FiUsers });
+      if (galeria.length) lista.push({ id: 'galeria', rotulo: 'Galeria', Icone: FiImage });
+      if (edicao.expositores.length) lista.push({ id: 'expositores', rotulo: 'Expositores', Icone: FiShoppingBag });
+      if (edicao.competicoes.length) lista.push({ id: 'competicoes', rotulo: 'Competições', Icone: FiAward });
     }
-    if (pockets.length) lista.push({ id: 'pockets', rotulo: 'Pockets' });
+    if (pockets.length) lista.push({ id: 'pockets', rotulo: 'Pockets', Icone: FiCalendar });
     return lista;
   }, [edicao, temSobreEdicao, galeria.length, pockets.length]);
 

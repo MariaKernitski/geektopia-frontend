@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { usePendencias } from '../hooks/usePendencias';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
 import '../style/Header.css';
 
@@ -8,6 +9,8 @@ export function Header() {
   const userRaw = localStorage.getItem('@Geektopia:user');
   const user = userRaw ? JSON.parse(userRaw) : null;
   const isAdmin = !!user?.administrador;
+
+  const { total: pendentes } = usePendencias(isAdmin, location.pathname);
 
   const handleLogout = () => {
     localStorage.removeItem('@Geektopia:token');
@@ -34,7 +37,10 @@ export function Header() {
         {user ? (
           <>
             {isAdmin && (
-              <Link to="/admin" className="btn btn-secondary">Painel ADM</Link>
+              <Link to="/admin" className="btn btn-secondary header-admin">
+                Painel ADM
+                {pendentes > 0 && <span className="header-pendente" aria-label={`${pendentes} solicitações em análise`}>{pendentes}</span>}
+              </Link>
             )}
             {/* Administrador só tem o painel: participar e perfil são de conta cliente. */}
             {!isAdmin && (

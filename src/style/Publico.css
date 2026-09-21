@@ -6,7 +6,7 @@
 
 .pb-container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 
-.pb-secao { padding: 72px 0; scroll-margin-top: 72px; }
+.pb-secao { padding: 72px 0; scroll-margin-top: 140px; }
 .pb-secao.is-alt { background: var(--bg-alt-color); }
 .pb-secao.is-escura { background: var(--main-txt-color); color: #fff; }
 
@@ -134,13 +134,14 @@ a.pb-cartao:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(22,
 }
 
 /* ---------------- NAVEGAÇÃO INTERNA ---------------- */
-.pb-nav { position: sticky; top: 64px; z-index: 9; background: rgba(252, 250, 246, 0.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-color); }
-.pb-nav-interno { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
-.pb-nav ul { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.pb-nav { position: sticky; top: 64px; z-index: 9; background: var(--surface-color); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 14px rgba(22, 21, 26, 0.08); }
+.pb-nav-interno { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+.pb-nav ul { display: flex; gap: 8px; margin: 0; padding: 10px 2px; list-style: none; overflow-x: auto; scrollbar-width: none; }
 .pb-nav ul::-webkit-scrollbar { display: none; }
-.pb-nav li a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; font-family: var(--font-title); font-weight: 500; font-size: 14.5px; color: var(--soft-txt-color); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
-.pb-nav li a:hover { color: var(--main-txt-color); }
-.pb-nav li a.is-ativa { color: var(--main-txt-color); font-weight: 600; border-bottom-color: var(--cor-edicao, var(--light-yellow)); }
+.pb-nav li a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--border-color); background: var(--surface-color); font-family: var(--font-title); font-weight: 600; font-size: 15px; color: var(--main-txt-color); text-decoration: none; white-space: nowrap; transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease; }
+.pb-nav li a svg { font-size: 18px; flex-shrink: 0; }
+.pb-nav li a:hover { border-color: var(--main-txt-color); background: var(--bg-alt-color); }
+.pb-nav li a.is-ativa { background: var(--cor-edicao, var(--light-yellow)); border-color: var(--main-txt-color); }
 .pb-nav-cta { flex-shrink: 0; padding: 8px 20px; font-size: 14px; }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
@@ -155,10 +156,16 @@ html { scroll-behavior: smooth; }
 a.pb-cartao:focus-visible { outline: 3px solid var(--dark-cyan); outline-offset: 3px; }
 
 /* ---------- Aviso de menores (Geektopia Principal) ---------- */
-.pb-aviso-menores { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 16px 20px; background: #FBF0CF; border-bottom: 1px solid var(--light-yellow); color: var(--main-txt-color); }
-.pb-aviso-menores-icone { flex-shrink: 0; font-size: 26px; color: #6B4E00; }
+/* Tom informativo (ciano): é uma orientação permanente, não um alerta de erro. */
+.pb-aviso-menores { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 16px 24px; background: #E4F6F5; border-bottom: 1px solid #A9DEDB; color: var(--main-txt-color); }
+.pb-aviso-menores-icone { flex-shrink: 0; font-size: 26px; color: var(--dark-cyan); }
 .pb-aviso-menores-texto { flex: 1 1 340px; min-width: 0; }
 .pb-aviso-menores-texto strong { font-family: var(--font-title); font-size: 15.5px; }
 .pb-aviso-menores-texto p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; }
-.pb-aviso-menores-acao { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
-.pb-aviso-menores.is-caixa { border: 1px solid var(--light-yellow); border-radius: 8px; }
+.pb-aviso-menores-acao { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; background: var(--surface-color); border-color: var(--dark-cyan); color: var(--dark-cyan); }
+.pb-aviso-menores-acao:hover:not(:disabled) { background: var(--dark-cyan); color: #fff; }
+
+/* Botão de pausar a rotação automática do carrossel */
+.pb-carrossel-pausa { display: inline-flex; align-items: center; gap: 8px; margin: 6px 0 0; padding: 6px 14px; min-height: 36px; border: 1.5px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; opacity: 0.85; }
+.pb-carrossel-pausa:hover { opacity: 1; background: rgba(128, 128, 128, 0.15); }
+.is-escura .pb-carrossel-pausa { color: #fff; }

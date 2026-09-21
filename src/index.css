@@ -5,6 +5,12 @@
   box-sizing: border-box;
 }
 
+/* Reserva o espaço da barra de rolagem: sem isso, páginas curtas (sem barra) e longas (com barra)
+   têm larguras diferentes e o cabeçalho "pula" alguns pixels ao trocar de página. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);

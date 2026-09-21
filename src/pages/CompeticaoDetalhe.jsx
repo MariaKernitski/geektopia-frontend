@@ -118,7 +118,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
   const modalidade = competicao.modalidade;
   const [form, setForm] = useState({
     nickname: competidor?.nickname_competidor || '',
-    nome_equipe: '', integrantes: '', link_equipe: '', portfolio: '', audio: '', aceite: false
+    nome_equipe: '', integrantes: '', link_equipe: '', portfolio: '', audio: '', redes: '', aceite: false
   });
   const [erros, setErros] = useState({});
   const [enviando, setEnviando] = useState(false);
@@ -141,6 +141,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
       if (modalidade === 'Grupo' && (qtd < 2 || qtd > 9)) n.integrantes = 'Informe de 2 a 9 integrantes além de você, um por linha.';
       if (form.link_equipe.trim() && !ehUrl(form.link_equipe)) n.link_equipe = 'O link deve começar com http:// ou https://.';
     }
+    if (form.redes.trim() && !ehUrl(form.redes)) n.redes = 'O link deve começar com http:// ou https://.';
     if (form.portfolio.trim() && !ehUrl(form.portfolio)) n.portfolio = 'O link deve começar com http:// ou https://.';
     if (form.audio.trim() && !ehUrl(form.audio)) n.audio = 'O link deve começar com http:// ou https://.';
     if (!form.aceite) n.aceite = 'Confirme que leu as informações da competição.';
@@ -150,7 +151,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
     setEnviando(true);
     try {
       // Quem nunca competiu ganha o perfil de competidor aqui mesmo, sem etapa à parte.
-      if (!competidor) await api.post('/parceiros/competidor', { nickname_competidor: form.nickname.trim() });
+      if (!competidor) await api.post('/parceiros/competidor', { nickname_competidor: form.nickname.trim(), link_redes_sociais: form.redes.trim() || undefined });
 
       const corpo = {
         id_competicao: competicao.id_competicao,
@@ -180,7 +181,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
       {reprovada && <p className="ed-ajuda-topo">Sua inscrição anterior nesta competição não foi aprovada. Você pode enviar uma nova.</p>}
       <p className="ed-ajuda-topo" style={{ marginTop: 0 }}>
         Sua inscrição vai para a análise da organização{taxa > 0 ? `; se for aprovada, você paga a taxa de ${moeda(taxa)} para garantir a vaga` : ' e é gratuita'}.
-        Quem tem menos de 18 anos precisa do termo de autorização assinado por um responsável na entrada do evento.
+        A organização vê o seu nome, e-mail e telefone do cadastro para falar com você se precisar. Quem tem menos de 18 anos precisa do termo de autorização assinado por um responsável na entrada do evento.
       </p>
       <AvisoBox aviso={avisoDaTela(aviso, null)} />
 
@@ -191,6 +192,14 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
             <input id="i-nickname" name="nickname" value={form.nickname} onChange={alterar} maxLength={30} {...aria('nickname')} />
             {campoErro('nickname')}
             <small className="ed-ajuda">É como você aparece nas chaves e no placar. Fica salvo para as próximas competições.</small>
+          </div>
+        )}
+        {!competidor && (
+          <div className="ed-campo">
+            <label htmlFor="i-redes">Instagram ou outra rede social</label>
+            <input id="i-redes" name="redes" type="url" value={form.redes} onChange={alterar} placeholder="https://instagram.com/..." {...aria('redes')} />
+            {campoErro('redes')}
+            <small className="ed-ajuda">Ajuda a organização a conhecer você. Fica salvo no seu perfil de competidor.</small>
           </div>
         )}
 
