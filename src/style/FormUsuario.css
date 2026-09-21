@@ -1,0 +1,85 @@
+/* Formulário de usuário em etapas (cadastro e admin). Complementa AdminEdicao.css (.ed-*). */
+
+.fu-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 24px;
+}
+
+.fu-aba {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  min-height: 44px;
+  box-sizing: border-box;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  font-family: var(--font-title);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--soft-txt-color);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.fu-aba:hover:not(.is-bloqueada) { color: var(--main-txt-color); }
+.fu-aba.is-atual { color: var(--main-txt-color); font-weight: 600; border-bottom-color: var(--light-yellow); }
+.fu-aba.is-erro { color: #B02545; }
+.fu-aba.is-erro.is-atual { border-bottom-color: var(--dark-red); }
+.fu-aba.is-bloqueada { opacity: 0.55; cursor: not-allowed; }
+.fu-aba:focus-visible { outline: 2px solid var(--dark-cyan); outline-offset: 2px; }
+
+.fu-aba-marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-alt-color);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--main-txt-color);
+}
+.fu-aba.is-atual .fu-aba-marca { background: var(--light-yellow); }
+.fu-aba.is-erro .fu-aba-marca { background: var(--light-red); color: #B02545; }
+.fu-aba:not(.is-atual):not(.is-erro):not(.is-bloqueada) .fu-aba-marca:has(svg) { background: var(--light-green); color: var(--dark-green); }
+
+.fu-aviso {
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  background: var(--light-red);
+  color: #B02545;
+  border: 1px solid rgba(228, 64, 95, 0.35);
+}
+
+.fu-radios { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 12px; }
+.fu-doc .ed-campo { margin-bottom: 12px; }
+
+.fu-checklist { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 4px 16px; }
+.fu-checklist li { font-size: 12.5px; color: var(--soft-txt-color); }
+.fu-checklist li.is-valido { color: var(--dark-green); }
+
+.fu-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+.fu-rodape > div { display: flex; gap: 12px; }
+
+@media (max-width: 640px) {
+  .fu-aba { flex: 1 1 100%; }
+  .fu-rodape { flex-direction: column-reverse; align-items: stretch; }
+  .fu-rodape > div { flex-direction: column-reverse; }
+}
