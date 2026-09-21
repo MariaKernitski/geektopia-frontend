@@ -3,7 +3,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 // Mesmos limites do backend (uploadMiddleware). Validar aqui poupa o envio de
 // um arquivo que o servidor recusaria de qualquer jeito.
 const TIPOS = ['image/jpeg', 'image/png', 'image/webp'];
-const TAMANHO_MAXIMO = 4 * 1024 * 1024;
+const TAMANHO_MAXIMO = 15 * 1024 * 1024;
 
 // Seletor de imagem com pré-visualização.
 //   urlAtual  imagem já salva (mostrada até escolherem outra)
@@ -28,7 +28,7 @@ export function ImagemUpload({ rotulo, urlAtual, arquivo, onEscolher, onRemover,
       return;
     }
     if (file.size > TAMANHO_MAXIMO) {
-      setErro('A imagem passa de 4MB. Reduza o tamanho e tente de novo.');
+      setErro('A imagem passa de 15MB. Reduza o tamanho e tente de novo.');
       return;
     }
     setErro('');

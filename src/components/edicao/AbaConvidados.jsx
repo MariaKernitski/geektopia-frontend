@@ -144,7 +144,7 @@ export function AbaConvidados({ evento, recarregarResumo, marcarAlterado }) {
           arquivo={foto}
           onEscolher={(f) => { setFoto(f); if (f) setRemoverFoto(false); marcarAlterado(true); }}
           onRemover={editando ? () => { setRemoverFoto(true); marcarAlterado(true); } : undefined}
-          ajuda="Rosto centralizado funciona melhor: a foto é recortada em quadrado. JPEG, PNG ou WEBP, até 4MB."
+          ajuda="Rosto centralizado funciona melhor: a foto é recortada em quadrado. JPEG, PNG ou WEBP, até 15MB."
         />
         <div className="ed-acoes ed-acoes-esquerda">
           <button type="submit" className="btn btn-primary" disabled={enviando}>
