@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contarFiltros, descricaoFiltros, montarConsulta, paraCsv } from '../src/utils/relatorio';
+import { comPercentual, contarFiltros, descricaoFiltros, filtrosAtivos, montarConsulta, paraCsv } from '../src/utils/relatorio';
 
 describe('relatório', () => {
   it('monta a consulta só com o que foi preenchido', () => {
@@ -19,5 +19,10 @@ describe('relatório', () => {
     const l = descricaoFiltros({ id_geektopia: '3', cidade: 'Castro', base: 'participantes' }, { edicoes: [{ id: 3, nome: 'Geektopia 5' }] });
     expect(l.flat()).toContain('Geektopia 5');
     expect(l.flat()).toContain('Castro');
+  });
+  it('lista os filtros ativos com nome legível e formata percentuais', () => {
+    const a = filtrosAtivos({ id_geektopia: '3', genero: 'Feminino', cidade: '', base: 'participantes' }, { edicoes: [{ id: 3, nome: 'Geektopia 5' }] });
+    expect(a).toEqual([{ chave: 'id_geektopia', rotulo: 'Edição', valor: 'Geektopia 5' }, { chave: 'genero', rotulo: 'Gênero', valor: 'Feminino' }]);
+    expect(comPercentual([{ rotulo: 'Feminino', percentual: 52.34 }])).toEqual(['Feminino · 52,3%']);
   });
 });

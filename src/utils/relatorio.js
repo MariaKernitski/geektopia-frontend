@@ -1,6 +1,6 @@
 // Apoio do painel de relatórios: filtros da URL/consulta e exportação para planilha (CSV).
 
-export const FILTROS_VAZIOS = { id_geektopia: '', de: '', ate: '', base: 'participantes', estado: '', cidade: '', genero: '', faixa: '' };
+export const FILTROS_VAZIOS = { id_geektopia: '', de: '', ate: '', base: 'participantes', estado: '', cidade: '', genero: '', sexualidade: '', faixa: '' };
 
 // Só manda para a API o que foi preenchido.
 export function montarConsulta(filtros) {
@@ -42,7 +42,20 @@ export function descricaoFiltros(filtros, opcoes) {
     ['Estado', filtros.estado || 'Todos'],
     ['Cidade', filtros.cidade || 'Todas'],
     ['Gênero', filtros.genero || 'Todos'],
+    ['Sexualidade', filtros.sexualidade || 'Todas'],
     ['Faixa etária', filtros.faixa || 'Todas']
   ];
   return [['Relatório NEXUS / CCPOP', `Gerado em ${new Date().toLocaleString('pt-BR')}`], ...partes.map(([a, b]) => [a, b]), []];
 }
+
+export const ROTULO_FILTRO = { id_geektopia: 'Edição', de: 'Compra de', ate: 'Compra até', estado: 'Estado', cidade: 'Cidade', genero: 'Gênero', sexualidade: 'Sexualidade', faixa: 'Faixa etária' };
+
+// Filtros ativos como lista [{ chave, rotulo, valor }] para mostrar como etiquetas removíveis.
+export function filtrosAtivos(filtros, opcoes) {
+  return Object.entries(ROTULO_FILTRO)
+    .filter(([k]) => filtros[k])
+    .map(([k, rotulo]) => ({ chave: k, rotulo, valor: k === 'id_geektopia' ? (opcoes?.edicoes?.find((e) => String(e.id) === String(filtros[k]))?.nome || filtros[k]) : filtros[k] }));
+}
+
+// "Feminino · 52,3%": nome com o percentual, para a legenda dos gráficos de pizza.
+export const comPercentual = (lista) => lista.map((x) => `${x.rotulo} · ${Number(x.percentual).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`);
