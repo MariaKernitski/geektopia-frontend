@@ -242,7 +242,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
         <div className="ed-campo">
           <label className="ed-check">
             <input id="i-aceite" type="checkbox" name="aceite" checked={form.aceite} onChange={alterar} {...aria('aceite')} />
-            Li a descrição e o regulamento da competição.
+            Li a descrição e o regulamento da competição e concordo com as <a href="/termos#participacao" target="_blank" rel="noopener noreferrer">regras de participação</a>.
           </label>
           {campoErro('aceite')}
         </div>

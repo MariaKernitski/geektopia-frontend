@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCarga } from '../hooks/useCarga';
 import { Link } from 'react-router-dom';
-import { FiActivity, FiAward, FiBarChart2, FiDollarSign, FiDownload, FiMapPin, FiPrinter, FiRefreshCw, FiShoppingBag, FiTag, FiUsers } from 'react-icons/fi';
+import { FiActivity, FiAward, FiBarChart2, FiDollarSign, FiDownload, FiMapPin, FiPrinter, FiRefreshCw, FiShoppingBag, FiTag, FiUsers, FiX } from 'react-icons/fi';
 import api from '../services/api';
 import { Grafico } from '../components/dashboard/Grafico';
 import { CartaoDados } from '../components/dashboard/CartaoDados';
-import { FILTROS_VAZIOS, contarFiltros, descricaoFiltros, montarConsulta } from '../utils/relatorio';
+import { FILTROS_VAZIOS, comPercentual, contarFiltros, descricaoFiltros, filtrosAtivos, montarConsulta } from '../utils/relatorio';
 import { baixarXlsx } from '../utils/xlsx';
 import { moeda } from '../utils/evento';
 import '../style/Dashboard.css';
@@ -55,6 +55,8 @@ export function Dashboard() {
   }, [imprimindo]);
 
   const alterar = (k, v) => setFiltros((f) => ({ ...f, [k]: v }));
+  // Clicar numa barra ou fatia aplica aquele valor como filtro (item.filtro vem pronto do servidor).
+  const filtrarPor = (lista) => (i) => { const f = lista[i]?.filtro; if (f) setFiltros((x) => ({ ...x, ...f }));  };
   const opcoes = dados?.opcoes;
   const ativos = contarFiltros(filtros);
   const r = dados?.resumo;
@@ -82,6 +84,7 @@ export function Dashboard() {
     planilha('Público por cidade', CAB_PUBLICO, linhasPublico(dados.publico.por_cidade)),
     planilha('Público por estado', CAB_PUBLICO, linhasPublico(dados.publico.por_estado)),
     planilha('Público por gênero', CAB_PUBLICO, linhasPublico(dados.publico.por_genero)),
+    planilha('Público por sexualidade', CAB_PUBLICO, linhasPublico(dados.publico.por_sexualidade)),
     planilha('Público por faixa etária', CAB_PUBLICO, linhasPublico(dados.publico.por_faixa_etaria))
   ]);
 
@@ -91,6 +94,7 @@ export function Dashboard() {
     ['Público por cidade', () => baixarPublico('publico-cidade', dados.publico.por_cidade)],
     ['Público por estado', () => baixarPublico('publico-estado', dados.publico.por_estado)],
     ['Público por gênero', () => baixarPublico('publico-genero', dados.publico.por_genero)],
+    ['Público por sexualidade', () => baixarPublico('publico-sexualidade', dados.publico.por_sexualidade)],
     ['Público por faixa etária', () => baixarPublico('publico-faixa-etaria', dados.publico.por_faixa_etaria)],
     ['Vendas por edição', () => baixarVendas('vendas-edicao', dados.vendas.por_edicao)],
     ['Vendas por lote', () => baixarVendas('vendas-lote', dados.vendas.por_lote)],
@@ -123,62 +127,84 @@ export function Dashboard() {
           </div>
         </header>
 
-        <section className="dash-filtros" aria-label="Filtros do relatório">
-          <div className="dash-campo">
-            <label htmlFor="f-base">Base</label>
-            <select id="f-base" value={filtros.base} onChange={(e) => alterar('base', e.target.value)}>
-              <option value="participantes">Participantes (quem tem ingresso)</option>
-              <option value="cadastros">Todos os usuários cadastrados</option>
-            </select>
+        <details className="dash-filtros" open>
+          <summary>Filtros {ativos > 0 && <span className="dash-filtros-qtd">{ativos}</span>}</summary>
+          <div className="dash-filtros-grupos">
+            <fieldset className="dash-grupo">
+              <legend>O que analisar</legend>
+              <div className="dash-campo">
+                <label htmlFor="f-base">Base</label>
+                <select id="f-base" value={filtros.base} onChange={(e) => alterar('base', e.target.value)}>
+                  <option value="participantes">Participantes (quem tem ingresso)</option>
+                  <option value="cadastros">Todos os usuários cadastrados</option>
+                </select>
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-edicao">Edição</label>
+                <select id="f-edicao" value={filtros.id_geektopia} onChange={(e) => alterar('id_geektopia', e.target.value)} disabled={filtros.base === 'cadastros'}>
+                  <option value="">Todas</option>
+                  {(opcoes?.edicoes ?? []).map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}
+                </select>
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-de">Compra de</label>
+                <input id="f-de" type="date" value={filtros.de} max={filtros.ate || undefined} onChange={(e) => alterar('de', e.target.value)} disabled={filtros.base === 'cadastros'} />
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-ate">até</label>
+                <input id="f-ate" type="date" value={filtros.ate} min={filtros.de || undefined} onChange={(e) => alterar('ate', e.target.value)} disabled={filtros.base === 'cadastros'} />
+              </div>
+            </fieldset>
+            <fieldset className="dash-grupo">
+              <legend>Perfil do público</legend>
+              <div className="dash-campo">
+                <label htmlFor="f-estado">Estado</label>
+                <select id="f-estado" value={filtros.estado} onChange={(e) => alterar('estado', e.target.value)}>
+                  <option value="">Todos</option>
+                  {(opcoes?.estados ?? []).map((e) => <option key={e} value={e}>{e}</option>)}
+                </select>
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-cidade">Cidade</label>
+                <select id="f-cidade" value={filtros.cidade} onChange={(e) => alterar('cidade', e.target.value)}>
+                  <option value="">Todas</option>
+                  {(opcoes?.cidades ?? []).map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-genero">Gênero</label>
+                <select id="f-genero" value={filtros.genero} onChange={(e) => alterar('genero', e.target.value)}>
+                  <option value="">Todos</option>
+                  {(opcoes?.generos ?? []).map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-sexualidade">Sexualidade</label>
+                <select id="f-sexualidade" value={filtros.sexualidade} onChange={(e) => alterar('sexualidade', e.target.value)}>
+                  <option value="">Todas</option>
+                  {(opcoes?.sexualidades ?? []).map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+              <div className="dash-campo">
+                <label htmlFor="f-faixa">Faixa etária</label>
+                <select id="f-faixa" value={filtros.faixa} onChange={(e) => alterar('faixa', e.target.value)}>
+                  <option value="">Todas</option>
+                  {(opcoes?.faixas ?? []).map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+            </fieldset>
           </div>
-          <div className="dash-campo">
-            <label htmlFor="f-edicao">Edição</label>
-            <select id="f-edicao" value={filtros.id_geektopia} onChange={(e) => alterar('id_geektopia', e.target.value)} disabled={filtros.base === 'cadastros'}>
-              <option value="">Todas</option>
-              {(opcoes?.edicoes ?? []).map((e) => <option key={e.id} value={e.id}>{e.nome}</option>)}
-            </select>
-          </div>
-          <div className="dash-campo">
-            <label htmlFor="f-de">Compra de</label>
-            <input id="f-de" type="date" value={filtros.de} max={filtros.ate || undefined} onChange={(e) => alterar('de', e.target.value)} disabled={filtros.base === 'cadastros'} />
-          </div>
-          <div className="dash-campo">
-            <label htmlFor="f-ate">até</label>
-            <input id="f-ate" type="date" value={filtros.ate} min={filtros.de || undefined} onChange={(e) => alterar('ate', e.target.value)} disabled={filtros.base === 'cadastros'} />
-          </div>
-          <div className="dash-campo">
-            <label htmlFor="f-estado">Estado</label>
-            <select id="f-estado" value={filtros.estado} onChange={(e) => alterar('estado', e.target.value)}>
-              <option value="">Todos</option>
-              {(opcoes?.estados ?? []).map((e) => <option key={e} value={e}>{e}</option>)}
-            </select>
-          </div>
-          <div className="dash-campo">
-            <label htmlFor="f-cidade">Cidade</label>
-            <select id="f-cidade" value={filtros.cidade} onChange={(e) => alterar('cidade', e.target.value)}>
-              <option value="">Todas</option>
-              {(opcoes?.cidades ?? []).map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          <div className="dash-campo">
-            <label htmlFor="f-genero">Gênero</label>
-            <select id="f-genero" value={filtros.genero} onChange={(e) => alterar('genero', e.target.value)}>
-              <option value="">Todos</option>
-              {(opcoes?.generos ?? []).map((g) => <option key={g} value={g}>{g}</option>)}
-            </select>
-          </div>
-          <div className="dash-campo">
-            <label htmlFor="f-faixa">Faixa etária</label>
-            <select id="f-faixa" value={filtros.faixa} onChange={(e) => alterar('faixa', e.target.value)}>
-              <option value="">Todas</option>
-              {(opcoes?.faixas ?? []).map((g) => <option key={g} value={g}>{g}</option>)}
-            </select>
-          </div>
-          <div className="dash-filtros-rodape">
-            <span aria-live="polite">{carregando ? 'Atualizando...' : ativos > 0 ? `${ativos} filtro(s) ativo(s)` : 'Sem filtros: mostrando tudo'}</span>
-            {ativos > 0 && <button type="button" className="btn btn-secondary dash-btn-peq" onClick={() => setFiltros((f) => ({ ...FILTROS_VAZIOS, base: f.base }))}><FiRefreshCw aria-hidden="true" /> Limpar filtros</button>}
-          </div>
-        </section>
+        </details>
+
+        <div className="dash-etiquetas" aria-live="polite">
+          <span className="dash-etiquetas-titulo">{carregando ? 'Atualizando...' : ativos > 0 ? 'Filtrando por:' : 'Sem filtros: mostrando tudo. Clique num gráfico para filtrar.'}</span>
+          {filtrosAtivos(filtros, opcoes).map((f) => (
+            <button key={f.chave} type="button" className="dash-etiqueta" onClick={() => alterar(f.chave, '')} aria-label={`Remover filtro ${f.rotulo}: ${f.valor}`}>
+              <strong>{f.rotulo}:</strong> {f.valor} <FiX aria-hidden="true" />
+            </button>
+          ))}
+          {ativos > 0 && <button type="button" className="btn btn-secondary dash-btn-peq" onClick={() => setFiltros((f) => ({ ...FILTROS_VAZIOS, base: f.base }))}><FiRefreshCw aria-hidden="true" /> Limpar tudo</button>}
+        </div>
 
         {erro && <div className="dash-erro" role="alert">{erro} <button type="button" className="btn btn-secondary dash-btn-peq" onClick={buscarDeNovo}>Tentar de novo</button></div>}
         {!dados && !erro && <p className="dash-carregando" aria-busy="true">Carregando relatório...</p>}
@@ -220,17 +246,20 @@ export function Dashboard() {
 
             {mostra('publico') && (
               <div className="dash-grade">
-                <CartaoDados larga titulo="De onde vem o público" subtitulo={`Cidades (as 10 maiores no gráfico; a tabela mostra todas: ${dados.publico.por_cidade.length})`} colunas={COL_PUBLICO} linhas={dados.publico.por_cidade} aoBaixar={() => baixarPublico('publico-cidade', dados.publico.por_cidade)}>
-                  <Grafico tipo="barH" rotulos={cidadesGrafico.map((c) => c.rotulo)} series={[{ nome: 'Pessoas', valores: cidadesGrafico.map((c) => c.quantidade) }]} descricao="Barras com as cidades de origem do público" />
+                <CartaoDados larga filtravel titulo="De onde vem o público" subtitulo={`Cidades (as 10 maiores no gráfico; a tabela mostra todas: ${dados.publico.por_cidade.length})`} colunas={COL_PUBLICO} linhas={dados.publico.por_cidade} aoBaixar={() => baixarPublico('publico-cidade', dados.publico.por_cidade)}>
+                  <Grafico tipo="barH" rotulos={cidadesGrafico.map((c) => c.rotulo)} series={[{ nome: 'Pessoas', valores: cidadesGrafico.map((c) => c.quantidade) }]} descricao="Barras com as cidades de origem do público" aoClicar={filtrarPor(cidadesGrafico)} />
                 </CartaoDados>
-                <CartaoDados titulo="Estados" colunas={COL_PUBLICO} linhas={dados.publico.por_estado} aoBaixar={() => baixarPublico('publico-estado', dados.publico.por_estado)}>
-                  <Grafico tipo="doughnut" rotulos={dados.publico.por_estado.map((e) => e.rotulo)} series={[{ nome: 'Pessoas', valores: dados.publico.por_estado.map((e) => e.quantidade) }]} descricao="Distribuição do público por estado" />
+                <CartaoDados filtravel titulo="Gênero" subtitulo="Informado no cadastro" colunas={COL_PUBLICO} linhas={dados.publico.por_genero} aoBaixar={() => baixarPublico('publico-genero', dados.publico.por_genero)}>
+                  <Grafico tipo="doughnut" rotulos={comPercentual(dados.publico.por_genero)} series={[{ nome: 'Pessoas', valores: dados.publico.por_genero.map((e) => e.quantidade) }]} descricao="Distribuição do público por gênero, em porcentagem" aoClicar={filtrarPor(dados.publico.por_genero)} />
                 </CartaoDados>
-                <CartaoDados titulo="Gênero" colunas={COL_PUBLICO} linhas={dados.publico.por_genero} aoBaixar={() => baixarPublico('publico-genero', dados.publico.por_genero)}>
-                  <Grafico tipo="doughnut" rotulos={dados.publico.por_genero.map((e) => e.rotulo)} series={[{ nome: 'Pessoas', valores: dados.publico.por_genero.map((e) => e.quantidade) }]} descricao="Distribuição do público por gênero" />
+                <CartaoDados filtravel titulo="Faixa etária" subtitulo="Idade do titular do ingresso" colunas={COL_PUBLICO} linhas={dados.publico.por_faixa_etaria} aoBaixar={() => baixarPublico('publico-faixa-etaria', dados.publico.por_faixa_etaria)}>
+                  <Grafico tipo="bar" rotulos={dados.publico.por_faixa_etaria.map((e) => e.rotulo)} series={[{ nome: 'Pessoas', valores: dados.publico.por_faixa_etaria.map((e) => e.quantidade) }]} descricao="Distribuição do público por faixa etária" aoClicar={filtrarPor(dados.publico.por_faixa_etaria)} />
                 </CartaoDados>
-                <CartaoDados titulo="Faixa etária" subtitulo="Idade do titular do ingresso" colunas={COL_PUBLICO} linhas={dados.publico.por_faixa_etaria} aoBaixar={() => baixarPublico('publico-faixa-etaria', dados.publico.por_faixa_etaria)}>
-                  <Grafico tipo="bar" rotulos={dados.publico.por_faixa_etaria.map((e) => e.rotulo)} series={[{ nome: 'Pessoas', valores: dados.publico.por_faixa_etaria.map((e) => e.quantidade) }]} descricao="Distribuição do público por faixa etária" />
+                <CartaoDados filtravel titulo="Estados" colunas={COL_PUBLICO} linhas={dados.publico.por_estado} aoBaixar={() => baixarPublico('publico-estado', dados.publico.por_estado)}>
+                  <Grafico tipo="doughnut" rotulos={comPercentual(dados.publico.por_estado)} series={[{ nome: 'Pessoas', valores: dados.publico.por_estado.map((e) => e.quantidade) }]} descricao="Distribuição do público por estado" aoClicar={filtrarPor(dados.publico.por_estado)} />
+                </CartaoDados>
+                <CartaoDados filtravel titulo="Sexualidade" subtitulo="Opcional: só quem informou no perfil" colunas={COL_PUBLICO} linhas={dados.publico.por_sexualidade} aoBaixar={() => baixarPublico('publico-sexualidade', dados.publico.por_sexualidade)}>
+                  <Grafico tipo="doughnut" rotulos={comPercentual(dados.publico.por_sexualidade)} series={[{ nome: 'Pessoas', valores: dados.publico.por_sexualidade.map((e) => e.quantidade) }]} descricao="Distribuição do público por sexualidade, em porcentagem" aoClicar={filtrarPor(dados.publico.por_sexualidade)} />
                 </CartaoDados>
               </div>
             )}
@@ -265,7 +294,7 @@ export function Dashboard() {
               </div>
             )}
 
-            <p className="dash-nota">Cada ingresso vendido conta uma pessoa. Cidade, estado e gênero vêm do cadastro de quem comprou; a idade vem do titular do ingresso. Ingressos cancelados não entram nos números. Os relatórios são agregados e não mostram dados pessoais.</p>
+            <p className="dash-nota">Cada ingresso vendido conta uma pessoa. Cidade, estado, gênero e sexualidade vêm do cadastro de quem comprou (a sexualidade é opcional e informada no perfil); a idade vem do titular do ingresso. Ingressos cancelados não entram nos números. Os relatórios são agregados e não mostram dados pessoais.</p>
           </div>
         )}
       </div>

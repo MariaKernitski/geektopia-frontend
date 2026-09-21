@@ -82,10 +82,7 @@
 }
 
 .dash-filtros {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 14px 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   padding: 18px;
   background: var(--surface-color);
   border: 1px solid var(--border-color);
@@ -394,5 +391,98 @@
   }
   .dash-grade {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dash-filtros summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: var(--font-title);
+  font-size: 16px;
+}
+.dash-filtros-qtd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--light-yellow);
+  border-radius: 999px;
+}
+.dash-filtros-grupos {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+.dash-grupo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+.dash-grupo legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--soft-txt-color);
+}
+.dash-etiquetas {
+  position: sticky;
+  top: 62px;
+  z-index: 15;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 20px;
+  padding: 10px 14px;
+  font-size: 13px;
+  background: var(--bg-alt-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+.dash-etiquetas-titulo {
+  color: var(--soft-txt-color);
+}
+.dash-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--main-txt-color);
+  background: var(--light-yellow);
+  border: 1px solid var(--main-txt-color);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.dash-etiqueta:hover,
+.dash-etiqueta:focus-visible {
+  filter: brightness(0.93);
+}
+.dash-dica-clique {
+  font-style: italic;
+}
+@media (max-width: 900px) {
+  .dash-filtros-grupos {
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  .dash-filtros summary,
+  .dash-dica-clique {
+    display: none;
   }
 }

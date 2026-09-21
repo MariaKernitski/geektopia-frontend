@@ -179,6 +179,7 @@ export function ExpositorSolicitar() {
               <p className="ed-ajuda">Você só paga se a diretoria aprovar. O valor fica travado no momento do envio.</p>
             </>
           )}
+          <p className="ed-ajuda">Ao enviar, você concorda com as <a href="/termos#participacao" target="_blank" rel="noopener noreferrer">regras para expositores</a> e com a <a href="/termos#privacidade" target="_blank" rel="noopener noreferrer">política de privacidade</a>.</p>
           <button type="button" className="btn btn-primary" disabled={enviando || !idEdicao || !idEspaco} onClick={enviar}>
             {enviando ? 'Enviando...' : 'Enviar solicitação'}
           </button>

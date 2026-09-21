@@ -91,6 +91,7 @@ export function SecaoEventosComunidade({ onMensagem }) {
           {campo('url_saiba_mais', 'Link do evento ou do organizador (Instagram, site, Drive) *', { type: 'url', placeholder: 'https://' }, true)}
           {campo('regras_idade_minima', 'Regras de idade (opcional)', { maxLength: 1000 }, true)}
           {!editando && campo('instituicao_empresa', 'Instituição ou grupo organizador (opcional)', { maxLength: 100 }, true)}
+          <p className="perfil-ajuda perfil-form-full">Ao enviar, você confirma que o material é seu ou que tem autorização para divulgá-lo e concorda com as <a href="/termos#participacao" target="_blank" rel="noopener noreferrer">regras de eventos da comunidade</a>.</p>
           <div className="perfil-form-actions">
             <button type="button" className="btn btn-secondary" onClick={() => setForm(null)}>Cancelar</button>
             <button type="submit" className="btn btn-primary" disabled={enviando}>{enviando ? 'Enviando...' : editando ? 'Reenviar para análise' : 'Enviar para análise'}</button>

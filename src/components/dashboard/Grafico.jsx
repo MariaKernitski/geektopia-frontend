@@ -11,10 +11,11 @@ export const PALETA = ['#f5c22b', '#0e7c86', '#e4572e', '#6a4c93', '#2e933c', '#
 // Desenha um gráfico do Chart.js (biblioteca gratuita, MIT). Recria quando os dados mudam e limpa ao sair.
 //   tipo     'bar' | 'barH' (barras horizontais) | 'line' | 'doughnut'
 //   rotulos  nomes; series [{ nome, valores, cor? }]
-export function Grafico({ tipo, rotulos, series, descricao, formatar = (v) => v }) {
+export function Grafico({ tipo, rotulos, series, descricao, formatar = (v) => v, aoClicar }) {
   const canvas = useRef(null);
   const formatador = useRef(formatar);
-  useEffect(() => { formatador.current = formatar; }, [formatar]);
+  const clicador = useRef(aoClicar);
+  useEffect(() => { formatador.current = formatar; clicador.current = aoClicar; }, [formatar, aoClicar]);
   // Os dados chegam como objetos novos a cada desenho da tela; a assinatura evita recriar o gráfico sem necessidade.
   const assinatura = JSON.stringify([tipo, rotulos, series]);
 
@@ -43,6 +44,8 @@ export function Grafico({ tipo, rotulos, series, descricao, formatar = (v) => v 
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 250 },
+        onClick: (_evento, elementos) => { if (clicador.current && elementos.length) clicador.current(elementos[0].index); },
+        onHover: (evento, elementos) => { if (evento.native?.target) evento.native.target.style.cursor = clicador.current && elementos.length ? 'pointer' : 'default'; },
         plugins: {
           legend: { display: rosca || series.length > 1, position: 'bottom' },
           tooltip: { callbacks: { label: (c) => `${c.dataset.label ? `${c.dataset.label}: ` : ''}${formatador.current(tipo === 'barH' ? c.parsed.x : tipo === 'doughnut' ? c.parsed : c.parsed.y)}` } }

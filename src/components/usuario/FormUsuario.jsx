@@ -3,6 +3,8 @@ import { FiAlertCircle, FiCheck, FiCircle } from 'react-icons/fi';
 import * as v from '../../utils/validacao';
 import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../../utils/mascaras';
 import { useLocalidades } from '../../hooks/useLocalidades';
+import { TermosModal } from '../termos/TermosModal';
+import { GENEROS, comporGenero, separarGenero } from '../../utils/genero';
 import '../../style/AdminEdicao.css';
 import '../../style/FormUsuario.css';
 
@@ -19,16 +21,16 @@ import '../../style/FormUsuario.css';
 const PASSOS = [
   { id: 'pessoais', rotulo: 'Dados pessoais', campos: ['nome_completo', 'documento', 'data_nascimento'] },
   { id: 'contato', rotulo: 'Contato e acesso', campos: ['email', 'telefone', 'senha', 'confirmarSenha'] },
-  { id: 'local', rotulo: 'Localização e extras', campos: ['estado', 'cidade', 'genero', 'sexualidade', 'nivel_permissao', 'aceitaTermos'] }
+  { id: 'local', rotulo: 'Localização e termos', campos: ['estado', 'cidade', 'genero', 'nivel_permissao', 'aceitaTermos'] }
 ];
 
 // O servidor responde com o nome do campo do banco; a tela agrupa os três documentos.
 const CAMPO_DO_SERVIDOR = { cpf: 'documento', cnpj: 'documento', passaporte: 'documento' };
 
 const CAMPOS_POR_MODO = {
-  cadastro: ['nome_completo', 'documento', 'data_nascimento', 'email', 'telefone', 'senha', 'confirmarSenha', 'estado', 'cidade', 'genero', 'sexualidade', 'aceitaTermos'],
-  'admin-criar': ['nome_completo', 'documento', 'data_nascimento', 'email', 'telefone', 'senha', 'confirmarSenha', 'estado', 'cidade', 'genero', 'sexualidade', 'nivel_permissao'],
-  'admin-editar': ['nome_completo', 'documento', 'data_nascimento', 'email', 'telefone', 'estado', 'cidade', 'genero', 'sexualidade']
+  cadastro: ['nome_completo', 'documento', 'data_nascimento', 'email', 'telefone', 'senha', 'confirmarSenha', 'estado', 'cidade', 'genero', 'aceitaTermos'],
+  'admin-criar': ['nome_completo', 'documento', 'data_nascimento', 'email', 'telefone', 'senha', 'confirmarSenha', 'estado', 'cidade', 'genero', 'nivel_permissao'],
+  'admin-editar': ['nome_completo', 'documento', 'data_nascimento', 'email', 'telefone', 'estado', 'cidade', 'genero']
 };
 
 const MASCARA_DOC = { cpf: mascaraCpf, cnpj: mascaraCnpj, passaporte: (x) => x.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) };
@@ -48,8 +50,7 @@ function valoresIniciais(u) {
     confirmarSenha: '',
     estado: u?.estado || '',
     cidade: u?.cidade || '',
-    genero: u?.genero || '',
-    sexualidade: u?.sexualidade || '',
+    ...separarGenero(u?.genero),
     nivel_permissao: '',
     aceitaTermos: false
   };
@@ -65,13 +66,14 @@ function calcularErros(val, modo) {
     email: v.email(val.email),
     telefone: v.telefone(val.telefone, { obrigatorio: cadastro }),
     estado: cadastro ? v.obrigatorio(val.estado, 'Selecione o estado.') : '',
-    cidade: cadastro ? v.obrigatorio(val.cidade, 'Selecione a cidade.') : ''
+    cidade: cadastro ? v.obrigatorio(val.cidade, 'Selecione a cidade.') : '',
+    genero: cadastro ? v.obrigatorio(val.genero, 'Selecione o gênero (ou "Prefiro não informar").') : ''
   };
   if (comSenha) {
     e.senha = v.senha(val.senha);
     e.confirmarSenha = v.confirmarSenha(val.confirmarSenha, val.senha);
   }
-  if (cadastro) e.aceitaTermos = val.aceitaTermos ? '' : 'Aceite os Termos de Uso para concluir o cadastro.';
+  if (cadastro) e.aceitaTermos = val.aceitaTermos ? '' : 'Leia e aceite os Termos de Uso e a Política de Privacidade para concluir o cadastro.';
   return Object.fromEntries(Object.entries(e).filter(([, msg]) => msg));
 }
 
@@ -87,6 +89,7 @@ function Campo({ id, rotulo, obrigatorio, erro, ajuda, children }) {
 }
 
 export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }) {
+  const [termosAbertos, setTermosAbertos] = useState(false);
   const [val, setVal] = useState(() => valoresIniciais(inicial));
   const [passo, setPasso] = useState(0);
   const [tocados, setTocados] = useState({});
@@ -169,10 +172,10 @@ export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }
       telefone: val.telefone.replace(/\D/g, '') || null,
       estado: val.estado || null,
       cidade: val.cidade || null,
-      genero: val.genero.trim() || null,
-      sexualidade: val.sexualidade.trim() || null
+      genero: comporGenero(val.genero, val.generoOutro)
     };
     if (modo !== 'admin-editar') payload.senha = val.senha;
+    if (modo === 'cadastro') payload.aceite_termos = true;
     if (modo === 'admin-criar' && val.nivel_permissao) payload.nivel_permissao = val.nivel_permissao;
     return payload;
   };
@@ -387,17 +390,19 @@ export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }
             </Campo>
           </div>
 
-          <fieldset className="ed-fieldset">
-            <legend>Opcionais</legend>
-            <div className="ed-linha">
-              <Campo id="genero" rotulo="Gênero" erro={erroVisivel('genero')}>
-                <input id="u-genero" value={val.genero} maxLength={50} placeholder="Ex: Mulher cis, Homem trans..." onChange={(e) => alterar('genero', e.target.value)} />
+          <div className="ed-linha">
+            <Campo id="genero" rotulo="Gênero" obrigatorio={modo === 'cadastro'} erro={erroVisivel('genero')} ajuda="Usado só em estatísticas do público. Você pode escolher “Prefiro não informar”.">
+              <select id="u-genero" value={val.genero} onChange={(e) => alterar('genero', e.target.value)} onBlur={() => aoSair('genero')} {...aria('genero')}>
+                <option value="">Selecione...</option>
+                {GENEROS.map((g) => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </Campo>
+            {val.genero === 'Outro' && (
+              <Campo id="generoOutro" rotulo="Como você se identifica? (opcional)">
+                <input id="u-generoOutro" value={val.generoOutro} maxLength={40} onChange={(e) => alterar('generoOutro', e.target.value)} />
               </Campo>
-              <Campo id="sexualidade" rotulo="Sexualidade" erro={erroVisivel('sexualidade')}>
-                <input id="u-sexualidade" value={val.sexualidade} maxLength={50} placeholder="Ex: Heterossexual, Bissexual..." onChange={(e) => alterar('sexualidade', e.target.value)} />
-              </Campo>
-            </div>
-          </fieldset>
+            )}
+          </div>
 
           {modo === 'admin-criar' && (
             <Campo id="nivel_permissao" rotulo="Nível de acesso" ajuda="Um administrador pode ser criado já com permissão. Depois dá para promover ou rebaixar.">
@@ -411,15 +416,16 @@ export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }
 
           {modo === 'cadastro' && (
             <div className="ed-campo">
-              <label className="ed-check">
-                <input
-                  id="u-aceitaTermos" type="checkbox" checked={val.aceitaTermos}
-                  onChange={(e) => { alterar('aceitaTermos', e.target.checked); aoSair('aceitaTermos'); }}
-                  {...aria('aceitaTermos')}
-                />
-                Declaro que li e concordo com os Termos de Uso. *
-              </label>
+              <div className={`tm-aceite-linha ${val.aceitaTermos ? 'is-ok' : ''}`}>
+                <p id="u-aceitaTermos">
+                  {val.aceitaTermos ? <><FiCheck aria-hidden="true" /> Termos de Uso e Política de Privacidade lidos e aceitos.</> : <>Para criar a conta, leia e aceite os Termos de Uso e a Política de Privacidade (LGPD). *</>}
+                </p>
+                <button type="button" className={`btn ${val.aceitaTermos ? 'btn-secondary' : 'btn-primary'}`} onClick={() => setTermosAbertos(true)} aria-describedby="u-aceitaTermos">
+                  {val.aceitaTermos ? 'Ler de novo' : 'Ler e aceitar'}
+                </button>
+              </div>
               {erroVisivel('aceitaTermos') && <p className="ed-erro-campo" id="erro-u-aceitaTermos" role="alert">{erroVisivel('aceitaTermos')}</p>}
+              <TermosModal aberto={termosAbertos} aoFechar={() => setTermosAbertos(false)} aoAceitar={() => { alterar('aceitaTermos', true); aoSair('aceitaTermos'); setTermosAbertos(false); }} />
             </div>
           )}
         </section>
