@@ -10,6 +10,7 @@ import { AvisoMenores, URL_TERMO_MENORES } from '../components/publico/AvisoMeno
 import { CartaoCompeticao } from '../components/publico/CartaoCompeticao';
 import { Rodape } from '../components/Rodape';
 import { SeletorIngressos } from '../components/publico/SeletorIngressos';
+import { MAX_INGRESSOS_POR_COMPRA, limiteDoLote } from '../utils/titular';
 import { descricaoClassificacao, seloClassificacao } from '../utils/idade';
 import { chaveDoDia, eventoPassou, horaCurta, horarioEvento, linkMapa, moeda, periodoEvento, tituloDoDia } from '../utils/evento';
 import { cssDoFundo } from '../utils/fundo';
@@ -77,7 +78,7 @@ export function GeektopiaDetalhe() {
   const itens = useMemo(
     () => lotes
       .filter((l) => !l.esgotado)
-      .map((l) => ({ lote: l, qtd: Math.min(Number(quantidades[l.id_lote]) || 0, l.restantes ?? 99) }))
+      .map((l) => ({ lote: l, qtd: Math.min(Number(quantidades[l.id_lote]) || 0, l.restantes ?? 99, limiteDoLote(l) ?? 99) }))
       .filter((i) => i.qtd > 0),
     [lotes, quantidades]
   );
@@ -87,8 +88,15 @@ export function GeektopiaDetalhe() {
   // Incremento sobre o valor mais recente (cliques rápidos não se perdem), limitado ao estoque do lote.
   const alterarQuantidade = (idLote, delta) => {
     const lote = lotes.find((l) => l.id_lote === idLote);
-    const max = lote?.restantes ?? 99;
-    setQuantidades((q) => ({ ...q, [idLote]: Math.min(max, Math.max(0, (q[idLote] || 0) + delta)) }));
+    // Estoque do lote e, se houver, o limite por pessoa (como a meia-entrada: 1).
+    const max = Math.min(lote?.restantes ?? 99, (lote && limiteDoLote(lote)) ?? 99);
+    setQuantidades((q) => {
+      const atual = q[idLote] || 0;
+      const totalOutros = Object.entries(q).reduce((s, [k, n]) => s + (Number(k) === idLote ? 0 : Number(n) || 0), 0);
+      // Não deixa passar do estoque do lote nem do limite de ingressos por compra.
+      const teto = Math.min(max, MAX_INGRESSOS_POR_COMPRA - totalOutros);
+      return { ...q, [idLote]: Math.min(teto, Math.max(0, atual + delta)) };
+    });
   };
 
   const finalizarCompra = async () => {
@@ -284,7 +292,7 @@ export function GeektopiaDetalhe() {
             {lotes.length === 0 ? (
               <p className="pb-vazio">Os ingressos deste evento ainda não foram publicados. Volte em breve.</p>
             ) : (
-              <SeletorIngressos lotes={lotes} quantidades={quantidades} onAlterar={alterarQuantidade} vendaAberta={vendaAberta} semVendaTexto={semVendaTexto} />
+              <SeletorIngressos lotes={lotes} quantidades={quantidades} totalSelecionado={totalIngressos} onAlterar={alterarQuantidade} vendaAberta={vendaAberta} semVendaTexto={semVendaTexto} />
             )}
           </Secao>
 

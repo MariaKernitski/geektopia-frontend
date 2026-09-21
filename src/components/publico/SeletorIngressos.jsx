@@ -12,7 +12,8 @@ const POUCAS_UNIDADES = 10;
 //   quantidades  { id_lote: n }
 //   onAlterar    (id_lote, delta): delta = +1 ou -1 (incremento, não valor absoluto, para cliques rápidos não se perderem)
 //   vendaAberta  false = só informa; não mostra os controles de quantidade
-export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, semVendaTexto }) {
+export function SeletorIngressos({ lotes, quantidades, totalSelecionado = 0, onAlterar, vendaAberta, semVendaTexto }) {
+  const noLimiteDaCompra = totalSelecionado >= MAX_INGRESSOS_POR_COMPRA;
   const grupos = CATEGORIAS
     .map((c) => ({ ...c, lotes: lotes.filter((l) => (l.categoria || 'Inteira') === c.chave) }))
     .filter((g) => g.lotes.length > 0);
@@ -40,11 +41,12 @@ export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, s
 
   return (
     <div className="dt-ingressos">
+      {vendaAberta && noLimiteDaCompra && <p className="dt-limite-atingido" role="status">Você chegou ao limite de {MAX_INGRESSOS_POR_COMPRA} ingressos por compra. Para levar mais, finalize esta compra e faça outra.</p>}
       {vendaAberta && (
         <ul className="dt-limites" aria-label="Limites de compra">
           <li>Máximo de <strong>{MAX_INGRESSOS_POR_COMPRA} ingressos</strong> por compra.</li>
           <li>Cada ingresso sai em nome de uma pessoa (nome, documento e nascimento).</li>
-          <li>Meia-entrada: <strong>1 por pessoa</strong>, com comprovação na entrada.</li>
+          <li>Meia-entrada: <strong>1 por compra</strong>, com comprovação na entrada.</li>
         </ul>
       )}
       {grupos.length > 1 && (
@@ -74,7 +76,9 @@ export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, s
         <ul className="dt-lotes">
           {grupoAtivo.lotes.map((l) => {
             const qtd = quantidades[l.id_lote] || 0;
-            const max = l.restantes ?? 99;
+            const limitePessoa = limiteDoLote(l);
+            const max = Math.min(l.restantes ?? 99, limitePessoa ?? 99);
+            const noLimiteDoLote = limitePessoa !== null && qtd >= limitePessoa;
             const poucos = !l.esgotado && l.restantes !== undefined && l.restantes <= POUCAS_UNIDADES;
             const nomeCampo = `${l.nome_lote}`;
 
@@ -83,7 +87,7 @@ export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, s
                 <div className="dt-lote-info">
                   <strong className="dt-lote-nome" id={`lote-${l.id_lote}`}>{l.nome_lote}</strong>
                   <div className="dt-lote-chips">
-                    {limiteDoLote(l) && <span className="pb-chip">Máx. {limiteDoLote(l)} por pessoa</span>}
+                    {limitePessoa && <span className="pb-chip">Máx. {limitePessoa} por compra</span>}
                     {l.idade_minima && <span className="pb-chip">{l.idade_minima}+ anos</span>}
                     {poucos && <span className="pb-chip is-aviso">{l.restantes === 1 ? 'Última unidade' : `Restam ${l.restantes}`}</span>}
                     {l.esgotado && <span className="pb-chip is-erro">Esgotado</span>}
@@ -96,7 +100,7 @@ export function SeletorIngressos({ lotes, quantidades, onAlterar, vendaAberta, s
                   <div className="dt-stepper" role="group" aria-labelledby={`lote-${l.id_lote}`}>
                     <button type="button" aria-label={`Diminuir quantidade de ${nomeCampo}`} disabled={l.esgotado || qtd === 0} onClick={() => onAlterar(l.id_lote, -1)}>−</button>
                     <output aria-live="polite">{qtd}</output>
-                    <button type="button" aria-label={`Aumentar quantidade de ${nomeCampo}`} disabled={l.esgotado || qtd >= max} onClick={() => onAlterar(l.id_lote, 1)}>+</button>
+                    <button type="button" aria-label={`Aumentar quantidade de ${nomeCampo}`} disabled={l.esgotado || qtd >= max || noLimiteDaCompra} title={noLimiteDaCompra ? `Limite de ${MAX_INGRESSOS_POR_COMPRA} ingressos por compra` : noLimiteDoLote ? `Limite de ${limitePessoa} por compra neste ingresso` : qtd >= max ? 'Todos os ingressos disponíveis já foram selecionados' : undefined} onClick={() => onAlterar(l.id_lote, 1)}>+</button>
                   </div>
                 )}
               </li>
