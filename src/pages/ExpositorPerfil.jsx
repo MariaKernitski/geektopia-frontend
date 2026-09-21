@@ -124,7 +124,7 @@ function FormularioPerfil({ expositor, erroCarga }) {
             urlAtual={expositor?.url_logo}
             arquivo={logo}
             onEscolher={setLogo}
-            ajuda="Aparece no carrossel de expositores. Fundo transparente ou claro funciona melhor. JPEG, PNG ou WEBP, até 4MB."
+            ajuda="Aparece no carrossel de expositores. Fundo transparente ou claro funciona melhor. JPEG, PNG ou WEBP, até 15MB."
           />
 
           <div className="ed-acoes ed-acoes-esquerda">

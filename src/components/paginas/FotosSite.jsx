@@ -8,7 +8,7 @@ import { avisoDaTela, useCarga } from '../../hooks/useCarga';
 import { mover } from '../../utils/ordem';
 
 const TIPOS = ['image/jpeg', 'image/png', 'image/webp'];
-const TAMANHO_MAXIMO = 4 * 1024 * 1024;
+const TAMANHO_MAXIMO = 15 * 1024 * 1024;
 const MAX_FOTOS = 12;
 
 // Carrossel da página Geektopia: pertence ao site, não a uma edição.
@@ -30,7 +30,7 @@ export function FotosSite() {
     const problemas = [];
     const validos = arquivos.filter((f) => {
       if (!TIPOS.includes(f.type)) { problemas.push(`"${f.name}": formato não aceito.`); return false; }
-      if (f.size > TAMANHO_MAXIMO) { problemas.push(`"${f.name}": passa de 4MB.`); return false; }
+      if (f.size > TAMANHO_MAXIMO) { problemas.push(`"${f.name}": passa de 15MB.`); return false; }
       return true;
     });
     const aEnviar = validos.slice(0, Math.max(MAX_FOTOS - fotos.length, 0));
@@ -100,7 +100,7 @@ export function FotosSite() {
         <label htmlFor={inputId} className={`btn btn-primary ${progresso ? 'is-desabilitado' : ''}`}>
           {progresso ? `Enviando ${progresso.atual} de ${progresso.total}...` : '+ Adicionar fotos'}
         </label>
-        <small className="ed-ajuda">JPEG, PNG ou WEBP, até 4MB cada · {fotos.length}/{MAX_FOTOS} fotos</small>
+        <small className="ed-ajuda">JPEG, PNG ou WEBP, até 15MB cada · {fotos.length}/{MAX_FOTOS} fotos</small>
       </div>
 
       {carregando ? <p className="ed-vazio">Carregando fotos...</p> : fotos.length === 0 ? (

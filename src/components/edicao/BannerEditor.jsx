@@ -28,7 +28,7 @@ export function BannerEditor({ evento, nome, fundo, onFundo, foto, onFoto }) {
           urlAtual={evento?.banner_url}
           arquivo={foto}
           onEscolher={onFoto}
-          ajuda="Aparece no topo da página do evento. JPEG, PNG ou WEBP, até 4MB. Imagens largas (16:9) ficam melhores."
+          ajuda="Aparece no topo da página do evento. JPEG, PNG ou WEBP, até 15MB. Imagens largas (16:9) ficam melhores."
         />
       ) : (
         <>
