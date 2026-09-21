@@ -1,13 +1,66 @@
-/* Rodapé do site (landing e Geektopia) — prefixo .rd- */
-.rd-container { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
-.rd a:focus-visible { outline: 3px solid var(--light-cyan); outline-offset: 3px; }
-.rd { background: var(--main-txt-color); color: #B9B8C0; padding: 36px 0 24px; border-top: 1px solid #2C2A32; }
-.rd-grid { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-.rd-marca { display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #E8E7EE; }
-.rd-marca img { width: 40px; height: 40px; object-fit: contain; }
-.rd nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
-.rd nav a { display: inline-flex; align-items: center; gap: 8px; font-size: 14.5px; color: #E8E7EE; text-decoration: none; }
-.rd nav a:hover { color: var(--light-yellow); }
-.rd-copy { margin: 24px auto 0; max-width: 1160px; padding: 16px 24px 0; border-top: 1px solid #2C2A32; font-size: 13px; color: #8D8C95; }
+.rd-container {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+.rd a:focus-visible {
+  outline: 3px solid var(--light-cyan);
+  outline-offset: 3px;
+}
+.rd {
+  background: var(--main-txt-color);
+  color: #b9b8c0;
+  padding: 36px 0 24px;
+  border-top: 1px solid #2c2a32;
+}
+.rd-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.rd-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14.5px;
+  color: #e8e7ee;
+}
+.rd-marca img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.rd nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.rd nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  color: #e8e7ee;
+  text-decoration: none;
+}
+.rd nav a:hover {
+  color: var(--light-yellow);
+}
+.rd-copy {
+  margin: 24px auto 0;
+  max-width: 1160px;
+  padding: 16px 24px 0;
+  border-top: 1px solid #2c2a32;
+  font-size: 13px;
+  color: #8d8c95;
+}
 
-@media (max-width: 640px) { .rd-container { padding: 0 16px; } }
+@media (max-width: 640px) {
+  .rd-container {
+    padding: 0 16px;
+  }
+}
