@@ -46,7 +46,8 @@ function FormularioPerfil({ expositor, erroCarga }) {
 
     const novos = {};
     if (!form.nome_loja_projeto.trim()) novos.nome_loja_projeto = 'Informe o nome da sua loja ou projeto.';
-    if (form.url_portfolio.trim() && !/^https?:\/\//i.test(form.url_portfolio.trim())) {
+    if (!form.url_portfolio.trim()) novos.url_portfolio = 'Informe o link do seu portfólio ou rede social: é com ele que a organização avalia a sua loja.';
+    else if (!/^https?:\/\//i.test(form.url_portfolio.trim())) {
       novos.url_portfolio = 'O link deve começar com http:// ou https:// (ex.: https://instagram.com/sualoja).';
     }
     setErros(novos);
@@ -58,7 +59,7 @@ function FormularioPerfil({ expositor, erroCarga }) {
     const corpo = {
       nome_loja_projeto: form.nome_loja_projeto.trim(),
       tipo_expositor: form.tipo_expositor.trim() || null,
-      url_portfolio: form.url_portfolio.trim() || null
+      url_portfolio: form.url_portfolio.trim()
     };
 
     setEnviando(true);
@@ -111,7 +112,7 @@ function FormularioPerfil({ expositor, erroCarga }) {
           </div>
 
           <div className="ed-campo">
-            <label htmlFor="p-url_portfolio">Link do portfólio ou rede social</label>
+            <label htmlFor="p-url_portfolio">Link do portfólio ou rede social *</label>
             <input id="p-url_portfolio" name="url_portfolio" type="url" value={form.url_portfolio} onChange={alterar} placeholder="https://..." {...aria('url_portfolio')} />
             {campoErro('url_portfolio')}
             <small className="ed-ajuda">Ajuda a diretoria a conhecer o seu trabalho. Se você for confirmado, este link aparece no site.</small>

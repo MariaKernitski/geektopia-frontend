@@ -10,6 +10,11 @@ import { idadeEmAnos } from '../utils/validacao';
 import '../style/Checkin.css';
 
 const ID_LEITOR = 'leitor-qr';
+// Para a câmera sem nunca lançar erro: a biblioteca pode recusar `stop()` (síncrono) se já parou, e um erro aqui derrubaria a tela toda.
+const pararLeitor = async (l) => {
+  try { await l.stop(); } catch { /* já estava parado */ }
+  try { l.clear(); } catch { /* nada a limpar */ }
+};
 const docFormatado = (d) => (/^\d{11}$/.test(d || '') ? `CPF ${mascaraCpf(d)}` : d ? `Documento ${d}` : 'Sem documento informado');
 
 // Portaria: lê o QR code do ingresso (câmera) ou aceita o código digitado, mostra quem é o
@@ -49,14 +54,19 @@ export function AdminCheckin() {
   useEffect(() => {
     if (!camera) return undefined;
     let ativo = true;
-    const l = new Html5Qrcode(ID_LEITOR);
-    leitor.current = l;
-    l.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 240, height: 240 } }, (texto) => {
-      if (!ativo) return;
-      ativo = false;
-      l.stop().catch(() => {}).finally(() => { setCamera(false); consultar(texto); });
-    }, () => {}).catch(() => { if (ativo) { setErroCamera('Não foi possível abrir a câmera. Permita o acesso ou digite o código.'); setCamera(false); } });
-    return () => { ativo = false; l.stop().catch(() => {}); };
+    let l = null;
+    try {
+      l = new Html5Qrcode(ID_LEITOR);
+      leitor.current = l;
+      l.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 240, height: 240 } }, (texto) => {
+        if (!ativo) return;
+        ativo = false;
+        pararLeitor(l).finally(() => { setCamera(false); consultar(texto); });
+      }, () => {}).catch(() => { if (ativo) { setErroCamera('Não foi possível abrir a câmera. Permita o acesso ou digite o código.'); setCamera(false); } });
+    } catch {
+      Promise.resolve().then(() => { setErroCamera('Não foi possível abrir a câmera. Permita o acesso ou digite o código.'); setCamera(false); });
+    }
+    return () => { ativo = false; if (l) pararLeitor(l); };
   }, [camera, consultar]);
 
   const ligarCamera = () => { setErroCamera(''); setResultado(null); setCamera(true); };

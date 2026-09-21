@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   FiAward, FiCalendar, FiCamera, FiCheckCircle, FiChevronRight, FiClock, FiCircle, FiCreditCard, FiEdit2,
@@ -12,6 +12,7 @@ import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../utils/mascaras';
 import { formatarData, formatarMoeda } from '../utils/datas';
 import { eventoPassou } from '../utils/evento';
 import { requisitosSenha, senha as validarSenha } from '../utils/validacao';
+import { SecaoEventosComunidade } from '../components/perfil/SecaoEventosComunidade';
 import { BotaoPdf } from '../components/BotaoPdf';
 import { usePagamentosPendentes } from '../hooks/usePagamentosPendentes';
 import { situacaoDaInscricao, ROTULO_MODALIDADE } from '../utils/competicao';
@@ -22,6 +23,7 @@ const SECOES = [
   { chave: 'dados', rotulo: 'Meus dados', Icone: FiUser },
   { chave: 'ingressos', rotulo: 'Meus ingressos', Icone: FiTag },
   { chave: 'participacoes', rotulo: 'Minhas participações', Icone: FiAward },
+  { chave: 'comunidade', rotulo: 'Eventos da comunidade', Icone: FiCalendar },
   { chave: 'seguranca', rotulo: 'Segurança', Icone: FiLock }
 ];
 
@@ -48,7 +50,8 @@ export function Perfil() {
   }, []);
   const { dados, erro, carregando, recarregar } = useCarga(buscar);
 
-  const [secao, setSecao] = useState('dados');
+  const [params] = useSearchParams();
+  const [secao, setSecao] = useState(() => (SECOES.some((x) => x.chave === params.get('secao')) ? params.get('secao') : 'dados'));
   const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
   const [enviandoFoto, setEnviandoFoto] = useState(false);
   const inputFoto = useRef(null);
@@ -135,6 +138,7 @@ export function Perfil() {
             {secao === 'ingressos' && <ComprasPendentes aoConfirmar={recarregar} />}
             {secao === 'ingressos' && <SecaoIngressos proximos={ingressosProximos} anteriores={ingressosAnteriores} />}
             {secao === 'participacoes' && <SecaoParticipacoes ingressos={ingressos} inscricoes={inscricoes} solicitacoes={solicitacoes} />}
+            {secao === 'comunidade' && <SecaoEventosComunidade onMensagem={setMensagem} />}
             {secao === 'seguranca' && <SecaoSeguranca onMensagem={setMensagem} />}
           </main>
         </div>

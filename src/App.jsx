@@ -22,6 +22,8 @@ import { PedidoConfirmacao } from './pages/PedidoConfirmacao';
 import { Dashboard } from './pages/Dashboard';
 import { AdminPaginas } from './pages/AdminPaginas';
 import { AdminCheckin } from './pages/AdminCheckin';
+import { ErroTela } from './components/ErroTela';
+import { EventosComunidade } from './pages/EventosComunidade';
 import { AdminSolicitacoes } from './pages/AdminSolicitacoes';
 import { AdminUsuarioForm } from './pages/AdminUsuarioForm';
 import { Participar } from './pages/Participar';
@@ -35,8 +37,10 @@ export default function App() {
     <BrowserRouter>
       <Header />
 
+      <ErroTela>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/eventos" element={<EventosComunidade />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/perfil" element={<PrivateRoute apenasCliente><Perfil /></PrivateRoute>} />
@@ -66,6 +70,7 @@ export default function App() {
         <Route path="/geektopia/:id" element={<GeektopiaDetalhe />} />
         <Route path="/geektopia/:id/comprar" element={<PrivateRoute><Checkout /></PrivateRoute>} />
       </Routes>
+      </ErroTela>
     </BrowserRouter>
   );
 }
