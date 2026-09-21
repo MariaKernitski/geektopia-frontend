@@ -1,0 +1,73 @@
+/* Compra em etapas — prefixo .ck- */
+.ck-pagina { background: var(--bg-color); min-height: 80vh; padding: 32px 0 80px; }
+.ck-container { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+.ck-carregando { padding: 120px 24px; text-align: center; color: var(--soft-txt-color); }
+.ck-voltar { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--dark-cyan); text-decoration: none; }
+.ck-voltar:hover { text-decoration: underline; }
+.ck-titulo { margin: 12px 0 2px; font-family: var(--font-title); font-size: 32px; }
+.ck-evento { margin: 0 0 22px; font-size: 16px; color: var(--soft-txt-color); }
+
+.ck-etapas { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0 0 24px; padding: 0; list-style: none; }
+.ck-etapas li { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-title); font-weight: 600; font-size: 14.5px; color: var(--soft-txt-color); }
+.ck-etapas li span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color); font-size: 13px; }
+.ck-etapas li.is-atual { color: var(--main-txt-color); }
+.ck-etapas li.is-atual span { background: var(--light-yellow); border-color: var(--dark-yellow); color: var(--main-txt-color); }
+.ck-etapas li.is-feita span { background: var(--dark-green); border-color: var(--dark-green); color: #fff; }
+
+.ck-aviso { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding: 12px 16px; border-radius: 8px; font-size: 14.5px; font-weight: 500; }
+.ck-aviso.is-erro { background: var(--light-red); border: 1px solid rgba(228, 64, 95, 0.4); color: #7F1D2D; }
+
+.ck-grade { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+.ck-intro { margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: var(--soft-txt-color); }
+
+.ck-cartao { margin-bottom: 16px; padding: 22px 24px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; }
+.ck-cartao-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+.ck-cartao-topo h2, .ck-titulo-cartao { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--font-title); font-size: 18px; }
+.ck-cartao-topo h2 svg { color: var(--dark-cyan); }
+.ck-titulo-cartao { margin-bottom: 14px; }
+.ck-chip { padding: 4px 12px; border-radius: 999px; background: var(--bg-alt-color); font-size: 12.5px; font-weight: 600; }
+.ck-nota { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 8px 12px; border-radius: 6px; background: #E7F5F4; color: #0B4F4C; font-size: 13.5px; }
+
+.ck-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.ck-campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ck-campo-largo { grid-column: 1 / -1; }
+.ck-campo label { font-size: 13px; font-weight: 600; }
+.ck-campo input, .ck-campo select { min-height: 44px; padding: 10px 12px; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; font-family: var(--font-body); background: var(--surface-color); color: var(--main-txt-color); width: 100%; }
+.ck-campo input:focus, .ck-campo select:focus { outline: 3px solid var(--dark-cyan); outline-offset: 1px; border-color: var(--dark-cyan); }
+.ck-campo [aria-invalid="true"] { border-color: var(--dark-red); }
+.ck-doc { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; }
+.ck-erro { margin: 0; font-size: 13px; color: #B02545; }
+.ck-link { margin-top: 12px; padding: 0; border: 0; background: none; font-size: 14px; font-weight: 600; color: var(--dark-cyan); cursor: pointer; text-decoration: underline; }
+
+.ck-acoes { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
+.ck-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 26px; font-size: 16px; }
+.ck-seguro { margin: 14px 0 0; text-align: right; font-size: 13px; color: var(--soft-txt-color); }
+
+.ck-revisao { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 14px; }
+.ck-revisao li { display: flex; gap: 14px; align-items: flex-start; }
+.ck-num { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--main-txt-color); color: #fff; font-family: var(--font-title); font-weight: 700; font-size: 14px; }
+.ck-revisao strong { display: block; font-size: 16px; }
+.ck-revisao small { display: block; font-size: 13.5px; color: var(--soft-txt-color); }
+.ck-regras ul { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.5; }
+.ck-aceite { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; cursor: pointer; }
+.ck-aceite input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--dark-yellow); }
+
+.ck-resumo { position: sticky; top: 84px; padding: 22px; background: var(--surface-color); border: 1.5px solid var(--main-txt-color); border-radius: 12px; box-shadow: 6px 6px 0 var(--light-yellow); }
+.ck-resumo h2 { margin: 0 0 4px; font-family: var(--font-title); font-size: 19px; }
+.ck-resumo-evento { margin: 0 0 14px; font-size: 14px; color: var(--soft-txt-color); }
+.ck-resumo ul { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; font-size: 14.5px; }
+.ck-resumo li { display: flex; justify-content: space-between; gap: 12px; }
+.ck-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1.5px solid var(--main-txt-color); font-family: var(--font-title); font-size: 16px; }
+.ck-total strong { font-size: 24px; }
+.ck-limite { margin: 10px 0 0; font-size: 12.5px; color: var(--soft-txt-color); }
+
+@media (max-width: 860px) {
+  .ck-grade { grid-template-columns: 1fr; }
+  .ck-resumo { position: static; order: -1; }
+}
+@media (max-width: 560px) {
+  .ck-container { padding: 0 16px; }
+  .ck-campos { grid-template-columns: 1fr; }
+  .ck-doc { grid-template-columns: 1fr; }
+  .ck-acoes .btn { width: 100%; }
+}

@@ -7,7 +7,7 @@ import { AvisoBox } from './AvisoBox';
 import { formatarMoeda } from '../../utils/datas';
 import { CATEGORIAS, ROTULO_CATEGORIA } from '../../utils/evento';
 
-const VAZIO = { nome_lote: '', categoria: 'Inteira', valor_ingresso: '', quantidade_total: '' };
+const VAZIO = { nome_lote: '', categoria: 'Inteira', valor_ingresso: '', quantidade_total: '', limite_por_pessoa: '' };
 
 export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
   const id = evento.id_geektopia;
@@ -42,7 +42,8 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
       nome_lote: lote.nome_lote || '',
       categoria: lote.categoria || 'Inteira',
       valor_ingresso: String(lote.valor_ingresso ?? ''),
-      quantidade_total: String(lote.quantidade_total ?? '')
+      quantidade_total: String(lote.quantidade_total ?? ''),
+      limite_por_pessoa: lote.limite_por_pessoa ? String(lote.limite_por_pessoa) : ''
     });
     setErros({});
   };
@@ -60,10 +61,12 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
     else if (editando && qtd < (editando.ingressos_emitidos || 0)) {
       novos.quantidade_total = `Já foram vendidos ${editando.ingressos_emitidos}. A quantidade não pode ser menor.`;
     }
+    const limite = form.limite_por_pessoa === '' ? null : Number(form.limite_por_pessoa);
+    if (limite !== null && (!Number.isInteger(limite) || limite < 1 || limite > 50)) novos.limite_por_pessoa = 'Informe um número inteiro de 1 a 50, ou deixe vazio.';
     setErros(novos);
     if (Object.keys(novos).length) return;
 
-    const corpo = { nome_lote: form.nome_lote.trim(), categoria: form.categoria, valor_ingresso: valor, quantidade_total: qtd };
+    const corpo = { nome_lote: form.nome_lote.trim(), categoria: form.categoria, valor_ingresso: valor, quantidade_total: qtd, limite_por_pessoa: limite };
 
     setEnviando(true);
     try {
@@ -129,6 +132,13 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
             <label htmlFor="l-qtd">Quantidade *</label>
             <input id="l-qtd" name="quantidade_total" type="number" min="1" step="1" inputMode="numeric" value={form.quantidade_total} onChange={alterar} placeholder="100" {...aria('quantidade_total')} />
             {erroCampo('quantidade_total')}
+          </div>
+          <div className="ed-campo">
+            <label htmlFor="l-lim">Limite por pessoa</label>
+            <input id="l-lim" name="limite_por_pessoa" type="number" min="1" max="50" step="1" inputMode="numeric" value={form.limite_por_pessoa} onChange={alterar}
+              placeholder={form.categoria === 'Meia' ? '1 (padrão)' : 'Sem limite'} {...aria('limite_por_pessoa')} />
+            {erroCampo('limite_por_pessoa')}
+            <small className="ed-ajuda">Máximo deste ingresso por pessoa (CPF). Meia-entrada é 1 por pessoa se você não definir.</small>
           </div>
         </div>
         <div className="ed-acoes ed-acoes-esquerda">

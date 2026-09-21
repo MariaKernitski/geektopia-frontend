@@ -4,6 +4,7 @@ import { FiArrowRight, FiCalendar, FiImage, FiInfo, FiMapPin, FiShoppingBag, FiT
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
 import { CartaoCompeticao } from '../components/publico/CartaoCompeticao';
+import { Rodape } from '../components/Rodape';
 import { AvisoMenores } from '../components/publico/AvisoMenores';
 import { Carrossel } from '../components/publico/Carrossel';
 import { Contagem } from '../components/publico/Contagem';
@@ -406,6 +407,7 @@ export function GeektopiaPage() {
   const temSobre = Boolean(edicao && (edicao.texto_sobre || edicao.descricao || (Array.isArray(edicao.destaques) && edicao.destaques.length > 0)));
 
   return (
+    <>
     <main className="pb-pagina vt-pagina" style={{ '--cor-edicao': cor }}>
       {edicao ? (
         <Hero edicao={edicao} temSobre={temSobre} />
@@ -430,5 +432,7 @@ export function GeektopiaPage() {
       {edicao && edicao.competicoes.length > 0 && <Competicoes competicoes={edicao.competicoes} />}
       <Pockets pockets={pockets} />
     </main>
+    <Rodape />
+    </>
   );
 }

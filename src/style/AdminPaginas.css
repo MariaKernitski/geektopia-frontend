@@ -1,0 +1,15 @@
+/* Administrar páginas informativas — prefixo .ap- */
+.ap-form { display: grid; gap: 18px; padding-bottom: 96px; }
+.ap-rotulo { display: block; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; }
+.ap-lista { display: grid; gap: 8px; }
+.ap-linha { display: flex; gap: 8px; align-items: center; }
+.ap-linha input { flex: 1; min-width: 0; min-height: 44px; padding: 10px 12px; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; font-family: var(--font-body); }
+.ap-numero input:first-child { flex: 0 0 130px; font-family: var(--font-title); font-weight: 700; }
+.ap-add { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; }
+.ap-previa { margin: 8px 0 0; padding: 12px 14px; border-radius: 8px; background: var(--main-txt-color); color: #fff; font-family: var(--font-title); font-weight: 700; font-size: 20px; line-height: 1.25; }
+.ap-previa mark { background: none; color: var(--light-yellow); }
+.ap-sugestao { margin: 0 0 14px; padding: 10px 14px; border-radius: 8px; background: #E7F5F4; color: #0B4F4C; font-size: 13.5px; line-height: 1.5; }
+.ap-barra { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 12px 24px; background: var(--surface-color); border-top: 1px solid var(--border-color); box-shadow: 0 -4px 14px rgba(22, 21, 26, 0.08); }
+.ap-barra > span { margin-right: auto; font-size: 14px; color: var(--soft-txt-color); }
+.ap-nao-salvo { color: #6B4E00 !important; font-weight: 600; }
+@media (max-width: 560px) { .ap-barra { flex-wrap: wrap; } .ap-numero { flex-wrap: wrap; } .ap-numero input:first-child { flex: 1 1 100%; } }

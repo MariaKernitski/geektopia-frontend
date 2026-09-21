@@ -1,15 +1,16 @@
 import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FiArrowRight, FiBookOpen, FiCalendar, FiCheckCircle, FiCompass, FiFilm, FiInstagram, FiMapPin, FiMonitor,
-  FiMusic, FiPenTool, FiShield, FiShoppingBag, FiTag, FiUserPlus, FiAward, FiSmartphone
+  FiArrowRight, FiBookOpen, FiCalendar, FiCheckCircle, FiCompass, FiFilm, FiMapPin, FiMonitor,
+  FiMusic, FiPenTool, FiShield, FiShoppingBag, FiStar, FiTag, FiUserPlus, FiAward, FiSmartphone
 } from 'react-icons/fi';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
+import { Rodape } from '../components/Rodape';
 import { Contagem } from '../components/publico/Contagem';
 import { eventoPassou, periodoEvento } from '../utils/evento';
+import { LANDING_PADRAO, partesDoTitulo } from '../utils/landingPadrao';
 import ccpopLogo from '../assets/LOGO_CCPOP.png';
-import geektopiaTitle from '../assets/GEEKTOPIA-title.png';
 import '../style/Publico.css';
 import '../style/LandingPage.css';
 
@@ -26,10 +27,9 @@ const PASSOS = [
   { Icone: FiCheckCircle, titulo: 'Acompanhe pelo perfil', texto: 'Ingressos, inscrições e pagamentos num só lugar, sempre atualizados.' }
 ];
 
-const CENA = [
-  { Icone: FiMonitor, nome: 'Games' }, { Icone: FiFilm, nome: 'Animes' }, { Icone: FiMusic, nome: 'K-pop' },
-  { Icone: FiBookOpen, nome: 'RPG' }, { Icone: FiPenTool, nome: 'Artes visuais' }
-];
+// Ícone de cada etiqueta do "Quem somos" (as que o admin criar e não estiverem aqui usam a estrela).
+const ICONE_ETIQUETA = { games: FiMonitor, animes: FiFilm, 'k-pop': FiMusic, kpop: FiMusic, rpg: FiBookOpen, 'artes visuais': FiPenTool };
+const ICONES_CONFIANCA = [FiCheckCircle, FiSmartphone, FiShield];
 
 const MESES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 const partesDaData = (iso) => {
@@ -69,6 +69,11 @@ export function LandingPage() {
   const buscar = useCallback(() => api.get('/geektopia/vitrine').then((r) => r.data), []);
   const { dados } = useCarga(buscar);
 
+  // Textos editáveis pelo admin (Administrar Páginas Informativas); o padrão cobre falhas da API.
+  const buscarTextos = useCallback(() => api.get('/conteudo/landing').then((r) => r.data), []);
+  const { dados: textos } = useCarga(buscarTextos);
+  const T = textos || LANDING_PADRAO;
+
   const destaque = dados?.destaque && !eventoPassou(dados.destaque) ? dados.destaque : null;
   // Do mais próximo ao mais distante (a API devolve o mais recente primeiro).
   const pockets = [...(dados?.pockets ?? [])].filter((p) => !eventoPassou(p)).sort((a, b) => new Date(a.data_inicio || 8.64e15) - new Date(b.data_inicio || 8.64e15));
@@ -89,13 +94,11 @@ export function LandingPage() {
         <span className="lp-pixels" aria-hidden="true" />
         <div className="lp-container lp-hero-grid">
           <div className="lp-hero-texto">
-            <p className="lp-selo"><img src={ccpopLogo} alt="" /> Conselho de Cultura POP de Ponta Grossa</p>
+            <p className="lp-selo"><img src={ccpopLogo} alt="" /> {T.hero.selo}</p>
             <h1 id="lp-titulo" className="lp-titulo">
-              A cena <span>geek e pop</span> de Ponta Grossa começa aqui.
+              {partesDoTitulo(T.hero.titulo).map((p, i) => (p.destaque ? <span key={i}>{p.texto}</span> : p.texto))}
             </h1>
-            <p className="lp-lead">
-              Ingressos, competições e espaço para expositores da <img src={geektopiaTitle} alt="Geektopia" className="lp-lead-logo" /> e dos Pockets, tudo num só lugar.
-            </p>
+            <p className="lp-lead">{T.hero.lead}</p>
             <div className="lp-hero-acoes">
               <Link to="/geektopia" className="btn btn-primary lp-btn-grande">Ver a Geektopia <FiArrowRight aria-hidden="true" /></Link>
               {token
@@ -103,9 +106,7 @@ export function LandingPage() {
                 : <Link to="/cadastro" className="btn lp-btn-claro lp-btn-grande">Criar conta grátis</Link>}
             </div>
             <ul className="lp-confianca">
-              <li><FiCheckCircle aria-hidden="true" /> Compra segura</li>
-              <li><FiSmartphone aria-hidden="true" /> Ingresso no celular</li>
-              <li><FiCheckCircle aria-hidden="true" /> Acompanhe tudo online</li>
+              {T.hero.confianca.map((c, i) => { const Ic = ICONES_CONFIANCA[i % ICONES_CONFIANCA.length]; return <li key={c}><Ic aria-hidden="true" /> {c}</li>; })}
             </ul>
           </div>
 
@@ -114,13 +115,13 @@ export function LandingPage() {
       </section>
 
       {/* ---------------------------------------------------------- NÚMEROS */}
-      <section className="lp-container lp-numeros-faixa" aria-label="O CCPOP em números">
-        <ul className="lp-numeros">
-          <li><strong>3</strong><span>edições realizadas desde 2023</span></li>
-          <li><strong>+5 mil</strong><span>visitantes na última edição</span></li>
-          <li><strong>40+</strong><span>expositores e competidores</span></li>
-        </ul>
-      </section>
+      {T.numeros.length > 0 && (
+        <section className="lp-container lp-numeros-faixa" aria-label="O CCPOP em números">
+          <ul className="lp-numeros" style={{ '--n': T.numeros.length }}>
+            {T.numeros.map((n) => <li key={n.legenda}><strong>{n.valor}</strong><span>{n.legenda}</span></li>)}
+          </ul>
+        </section>
+      )}
 
       {/* -------------------------------------------------------- RECURSOS */}
       <section className="lp-secao" aria-labelledby="lp-recursos-t">
@@ -224,14 +225,10 @@ export function LandingPage() {
           <img src={ccpopLogo} alt="Selo do CCPOP" className="lp-sobre-selo" />
           <div>
             <p className="lp-sobretitulo">Quem somos</p>
-            <h2 id="lp-ccpop-t">Quem é o CCPOP?</h2>
-            <p>
-              O CCPOP (Conselho de Cultura Pop de Ponta Grossa) é uma entidade organizadora voltada a fomentar, estruturar e expandir a cena geek,
-              nerd e pop nos Campos Gerais. Nosso objetivo é inserir Ponta Grossa de vez na rota dos grandes eventos estaduais do setor,
-              valorizando a economia criativa e unindo a comunidade entusiasta.
-            </p>
+            <h2 id="lp-ccpop-t">{T.sobre.titulo}</h2>
+            <p>{T.sobre.texto}</p>
             <ul className="lp-cena" aria-label="O que a cena reúne">
-              {CENA.map(({ Icone, nome }) => <li key={nome}><Icone aria-hidden="true" /> {nome}</li>)}
+              {T.sobre.etiquetas.map((nome) => { const Ic = ICONE_ETIQUETA[nome.toLowerCase()] || FiStar; return <li key={nome}><Ic aria-hidden="true" /> {nome}</li>; })}
             </ul>
           </div>
         </div>
@@ -241,8 +238,8 @@ export function LandingPage() {
       <section className="lp-cta" aria-labelledby="lp-cta-t">
         <span className="lp-pixels" aria-hidden="true" />
         <div className="lp-container lp-cta-conteudo">
-          <h2 id="lp-cta-t">Quer expor ou competir na próxima Geektopia?</h2>
-          <p>As solicitações de espaço e as inscrições em competições são feitas pela plataforma. A organização analisa e você acompanha o resultado.</p>
+          <h2 id="lp-cta-t">{T.chamada.titulo}</h2>
+          <p>{T.chamada.texto}</p>
           <div className="lp-hero-acoes">
             {token
               ? <Link to={destinoConta} className="btn btn-primary lp-btn-grande">{ehAdmin ? 'Ir para o painel' : 'Escolher como participar'} <FiArrowRight aria-hidden="true" /></Link>
@@ -254,21 +251,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ----------------------------------------------------------- RODAPÉ */}
-      <footer className="lp-rodape">
-        <div className="lp-container lp-rodape-grid">
-          <div className="lp-rodape-marca">
-            <img src={ccpopLogo} alt="" />
-            <span>Conselho de Cultura POP de Ponta Grossa</span>
-          </div>
-          <nav aria-label="Links do rodapé">
-            <Link to="/geektopia">Geektopia</Link>
-            {token ? <Link to={ehAdmin ? '/admin' : '/perfil'}>{ehAdmin ? 'Painel' : 'Meu perfil'}</Link> : <Link to="/login">Entrar</Link>}
-            <a href="https://instagram.com/ccpop.pg" target="_blank" rel="noopener noreferrer"><FiInstagram aria-hidden="true" /> Instagram</a>
-          </nav>
-        </div>
-        <p className="lp-rodape-copy">© {new Date().getFullYear()} CCPOP — Ponta Grossa, Paraná</p>
-      </footer>
+      <Rodape />
     </div>
   );
 }

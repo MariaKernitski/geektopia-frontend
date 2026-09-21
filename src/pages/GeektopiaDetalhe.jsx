@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { FiAlertCircle, FiAward, FiCalendar, FiClock, FiFileText, FiInfo, FiMapPin, FiShield, FiShoppingBag, FiShoppingCart, FiSlash, FiTag, FiUsers } from 'react-icons/fi';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
@@ -48,6 +48,7 @@ export function GeektopiaDetalhe() {
 
   // Links como /geektopia/5#programacao: os dados chegam depois da página, então o
   // navegador sozinho não acha a seção; rolamos até ela quando o conteúdo aparece.
+  const navigate = useNavigate();
   const { hash } = useLocation();
   const pronto = Boolean(dados);
   useEffect(() => {
@@ -67,7 +68,6 @@ export function GeektopiaDetalhe() {
     try { sessionStorage.setItem(chaveCarrinho, JSON.stringify(quantidades)); } catch { /* sem armazenamento: a seleção só não sobrevive à navegação */ }
   }, [chaveCarrinho, quantidades]);
   const [mensagem, setMensagem] = useState('');
-  const [comprando, setComprando] = useState(false);
   const logado = Boolean(localStorage.getItem('@Geektopia:token'));
 
   const lotes = useMemo(() => dados?.lotes ?? [], [dados]);
@@ -94,36 +94,14 @@ export function GeektopiaDetalhe() {
     setMensagem('');
     if (itens.length === 0) return;
 
-    // Antes de abrir qualquer aba de pagamento: quem não entrou não tem como comprar.
+    // Quem não entrou vai para o login e volta direto para a compra (a seleção fica guardada na sessão).
     if (!logado) {
-      setMensagem('Entre na sua conta para finalizar a compra. Seus ingressos escolhidos ficam salvos neste navegador.');
+      navigate('/login', { state: { from: `/geektopia/${id}/comprar` } });
       return;
     }
 
-    setComprando(true);
-
-    // Vai para o Mercado Pago NA MESMA ABA. Antes abríamos uma segunda aba antes da
-    // resposta do servidor; se o pop-up fosse bloqueado ou a resposta demorasse, a
-    // pessoa via uma aba em branco e achava que nada tinha acontecido. Ao pagar, o
-    // botão "Voltar ao site" do Mercado Pago traz de volta para a tela de confirmação.
-    try {
-      const res = await api.post(
-        '/pedidos',
-        { itens: itens.map((i) => ({ id_lote: i.lote.id_lote, quantidade: i.qtd })) },
-        { timeout: 30000 }
-      );
-      try { sessionStorage.removeItem(chaveCarrinho); } catch { /* ignora */ }
-      window.location.href = res.data.init_point;
-    } catch (err) {
-      setMensagem(
-        err.response?.status === 401
-          ? 'Sua sessão expirou. Entre novamente para comprar.'
-          : err.code === 'ECONNABORTED'
-            ? 'O Mercado Pago demorou para responder. Nenhuma cobrança foi feita; tente novamente.'
-            : err.response?.data?.error || 'Não foi possível iniciar a compra. Tente de novo.'
-      );
-      setComprando(false);
-    }
+    // Próxima etapa: dados de quem vai usar cada ingresso (nome, documento e nascimento).
+    navigate(`/geektopia/${id}/comprar`);
   };
 
   if (carregando) {
@@ -219,10 +197,10 @@ export function GeektopiaDetalhe() {
         </div>
       )}
 
-      <button type="button" className="btn btn-primary dt-finalizar" disabled={totalIngressos === 0 || comprando} onClick={finalizarCompra}>
-        {comprando ? 'Abrindo o pagamento...' : totalIngressos === 0 ? 'Escolha um ingresso' : `Finalizar compra (${totalIngressos})`}
+      <button type="button" className="btn btn-primary dt-finalizar" disabled={totalIngressos === 0} onClick={finalizarCompra}>
+        {totalIngressos === 0 ? 'Escolha um ingresso' : `Continuar (${totalIngressos})`}
       </button>
-      <p className="dt-carrinho-nota">Pagamento seguro pelo Mercado Pago.</p>
+      <p className="dt-carrinho-nota">Na próxima etapa você informa quem vai usar cada ingresso. Pagamento seguro pelo Mercado Pago.</p>
     </>
   );
 
@@ -420,7 +398,7 @@ export function GeektopiaDetalhe() {
       {mostraCarrinho && totalIngressos > 0 && (
         <div className="dt-barra" role="region" aria-label="Resumo do pedido">
           <div><small>{totalIngressos} ingresso{totalIngressos === 1 ? '' : 's'}</small><strong>{moeda(totalValor)}</strong></div>
-          <button type="button" className="btn btn-primary" disabled={comprando} onClick={finalizarCompra}>{comprando ? 'Abrindo...' : 'Finalizar compra'}</button>
+          <button type="button" className="btn btn-primary" onClick={finalizarCompra}>Continuar</button>
           {mensagem && <p className="dt-barra-msg" role="alert">{mensagem} {!logado && <Link to="/login">Entrar</Link>}</p>}
         </div>
       )}

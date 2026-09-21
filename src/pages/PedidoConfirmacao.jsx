@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FiCheckCircle } from 'react-icons/fi';
+import { BotaoPdf } from '../components/BotaoPdf';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import '../style/PedidoConfirmacao.css';
@@ -63,6 +64,8 @@ export function PedidoConfirmacao() {
     ? { to: '/expositor', rotulo: 'Voltar à área do expositor' }
     : { to: '/perfil', rotulo: 'Ver meus ingressos' };
 
+  const ehPedidoDeIngresso = Boolean(pedido) && !(pedido._count?.inscricoesCompeticao > 0) && !(pedido._count?.solicitacoesEspaco > 0);
+
   const resumo = pedido && (
     <div className="confirmacao-resumo">
       <div className="confirmacao-linha">
@@ -107,7 +110,13 @@ export function PedidoConfirmacao() {
             <h2 className="confirmacao-title is-sucesso"><FiCheckCircle aria-hidden="true" className="confirmacao-icone" /> Pagamento confirmado!</h2>
             <p className="confirmacao-sub">{mensagem || 'Seu pedido foi aprovado.'}</p>
             {resumo}
-            <Link to={destino.to} className="btn btn-primary">{destino.rotulo}</Link>
+            {ehPedidoDeIngresso && (
+              <div className="confirmacao-ingressos">
+                <p>Seus ingressos estão prontos, cada um em nome do titular. Baixe o PDF e guarde no celular: na entrada, basta mostrar o QR code e um documento com foto.</p>
+                <BotaoPdf secundario={false} url={`/ingressos/pedido/${id}/pdf`} nome={`ingressos-compra-${id}.pdf`}>Baixar ingressos (PDF)</BotaoPdf>
+              </div>
+            )}
+            <Link to={destino.to} className={`btn ${ehPedidoDeIngresso ? 'btn-secondary' : 'btn-primary'}`}>{destino.rotulo}</Link>
           </>
         )}
 
