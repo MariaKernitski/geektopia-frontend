@@ -52,6 +52,12 @@ export function Login() {
             </div>
           )}
 
+          {location.state?.senhaRedefinida && (
+            <div className="login-feedback is-success" role="status" style={{ marginTop: '0', marginBottom: '20px' }}>
+              Senha alterada com sucesso! Entre com a nova senha.
+            </div>
+          )}
+
           <p className="login-subtitle">Entre com sua conta para acessar o NEXUS.</p>
           <p className="login-required-hint"><span>*</span> Campos obrigatórios</p>
 
@@ -85,7 +91,7 @@ export function Login() {
             </div>
 
             <div className="login-form-foot">
-              <a href="/esqueci-senha" className="login-forgot-link">Esqueci minha senha</a>
+              <Link to="/esqueci-senha" className="login-forgot-link">Esqueci minha senha</Link>
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={carregando}>
