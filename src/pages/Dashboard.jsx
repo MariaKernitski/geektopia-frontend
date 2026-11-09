@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Dica } from '../components/ajuda/Dica';
 import { useCarga } from '../hooks/useCarga';
 import { Link } from 'react-router-dom';
 import { FiActivity, FiAward, FiBarChart2, FiDollarSign, FiDownload, FiMapPin, FiPrinter, FiRefreshCw, FiShoppingBag, FiTag, FiUsers, FiX } from 'react-icons/fi';
@@ -133,7 +134,7 @@ export function Dashboard() {
             <fieldset className="dash-grupo">
               <legend>O que analisar</legend>
               <div className="dash-campo">
-                <label htmlFor="f-base">Base</label>
+                <label htmlFor="f-base">Base<Dica chave="relatorioBase" rotulo="Base" /></label>
                 <select id="f-base" value={filtros.base} onChange={(e) => alterar('base', e.target.value)}>
                   <option value="participantes">Participantes (quem tem ingresso)</option>
                   <option value="cadastros">Todos os usuários cadastrados</option>
@@ -198,6 +199,7 @@ export function Dashboard() {
 
         <div className="dash-etiquetas" aria-live="polite">
           <span className="dash-etiquetas-titulo">{carregando ? 'Atualizando...' : ativos > 0 ? 'Filtrando por:' : 'Sem filtros: mostrando tudo. Clique num gráfico para filtrar.'}</span>
+          <Dica chave="relatorioFiltros" rotulo="Como usar os filtros" />
           {filtrosAtivos(filtros, opcoes).map((f) => (
             <button key={f.chave} type="button" className="dash-etiqueta" onClick={() => alterar(f.chave, '')} aria-label={`Remover filtro ${f.rotulo}: ${f.valor}`}>
               <strong>{f.rotulo}:</strong> {f.valor} <FiX aria-hidden="true" />

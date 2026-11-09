@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Dica } from '../components/ajuda/Dica';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { abrirAbaPagamento, fecharAbaPagamento, irParaPagamento } from '../utils/pagamentoAba';
 import { FiAlertCircle, FiArrowLeft, FiCheck, FiInfo, FiLock, FiUser } from 'react-icons/fi';
@@ -210,7 +211,7 @@ function Formulario({ idEvento, evento, lotes }) {
                         </div>
 
                         <div className="ck-campo">
-                          <label htmlFor={`d-${ing.chave}`}>Documento *</label>
+                          <label htmlFor={`d-${ing.chave}`}>Documento *<Dica chave="documentoTitular" rotulo="Documento" /></label>
                           <div className="ck-doc">
                             <select aria-label="Tipo de documento" value={t.tipoDoc} onChange={(ev) => guardar({ ...titulares, [ing.chave]: { ...t, tipoDoc: ev.target.value, doc: '' } })}>
                               <option value="cpf">CPF</option>
@@ -225,7 +226,7 @@ function Formulario({ idEvento, evento, lotes }) {
                         </div>
 
                         <div className="ck-campo">
-                          <label htmlFor={`b-${ing.chave}`}>Data de nascimento *</label>
+                          <label htmlFor={`b-${ing.chave}`}>Data de nascimento *<Dica chave="nascimentoTitular" rotulo="Data de nascimento" /></label>
                           <input id={`b-${ing.chave}`} type="date" min={nascimentoMinimo()} max={hoje()} value={t.nasc} onChange={(ev) => alterar(ing.chave, 'nasc', ev.target.value)} aria-invalid={e.nascimento ? true : undefined} />
                           {e.nascimento && <p className="ck-erro" role="alert">{e.nascimento}</p>}
                         </div>

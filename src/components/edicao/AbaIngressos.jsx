@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Dica } from '../ajuda/Dica';
 import api from '../../services/api';
 import { ConfirmModal } from '../ConfirmModal';
 import { useAviso, mensagemDeErro } from '../../hooks/useAviso';
@@ -118,7 +119,7 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
             {erroCampo('nome_lote')}
           </div>
           <div className="ed-campo">
-            <label htmlFor="l-cat">Tipo de ingresso</label>
+            <label htmlFor="l-cat">Tipo de ingresso<Dica chave="categoriaLote" rotulo="Tipo de ingresso" /></label>
             <select id="l-cat" name="categoria" value={form.categoria} onChange={alterar}>
               {CATEGORIAS.map((c) => <option key={c.chave} value={c.chave}>{c.rotulo}</option>)}
             </select>
@@ -134,7 +135,7 @@ export function AbaIngressos({ evento, recarregarResumo, marcarAlterado }) {
             {erroCampo('quantidade_total')}
           </div>
           <div className="ed-campo">
-            <label htmlFor="l-lim">Limite por pessoa</label>
+            <label htmlFor="l-lim">Limite por pessoa<Dica chave="limitePorPessoa" rotulo="Limite por pessoa" /></label>
             <input id="l-lim" name="limite_por_pessoa" type="number" min="1" max="50" step="1" inputMode="numeric" value={form.limite_por_pessoa} onChange={alterar}
               placeholder={form.categoria === 'Meia' ? '1 (padrão)' : 'Sem limite'} {...aria('limite_por_pessoa')} />
             {erroCampo('limite_por_pessoa')}

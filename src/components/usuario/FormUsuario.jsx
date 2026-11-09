@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Dica } from '../ajuda/Dica';
 import { FiAlertCircle, FiCheck, FiCircle } from 'react-icons/fi';
 import * as v from '../../utils/validacao';
 import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../../utils/mascaras';
@@ -77,10 +78,10 @@ function calcularErros(val, modo) {
   return Object.fromEntries(Object.entries(e).filter(([, msg]) => msg));
 }
 
-function Campo({ id, rotulo, obrigatorio, erro, ajuda, children }) {
+function Campo({ id, rotulo, obrigatorio, erro, ajuda, dica, children }) {
   return (
     <div className="ed-campo">
-      <label htmlFor={`u-${id}`}>{rotulo}{obrigatorio && ' *'}</label>
+      <label htmlFor={`u-${id}`}>{rotulo}{obrigatorio && ' *'}{dica && <Dica chave={dica} rotulo={rotulo} />}</label>
       {children}
       {ajuda && !erro && <small className="ed-ajuda">{ajuda}</small>}
       {erro && <p className="ed-erro-campo" id={`erro-u-${id}`} role="alert">{erro}</p>}
@@ -391,7 +392,7 @@ export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }
           </div>
 
           <div className="ed-linha">
-            <Campo id="genero" rotulo="Gênero" obrigatorio={modo === 'cadastro'} erro={erroVisivel('genero')} ajuda="Usado só em estatísticas do público. Você pode escolher “Prefiro não informar”.">
+            <Campo id="genero" rotulo="Gênero" dica="generoCadastro" obrigatorio={modo === 'cadastro'} erro={erroVisivel('genero')} ajuda="Usado só em estatísticas do público. Você pode escolher “Prefiro não informar”.">
               <select id="u-genero" value={val.genero} onChange={(e) => alterar('genero', e.target.value)} onBlur={() => aoSair('genero')} {...aria('genero')}>
                 <option value="">Selecione...</option>
                 {GENEROS.map((g) => <option key={g} value={g}>{g}</option>)}

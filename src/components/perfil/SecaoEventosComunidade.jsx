@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Dica } from '../ajuda/Dica';
 import { FiCalendar, FiPlus } from 'react-icons/fi';
 import api from '../../services/api';
 import { useCarga } from '../../hooks/useCarga';
@@ -65,7 +66,7 @@ export function SecaoEventosComunidade({ onMensagem }) {
 
   const campo = (k, rotulo, props = {}, cheio = false) => (
     <div className={`perfil-field ${cheio ? 'perfil-form-full' : ''}`}>
-      <label htmlFor={`ec-${k}`}>{rotulo}</label>
+      <label htmlFor={`ec-${k}`}>{rotulo}{k === 'url_saiba_mais' && <Dica chave="linkEventoComunidade" rotulo="Link do evento" />}</label>
       {props.area
         ? <textarea id={`ec-${k}`} rows={4} value={form[k]} onChange={(e) => alterar(k, e.target.value)} aria-invalid={erros[k] ? true : undefined} />
         : <input id={`ec-${k}`} value={form[k]} onChange={(e) => alterar(k, e.target.value)} aria-invalid={erros[k] ? true : undefined} {...props} />}

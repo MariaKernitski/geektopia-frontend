@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Dica } from '../components/ajuda/Dica';
 import { Link, useSearchParams } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import {
@@ -278,7 +279,7 @@ function FormEdicao({ user, onCancelar, onSalvo }) {
           </div>
         )}
         <div className="perfil-field">
-          <label htmlFor="pf-sexualidade">Sexualidade (opcional)</label>
+          <label htmlFor="pf-sexualidade">Sexualidade (opcional)<Dica chave="sexualidadePerfil" rotulo="Sexualidade" /></label>
           <select id="pf-sexualidade" name="sexualidade" value={form.sexualidade} onChange={alterar}>
             <option value="">Não informar agora</option>
             {SEXUALIDADES.map((g) => <option key={g} value={g}>{g}</option>)}

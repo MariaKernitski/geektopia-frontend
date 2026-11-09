@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { LinkAjuda } from '../ajuda/LinkAjuda';
 import { CATEGORIAS, moeda } from '../../utils/evento';
 import { MAX_INGRESSOS_POR_COMPRA, limiteDoLote } from '../../utils/titular';
 
@@ -42,6 +43,7 @@ export function SeletorIngressos({ lotes, quantidades, totalSelecionado = 0, onA
   return (
     <div className="dt-ingressos">
       {vendaAberta && noLimiteDaCompra && <p className="dt-limite-atingido" role="status">Você chegou ao limite de {MAX_INGRESSOS_POR_COMPRA} ingressos por compra. Para levar mais, finalize esta compra e faça outra.</p>}
+      {vendaAberta && <LinkAjuda artigo="comprar-ingresso">Como comprar? Veja o passo a passo</LinkAjuda>}
       {vendaAberta && (
         <ul className="dt-limites" aria-label="Limites de compra">
           <li>Máximo de <strong>{MAX_INGRESSOS_POR_COMPRA} ingressos</strong> por compra.</li>
