@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { LinkAjuda } from '../components/ajuda/LinkAjuda';
+import { Dica } from '../components/ajuda/Dica';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { AvisoBox } from '../components/edicao/AvisoBox';
@@ -71,6 +73,7 @@ export function CompeticaoDetalhe() {
     <div className="ed-pagina ed-pagina-estreita">
       <Link to={`/geektopia/${c.geektopia.id_geektopia}`} className="btn btn-secondary ed-voltar">← {c.geektopia.nome_edicao}</Link>
 
+      <LinkAjuda artigo="inscrever-competicao" />
       <h1 className="ed-titulo-pagina" style={{ marginBottom: 8 }}>{c.nome_competicao}</h1>
       <div className="pb-chips" style={{ marginBottom: 16 }}>
         {c.modalidade && <span className="pb-chip">{ROTULO_MODALIDADE[c.modalidade]}</span>}
@@ -133,7 +136,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
     e.preventDefault();
     limpar();
     const n = {};
-    if (!competidor && !form.nickname.trim()) n.nickname = 'Informe o nome (nickname) com que você vai competir.';
+    if (!form.nickname.trim()) n.nickname = 'Informe o nome (nickname) com que você vai competir.';
     if (modalidade !== 'Solo') {
       if (!form.nome_equipe.trim()) n.nome_equipe = 'Dê um nome para a sua equipe.';
       const qtd = form.integrantes.split('\n').map((x) => x.trim()).filter(Boolean).length;
@@ -153,6 +156,8 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
     try {
       // Quem nunca competiu ganha o perfil de competidor aqui mesmo, sem etapa à parte.
       if (!competidor) await api.post('/parceiros/competidor', { nickname_competidor: form.nickname.trim(), link_redes_sociais: form.redes.trim() || undefined });
+      // Quem já compete pode trocar o nome aqui mesmo (por exemplo, quando outro competidor já usa o mesmo nome nesta edição).
+      else if (form.nickname.trim() !== (competidor.nickname_competidor || '')) await api.put('/parceiros/competidor', { nickname_competidor: form.nickname.trim() });
 
       const corpo = {
         id_competicao: competicao.id_competicao,
@@ -169,7 +174,13 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
       const res = await api.post('/inscricoes', corpo);
       navigate('/competidor', { state: { sucesso: res.data.message } });
     } catch (err) {
-      mostrar('erro', mensagemDeErro(err, 'Não foi possível enviar a inscrição. Tente de novo.'));
+      // Nome de competidor já usado nesta edição: o erro aparece no próprio campo, com o foco nele.
+      if (err.response?.data?.campo === 'nickname_competidor') {
+        setErros((e) => ({ ...e, nickname: err.response.data.error }));
+        document.getElementById('i-nickname')?.focus();
+      } else {
+        mostrar('erro', mensagemDeErro(err, 'Não foi possível enviar a inscrição. Tente de novo.'));
+      }
       setEnviando(false);
     }
   };
@@ -187,14 +198,12 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
       <AvisoBox aviso={avisoDaTela(aviso, null)} />
 
       <form onSubmit={enviar} className="ed-form" noValidate>
-        {!competidor && (
-          <div className="ed-campo">
-            <label htmlFor="i-nickname">Seu nome de competidor (nickname) *</label>
-            <input id="i-nickname" name="nickname" value={form.nickname} onChange={alterar} maxLength={30} {...aria('nickname')} />
-            {campoErro('nickname')}
-            <small className="ed-ajuda">É como você aparece nas chaves e no placar. Fica salvo para as próximas competições.</small>
-          </div>
-        )}
+        <div className="ed-campo">
+          <label htmlFor="i-nickname">Seu nome de competidor (nickname) *<Dica chave="nicknameCompeticao" rotulo="Nome de competidor" /></label>
+          <input id="i-nickname" name="nickname" value={form.nickname} onChange={alterar} maxLength={30} {...aria('nickname')} />
+          {campoErro('nickname')}
+          <small className="ed-ajuda">É como você aparece nas chaves e no placar. Fica salvo para as próximas competições. Em cada edição, dois competidores não podem ter o mesmo nome.</small>
+        </div>
         {!competidor && (
           <div className="ed-campo">
             <label htmlFor="i-redes">Instagram ou outra rede social</label>
@@ -226,7 +235,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
         )}
 
         <div className="ed-campo">
-          <label htmlFor="i-portfolio">Link do seu material de apresentação *</label>
+          <label htmlFor="i-portfolio">Link do seu material de apresentação *<Dica chave="portfolioCompeticao" rotulo="Link do material de apresentação" /></label>
           <input id="i-portfolio" name="portfolio" type="url" value={form.portfolio} onChange={alterar} placeholder="https://..." {...aria('portfolio')} />
           {campoErro('portfolio')}
           <small className="ed-ajuda">Portfólio, vídeo, fotos ou rede social. É o que a organização usa para avaliar a inscrição.</small>
