@@ -52,6 +52,18 @@ export function Login() {
             </div>
           )}
 
+          {new URLSearchParams(location.search).get('conta') === 'inativa' && (
+            <div className="login-feedback is-error" role="alert" style={{ marginTop: '0', marginBottom: '20px' }}>
+              Esta conta foi inativada. Fale com a organização do CCPOP para reativá-la.
+            </div>
+          )}
+
+          {new URLSearchParams(location.search).get('conta') === 'encerrada' && (
+            <div className="login-feedback is-success" role="status" style={{ marginTop: '0', marginBottom: '20px' }}>
+              Sua conta foi encerrada. Os dados de quem já comprou ou se inscreveu ficam guardados; para voltar, fale com a organização do CCPOP.
+            </div>
+          )}
+
           {location.state?.senhaRedefinida && (
             <div className="login-feedback is-success" role="status" style={{ marginTop: '0', marginBottom: '20px' }}>
               Senha alterada com sucesso! Entre com a nova senha.

@@ -522,6 +522,53 @@ const REQUISITOS = [
   ['numero', 'Um número'], ['especial', 'Um caractere especial']
 ];
 
+// Encerrar a conta. Quem tem pedidos, ingressos ou inscrições tem a conta INATIVADA (os dados ficam guardados e a
+// organização pode reativar); quem nunca fez nada tem a conta excluída de verdade. A senha é pedida de novo.
+function EncerrarConta() {
+  const [aberto, setAberto] = useState(false);
+  const [senha, setSenha] = useState('');
+  const [ciente, setCiente] = useState(false);
+  const [erro, setErro] = useState('');
+  const [enviando, setEnviando] = useState(false);
+
+  const encerrar = async (e) => {
+    e.preventDefault();
+    setErro('');
+    setEnviando(true);
+    try {
+      await api.delete('/auth/delete-account', { data: { senha } });
+      localStorage.removeItem('@Geektopia:token');
+      localStorage.removeItem('@Geektopia:user');
+      window.location.assign('/login?conta=encerrada');
+    } catch (err) {
+      setErro(err.response?.data?.error || 'Não foi possível encerrar a conta agora. Tente de novo.');
+      setEnviando(false);
+    }
+  };
+
+  return (
+    <div className="perfil-encerrar">
+      <h3 className="perfil-subtitulo">Encerrar minha conta</h3>
+      {!aberto ? (
+        <>
+          <p className="perfil-ajuda">Se você já comprou, se inscreveu ou pediu espaço, a sua conta é <strong>inativada</strong>: você deixa de entrar, mas os registros continuam guardados e a organização pode reativar. Se nunca fez nada no site, a conta é excluída.</p>
+          <button type="button" className="btn btn-danger" onClick={() => setAberto(true)}>Encerrar minha conta</button>
+        </>
+      ) : (
+        <form onSubmit={encerrar} noValidate>
+          {erro && <div className="perfil-feedback is-erro" role="alert">{erro}</div>}
+          <div className="perfil-field"><label htmlFor="pf-enc-senha">Confirme a sua senha</label><input id="pf-enc-senha" type="password" value={senha} onChange={(e) => setSenha(e.target.value)} autoComplete="current-password" /></div>
+          <label className="perfil-check"><input type="checkbox" checked={ciente} onChange={(e) => setCiente(e.target.checked)} /> Entendo que vou deixar de acessar o site com esta conta.</label>
+          <div className="perfil-form-actions">
+            <button type="button" className="btn btn-secondary" onClick={() => { setAberto(false); setSenha(''); setCiente(false); setErro(''); }}>Cancelar</button>
+            <button type="submit" className="btn btn-danger" disabled={enviando || !senha || !ciente}>{enviando ? 'Encerrando...' : 'Encerrar conta'}</button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function SecaoSeguranca({ onMensagem }) {
   const [atual, setAtual] = useState('');
   const [nova, setNova] = useState('');
@@ -561,6 +608,7 @@ function SecaoSeguranca({ onMensagem }) {
         </ul>
         <button type="submit" className="btn btn-primary" disabled={salvando || !atual || !nova}>{salvando ? 'Salvando...' : 'Atualizar senha'}</button>
       </form>
+      <EncerrarConta />
     </section>
   );
 }

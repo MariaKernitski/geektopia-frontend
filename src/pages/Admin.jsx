@@ -28,6 +28,7 @@ export function Admin() {
 
   const q = params.get('q') || '';
   const tipo = params.get('tipo') || '';
+  const situacao = params.get('situacao') || '';
   const ordem = params.get('ordem') || 'recentes';
   const limite = Number(params.get('limite')) || 20;
   const pagina = Number(params.get('pagina')) || 1;
@@ -38,11 +39,12 @@ export function Admin() {
 
   const { aviso, mostrar } = useAviso();
   const [idParaExcluir, setIdParaExcluir] = useState(null);
+  const [idParaInativar, setIdParaInativar] = useState(null);
   const [usuarioParaPromover, setUsuarioParaPromover] = useState(null);
 
   const buscar = useCallback(
-    () => api.get('/auth/admin/users', { params: { q, tipo, ordem, limite, pagina } }).then((r) => r.data),
-    [q, tipo, ordem, limite, pagina]
+    () => api.get('/auth/admin/users', { params: { q, tipo, situacao, ordem, limite, pagina } }).then((r) => r.data),
+    [q, tipo, situacao, ordem, limite, pagina]
   );
   const { dados, erro, carregando, atualizando, recarregar } = useCarga(buscar);
 
@@ -92,7 +94,7 @@ export function Admin() {
       mostrar('sucesso', res.data.message);
       recarregar();
     } catch (err) {
-      mostrar('erro', mensagemDeErro(err, 'Erro ao rebaixar.'));
+      mostrar('erro', mensagemDeErro(err, 'Erro ao remover o acesso de administrador.'));
     }
   };
 
@@ -108,7 +110,28 @@ export function Admin() {
     }
   };
 
-  const filtrando = Boolean(q || tipo);
+  const inativar = async () => {
+    const id = idParaInativar;
+    setIdParaInativar(null);
+    try {
+      const res = await api.patch(`/auth/admin/users/${id}/inativar`);
+      mostrar('sucesso', res.data.message);
+      recarregar();
+    } catch (err) {
+      mostrar('erro', mensagemDeErro(err, 'Erro ao inativar.'));
+    }
+  };
+  const reativar = async (id) => {
+    try {
+      const res = await api.patch(`/auth/admin/users/${id}/reativar`);
+      mostrar('sucesso', res.data.message);
+      recarregar();
+    } catch (err) {
+      mostrar('erro', mensagemDeErro(err, 'Erro ao reativar.'));
+    }
+  };
+
+  const filtrando = Boolean(q || tipo || situacao);
   const avisoInicial = location.state?.sucesso ? { tipo: 'sucesso', texto: location.state.sucesso } : aviso;
 
   return (
@@ -135,6 +158,14 @@ export function Admin() {
             <option value="">Todos</option>
             <option value="cliente">Clientes</option>
             <option value="admin">Administradores</option>
+          </select>
+        </div>
+        <div className="ed-campo">
+          <label htmlFor="usr-situacao">Situação</label>
+          <select id="usr-situacao" value={situacao} onChange={(e) => atualizarUrl({ situacao: e.target.value })}>
+            <option value="">Todas</option>
+            <option value="ativa">Ativas</option>
+            <option value="inativa">Inativas</option>
           </select>
         </div>
         <div className="ed-campo">
@@ -171,7 +202,9 @@ export function Admin() {
                     <span className={`ed-badge ${u.administrador ? 'is-ok' : ''}`}>
                       {u.administrador ? (u.administrador.nivel_permissao === 'ADMIN_GERAL' ? 'Admin Geral' : 'Admin Conteúdo') : 'Cliente'}
                     </span>
+                    {u.inativado_em && <span className="ed-badge is-erro">Inativa</span>}
                   </span>
+                  {u.inativado_em && <span className="ed-item-detalhe">Inativada em {new Date(u.inativado_em).toLocaleDateString('pt-BR')}{u.inativado_motivo ? ` · ${u.inativado_motivo}` : ''}. Os dados continuam guardados.</span>}
                   <span className="ed-item-detalhe">{u.email}</span>
                   <span className="ed-item-detalhe">
                     {documentoDe(u)}{u.cidade && ` · ${u.cidade}${u.estado ? `/${u.estado}` : ''}`}
@@ -180,11 +213,16 @@ export function Admin() {
                 <div className="ed-item-acoes">
                   <Link to={`/admin/usuarios/${u.id_usuario}/editar`} className="btn btn-secondary ed-btn-sm">Editar</Link>
                   {u.administrador ? (
-                    <button type="button" className="btn btn-secondary ed-btn-sm" onClick={() => rebaixar(u.id_usuario)}>Rebaixar</button>
+                    <button type="button" className="btn btn-secondary ed-btn-sm" onClick={() => rebaixar(u.id_usuario)}>Remover acesso de admin</button>
                   ) : (
                     <button type="button" className="btn btn-secondary ed-btn-sm" onClick={() => setUsuarioParaPromover(u.id_usuario)}>Promover a admin</button>
                   )}
-                  <button type="button" className="btn btn-danger ed-btn-sm" onClick={() => setIdParaExcluir(u.id_usuario)}>Excluir</button>
+                  {u.inativado_em
+                    ? <button type="button" className="btn btn-primary ed-btn-sm" onClick={() => reativar(u.id_usuario)}>Reativar</button>
+                    : !u.administrador && <button type="button" className="btn btn-secondary ed-btn-sm" onClick={() => setIdParaInativar(u.id_usuario)}>Inativar</button>}
+                  {u.tem_atividade
+                    ? <span className="usr-so-inativar" title="Esta pessoa tem pedidos, ingressos, inscrições ou perfis. Para não perder o histórico, ela só pode ser inativada.">Tem atividade: só inativar</span>
+                    : <button type="button" className="btn btn-danger ed-btn-sm" onClick={() => setIdParaExcluir(u.id_usuario)}>Excluir</button>}
                 </div>
               </li>
             ))}
@@ -201,9 +239,18 @@ export function Admin() {
       <PromoteModal isOpen={usuarioParaPromover !== null} onConfirm={confirmarPromocao} onCancel={() => setUsuarioParaPromover(null)} />
 
       <ConfirmModal
+        isOpen={idParaInativar !== null}
+        title="Inativar conta"
+        message="A pessoa deixa de conseguir entrar, mas pedidos, ingressos e inscrições continuam guardados. Você pode reativar a conta depois."
+        confirmLabel="Inativar"
+        onConfirm={inativar}
+        onCancel={() => setIdParaInativar(null)}
+      />
+
+      <ConfirmModal
         isOpen={idParaExcluir !== null}
         title="Excluir usuário"
-        message="Tem certeza que deseja excluir este usuário? Só é possível se ele não tiver pedidos, ingressos ou outros registros. Essa ação não pode ser desfeita."
+        message="Tem certeza que deseja excluir este usuário? Só é possível para quem nunca fez nada no site (quem tem pedidos, ingressos, inscrições ou perfis só pode ser inativado). Essa ação não pode ser desfeita."
         confirmLabel="Excluir"
         variant="danger"
         onConfirm={confirmarExclusao}

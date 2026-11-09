@@ -13,4 +13,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Conta inativada no meio da sessão: o servidor responde 403 com `inativa`. Sai do site e explica no login.
+api.interceptors.response.use((r) => r, (erro) => {
+  if (erro.response?.status === 403 && erro.response.data?.inativa && localStorage.getItem('@Geektopia:token')) {
+    localStorage.removeItem('@Geektopia:token');
+    localStorage.removeItem('@Geektopia:user');
+    window.location.assign('/login?conta=inativa');
+  }
+  return Promise.reject(erro);
+});
+
 export default api;

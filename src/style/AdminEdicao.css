@@ -1216,3 +1216,14 @@ label.btn.is-desabilitado {
 .ed-campo-medio {
   max-width: 360px;
 }
+
+.usr-so-inativar {
+  align-self: center;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--soft-txt-color);
+  background: var(--bg-alt-color);
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+}
