@@ -547,10 +547,10 @@ function EncerrarConta() {
     setErro('');
     setEnviando(true);
     try {
-      await api.delete('/auth/delete-account', { data: { senha } });
+      const res = await api.delete('/auth/delete-account', { data: { senha } });
       localStorage.removeItem('@Geektopia:token');
       localStorage.removeItem('@Geektopia:user');
-      window.location.assign('/login?conta=encerrada');
+      window.location.assign(`/login?conta=${res.data.inativada ? 'encerrada' : 'excluida'}`);
     } catch (err) {
       setErro(err.response?.data?.error || 'Não foi possível encerrar a conta agora. Tente de novo.');
       setEnviando(false);

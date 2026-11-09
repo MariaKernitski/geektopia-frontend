@@ -176,7 +176,7 @@ function Formulario({ competicao, taxa, competidor, reprovada }) {
     } catch (err) {
       // Nome de competidor já usado nesta edição: o erro aparece no próprio campo, com o foco nele.
       if (err.response?.data?.campo === 'nickname_competidor') {
-        setErros((e) => ({ ...e, nickname: err.response.data.error }));
+        setErros((e) => ({ ...e, nickname: `O nome “${form.nickname.trim()}” já está em uso por outro competidor nesta edição. Escolha outro nome aqui mesmo e envie de novo.` }));
         document.getElementById('i-nickname')?.focus();
       } else {
         mostrar('erro', mensagemDeErro(err, 'Não foi possível enviar a inscrição. Tente de novo.'));
