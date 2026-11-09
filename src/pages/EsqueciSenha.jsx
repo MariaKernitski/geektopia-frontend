@@ -7,7 +7,7 @@ import '../style/RecuperarSenha.css';
 
 // A recuperação por e-mail já está pronta no servidor, mas só é liberada quando o envio de e-mail (SMTP) estiver configurado.
 // Enquanto for false, a tela avisa que o recurso ainda não está disponível. Para liberar, mude para true.
-const RECUPERACAO_DISPONIVEL = false;
+const RECUPERACAO_DISPONIVEL = true;
 
 // Pede o e-mail e manda o link de redefinição. A resposta é sempre a mesma, exista a conta ou não.
 export function EsqueciSenha() {
