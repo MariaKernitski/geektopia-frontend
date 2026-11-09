@@ -53,3 +53,18 @@
   background: #fff7dc;
   border: 1px solid #f0dc94;
 }
+
+.rs-acoes {
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+}
+.rs-acoes .btn {
+  width: 100%;
+  box-sizing: border-box;
+}
+.rs-voltar {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--main-txt-color);
+}
