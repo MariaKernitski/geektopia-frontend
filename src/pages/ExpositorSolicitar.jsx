@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { Dica } from '../components/ajuda/Dica';
+import { LinkAjuda } from '../components/ajuda/LinkAjuda';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { AvisoBox } from '../components/edicao/AvisoBox';
@@ -106,6 +108,7 @@ export function ExpositorSolicitar() {
     <div className="ed-pagina">
       <Link to="/expositor" className="btn btn-secondary ed-voltar">← Área do expositor</Link>
       <h1 className="ed-titulo-pagina" style={{ marginBottom: 6 }}>Solicitar espaço</h1>
+      <LinkAjuda artigo="solicitar-espaco" />
       <p className="ed-subtitulo" style={{ marginBottom: 20 }}>Escolha a edição e o espaço. A diretoria avalia o pedido e, se aprovar, você paga a taxa para confirmar a presença.</p>
 
       <AvisoBox aviso={avisoDaTela(aviso, erro)} />
@@ -152,7 +155,7 @@ export function ExpositorSolicitar() {
           </fieldset>
 
           <section className="pt-secao" aria-labelledby="extras">
-            <h2 className="pt-secao-titulo" id="extras"><span className="pt-numero">3</span> Precisa de algo a mais?</h2>
+            <h2 className="pt-secao-titulo" id="extras"><span className="pt-numero">3</span> Precisa de algo a mais?<Dica chave="extrasExpositor" rotulo="Extras do espaço" /></h2>
             {!espaco ? (
               <p className="ed-ajuda">Escolha um espaço para ver as opções extras.</p>
             ) : (

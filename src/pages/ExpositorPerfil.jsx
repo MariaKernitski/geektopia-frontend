@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Dica } from '../components/ajuda/Dica';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { AvisoBox } from '../components/edicao/AvisoBox';
@@ -112,7 +113,7 @@ function FormularioPerfil({ expositor, erroCarga }) {
           </div>
 
           <div className="ed-campo">
-            <label htmlFor="p-url_portfolio">Link do portfólio ou rede social *</label>
+            <label htmlFor="p-url_portfolio">Link do portfólio ou rede social *<Dica chave="portfolio" rotulo="Link do portfólio" /></label>
             <input id="p-url_portfolio" name="url_portfolio" type="url" value={form.url_portfolio} onChange={alterar} placeholder="https://..." {...aria('url_portfolio')} />
             {campoErro('url_portfolio')}
             <small className="ed-ajuda">Ajuda a diretoria a conhecer o seu trabalho. Se você for confirmado, este link aparece no site.</small>

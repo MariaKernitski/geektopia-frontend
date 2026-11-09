@@ -1,4 +1,7 @@
+import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import api from '../services/api';
+import { useCarga } from '../hooks/useCarga';
 import { usePendencias } from '../hooks/usePendencias';
 import { Sininho } from './Sininho';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
@@ -10,6 +13,20 @@ export function Header() {
   const userRaw = localStorage.getItem('@Geektopia:user');
   const user = userRaw ? JSON.parse(userRaw) : null;
   const isAdmin = !!user?.administrador;
+
+  // Nome fixo no canto direito: primeiro nome + sobrenome abreviado, e a inicial num círculo. Leva ao perfil (ou ao painel, para o admin).
+  const partesNome = (user?.nome_completo || '').trim().split(/\s+/).filter(Boolean);
+  const nomeCurto = partesNome.length > 1 ? `${partesNome[0]} ${partesNome[partesNome.length - 1][0]}.` : partesNome[0] || '';
+
+  // A foto de perfil não vem no login, então é buscada uma vez por sessão (e de novo ao sair da tela do perfil, onde ela pode ter mudado).
+  const token = localStorage.getItem('@Geektopia:token');
+  const noPerfil = location.pathname === '/perfil';
+  const buscarFoto = useCallback(
+    () => (token ? api.get('/auth/me').then((r) => r.data?.perfil?.avatar_url || null).catch(() => null) : Promise.resolve(null)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [token, noPerfil]
+  );
+  const { dados: foto } = useCarga(buscarFoto);
 
   const { total: pendentes } = usePendencias(isAdmin, location.pathname);
 
@@ -32,11 +49,24 @@ export function Header() {
         <Link to="/" className={linkClass('/')}>CCPOP</Link>
         <Link to="/geektopia" className={linkClass('/geektopia')}>Geektopia</Link>
         <Link to="/eventos" className={linkClass('/eventos')}>Eventos da comunidade</Link>
+        <Link to="/ajuda" className={linkClass('/ajuda')}>Ajuda</Link>
       </nav>
 
       <div className="header-actions">
         {user ? (
           <>
+            {nomeCurto && (() => {
+              const conteudo = (
+                <>
+                  {foto ? <img className="header-usuario-foto" src={foto} alt="" /> : <span className="header-usuario-inicial" aria-hidden="true">{nomeCurto[0].toUpperCase()}</span>}
+                  <span className="header-usuario-nome">{nomeCurto}</span>
+                </>
+              );
+              // Cliente: o chip é o caminho para o perfil. Administrador não tem perfil de participante: só identifica (o painel tem o seu botão).
+              return isAdmin
+                ? <span className="header-usuario is-fixo" title={user.nome_completo} aria-label={`Conectado como ${user.nome_completo}`}>{conteudo}</span>
+                : <Link to="/perfil" className="header-usuario" title="Meu perfil" aria-label={`Meu perfil: ${user.nome_completo}`}>{conteudo}</Link>;
+            })()}
             <Sininho />
             {isAdmin && (
               <Link to="/admin" className="btn btn-secondary header-admin">
@@ -48,7 +78,6 @@ export function Header() {
             {!isAdmin && (
               <>
                 <Link to="/participar" className="btn btn-secondary">Participar</Link>
-                <Link to="/perfil" className="btn btn-secondary">Meu Perfil</Link>
               </>
             )}
             <button onClick={handleLogout} className="btn btn-primary">Sair</button>

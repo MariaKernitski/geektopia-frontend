@@ -1,0 +1,55 @@
+.rs-card {
+  max-width: 480px;
+  grid-template-columns: 1fr;
+}
+.rs-card .login-form-side {
+  width: 100%;
+}
+.rs-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.rs-requisitos {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--soft-txt-color);
+}
+.rs-requisitos li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rs-requisitos li.is-ok {
+  color: #1b7a43;
+}
+
+.rs-sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.rs-sucesso .login-feedback {
+  margin: 0;
+}
+.rs-sucesso .login-subtitle {
+  margin: 0;
+}
+.rs-sucesso .btn {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.login-feedback.is-info {
+  color: #5a4a00;
+  background: #fff7dc;
+  border: 1px solid #f0dc94;
+}

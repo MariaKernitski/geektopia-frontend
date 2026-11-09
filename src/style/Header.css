@@ -92,3 +92,61 @@
 .header-link {
   white-space: nowrap;
 }
+
+.header-usuario {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 190px;
+  padding: 4px 12px 4px 4px;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid #45444c;
+  border-radius: 999px;
+}
+.header-usuario:hover,
+.header-usuario:focus-visible {
+  border-color: var(--light-yellow);
+}
+.header-usuario-inicial {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--main-txt-color);
+  background: var(--light-yellow);
+  border-radius: 50%;
+}
+.header-usuario-nome {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .header-usuario {
+    padding-right: 4px;
+  }
+  .header-usuario-nome {
+    display: none;
+  }
+}
+
+.header-usuario-foto {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  background: #45444c;
+  border-radius: 50%;
+}
+.header-usuario.is-fixo {
+  cursor: default;
+}
+.header-usuario.is-fixo:hover {
+  border-color: #45444c;
+}

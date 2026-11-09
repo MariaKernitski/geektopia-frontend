@@ -23,6 +23,9 @@ import { Dashboard } from './pages/Dashboard';
 import { AdminPaginas } from './pages/AdminPaginas';
 import { AdminCheckin } from './pages/AdminCheckin';
 import { ErroTela } from './components/ErroTela';
+import { Ajuda } from './pages/Ajuda';
+import { EsqueciSenha } from './pages/EsqueciSenha';
+import { RedefinirSenha } from './pages/RedefinirSenha';
 import { Termos } from './pages/Termos';
 import { EventosComunidade } from './pages/EventosComunidade';
 import { AdminSolicitacoes } from './pages/AdminSolicitacoes';
@@ -41,8 +44,12 @@ export default function App() {
       <ErroTela>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/ajuda" element={<Ajuda />} />
+        <Route path="/ajuda/:id" element={<Ajuda />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/eventos" element={<EventosComunidade />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/perfil" element={<PrivateRoute apenasCliente><Perfil /></PrivateRoute>} />

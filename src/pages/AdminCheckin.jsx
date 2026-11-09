@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Dica } from '../components/ajuda/Dica';
 import { Link } from 'react-router-dom';
 import { Html5Qrcode } from 'html5-qrcode';
 import { FiAlertTriangle, FiArrowLeft, FiCamera, FiCheckCircle, FiClock, FiSearch, FiXCircle } from 'react-icons/fi';
@@ -122,7 +123,7 @@ export function AdminCheckin() {
       </div>
 
       <form className="ck-p-manual" onSubmit={(e) => { e.preventDefault(); setResultado(null); consultar(codigo); }}>
-        <label htmlFor="ck-codigo">Ou digite o código do ingresso</label>
+        <label htmlFor="ck-codigo">Ou digite o código do ingresso<Dica chave="checkinCodigo" rotulo="Código do ingresso" /></label>
         <div>
           <input id="ck-codigo" value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder="GT-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autoComplete="off" spellCheck="false" />
           <button type="submit" className="btn btn-secondary" disabled={!codigo.trim()}><FiSearch aria-hidden="true" /> Consultar</button>
