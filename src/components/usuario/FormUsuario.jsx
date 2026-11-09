@@ -406,7 +406,7 @@ export function FormUsuario({ modo, inicial, onSubmit, rotuloEnvio, onCancelar }
           </div>
 
           {modo === 'admin-criar' && (
-            <Campo id="nivel_permissao" rotulo="Nível de acesso" ajuda="Um administrador pode ser criado já com permissão. Depois dá para promover ou rebaixar.">
+            <Campo id="nivel_permissao" rotulo="Nível de acesso" ajuda="Um administrador pode ser criado já com permissão. Depois dá para dar ou remover o acesso de administrador.">
               <select id="u-nivel_permissao" value={val.nivel_permissao} onChange={(e) => alterar('nivel_permissao', e.target.value)}>
                 <option value="">Cliente (sem acesso administrativo)</option>
                 <option value="ADMIN_CONTEUDO">Admin de Conteúdo</option>
