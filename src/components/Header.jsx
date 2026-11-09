@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
+import { AvisoEmail } from './AvisoEmail';
 import { usePendencias } from '../hooks/usePendencias';
 import { Sininho } from './Sininho';
 import ccpopLogo from '../assets/CCPOP_NAME.png';
@@ -22,11 +23,14 @@ export function Header() {
   const token = localStorage.getItem('@Geektopia:token');
   const noPerfil = location.pathname === '/perfil';
   const buscarFoto = useCallback(
-    () => (token ? api.get('/auth/me').then((r) => r.data?.perfil?.avatar_url || null).catch(() => null) : Promise.resolve(null)),
+    () => (token ? api.get('/auth/me').then((r) => ({ foto: r.data?.perfil?.avatar_url || null, email: r.data?.email, confirmado: Boolean(r.data?.email_confirmado_em) })).catch(() => null) : Promise.resolve(null)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [token, noPerfil]
   );
-  const { dados: foto } = useCarga(buscarFoto);
+  const { dados: conta } = useCarga(buscarFoto);
+  const foto = conta?.foto || null;
+  // Faixa de confirmação do e-mail: só para cliente logado cujo e-mail ainda não foi confirmado (e não na própria tela de confirmação).
+  const precisaConfirmar = Boolean(token && user && !isAdmin && conta && !conta.confirmado && !location.pathname.startsWith('/confirmar-email'));
 
   const { total: pendentes } = usePendencias(isAdmin, location.pathname);
 
@@ -40,6 +44,7 @@ export function Header() {
     `header-link ${location.pathname === path ? 'is-active' : ''}`;
 
   return (
+    <>
     <header className="header">
       <Link to="/" className="header-brand">
         <img src={ccpopLogo} alt="Logo CCPOP" className="header-logo" />
@@ -94,5 +99,7 @@ export function Header() {
         )}
       </div>
     </header>
+    {precisaConfirmar && <AvisoEmail email={conta.email} />}
+    </>
   );
 }

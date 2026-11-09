@@ -59,8 +59,8 @@ export function EsqueciSenha() {
                 </div>
                 {erro && <div className="login-feedback is-error" role="alert">{erro}</div>}
                 <div className="rs-acoes">
-                  <Link to="/login" className="btn btn-secondary">Voltar</Link>
                   <button type="submit" className="btn btn-primary" disabled={enviando}>{enviando ? 'Enviando...' : 'Enviar link'}</button>
+                  <Link to="/login" className="rs-voltar">Voltar ao login</Link>
                 </div>
               </form>
             </>
