@@ -230,3 +230,58 @@
 .aj-link-ajuda:focus-visible {
   background: var(--light-yellow);
 }
+
+.aj-flutuante {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 16px 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--main-txt-color);
+  text-decoration: none;
+  background: var(--light-yellow);
+  border: 2px solid var(--main-txt-color);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--main-txt-color);
+  transition: transform 0.12s;
+}
+.aj-flutuante svg {
+  flex: 0 0 auto;
+  font-size: 24px;
+}
+.aj-flutuante:hover {
+  transform: translate(-1px, -1px);
+}
+.aj-flutuante:focus-visible {
+  outline: 3px solid var(--dark-cyan);
+  outline-offset: 3px;
+}
+/* Barras fixas embaixo (compra no celular e "Salvar alterações" do painel): o botão sobe para não cobri-las. */
+body:has(.dt-barra) .aj-flutuante,
+body:has(.ap-barra) .aj-flutuante {
+  bottom: 96px;
+}
+@media (max-width: 700px) {
+  .aj-flutuante {
+    right: 14px;
+    bottom: 14px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+  .aj-flutuante-rotulo {
+    display: none;
+  }
+}
+@media print {
+  .aj-flutuante {
+    display: none;
+  }
+}

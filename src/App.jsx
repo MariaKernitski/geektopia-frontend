@@ -24,6 +24,7 @@ import { AdminPaginas } from './pages/AdminPaginas';
 import { AdminCheckin } from './pages/AdminCheckin';
 import { ErroTela } from './components/ErroTela';
 import { Ajuda } from './pages/Ajuda';
+import { AjudaFlutuante } from './components/ajuda/AjudaFlutuante';
 import { ConfirmarEmail } from './pages/ConfirmarEmail';
 import { EsqueciSenha } from './pages/EsqueciSenha';
 import { RedefinirSenha } from './pages/RedefinirSenha';
@@ -82,6 +83,7 @@ export default function App() {
         <Route path="/geektopia/:id/comprar" element={<PrivateRoute><Checkout /></PrivateRoute>} />
       </Routes>
       </ErroTela>
+      <AjudaFlutuante />
     </BrowserRouter>
   );
 }
