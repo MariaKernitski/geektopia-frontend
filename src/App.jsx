@@ -24,6 +24,7 @@ import { AdminPaginas } from './pages/AdminPaginas';
 import { AdminCheckin } from './pages/AdminCheckin';
 import { ErroTela } from './components/ErroTela';
 import { Ajuda } from './pages/Ajuda';
+import { ConfirmarEmail } from './pages/ConfirmarEmail';
 import { EsqueciSenha } from './pages/EsqueciSenha';
 import { RedefinirSenha } from './pages/RedefinirSenha';
 import { Termos } from './pages/Termos';
@@ -44,6 +45,7 @@ export default function App() {
       <ErroTela>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/confirmar-email" element={<ConfirmarEmail />} />
         <Route path="/ajuda" element={<Ajuda />} />
         <Route path="/ajuda/:id" element={<Ajuda />} />
         <Route path="/termos" element={<Termos />} />
