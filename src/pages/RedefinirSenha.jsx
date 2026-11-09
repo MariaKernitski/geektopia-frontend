@@ -22,6 +22,11 @@ export function RedefinirSenha() {
   const [enviando, setEnviando] = useState(false);
   const req = v.requisitosSenha(nova);
 
+  // Esta tela vale para a conta DO LINK do e-mail, não para quem está logado. Se houver outra sessão aberta, avisa.
+  let nomeLogado = '';
+  try { nomeLogado = JSON.parse(localStorage.getItem('@Geektopia:user') || 'null')?.nome_completo || ''; } catch { /* ignora */ }
+  const haSessao = Boolean(localStorage.getItem('@Geektopia:token'));
+
   const salvar = async (e) => {
     e.preventDefault();
     setErro('');
@@ -30,6 +35,9 @@ export function RedefinirSenha() {
     setEnviando(true);
     try {
       await api.post('/auth/reset-password', { token, nova_senha: nova });
+      // A senha mudou: a sessão aberta neste navegador (de quem quer que seja) é encerrada, e a pessoa entra com a senha nova.
+      localStorage.removeItem('@Geektopia:token');
+      localStorage.removeItem('@Geektopia:user');
       navigate('/login', { replace: true, state: { senhaRedefinida: true } });
     } catch (err) {
       setErro(err.response?.data?.error || 'Não foi possível alterar a senha. Tente de novo.');
@@ -42,6 +50,12 @@ export function RedefinirSenha() {
       <div className="login-card rs-card">
         <div className="login-form-side">
           <h1 className="login-title">Criar nova senha</h1>
+          {haSessao && (
+            <div className="login-feedback is-info" role="note" style={{ marginTop: 0, marginBottom: 16 }}>
+              {nomeLogado ? <>Há uma conta aberta neste navegador: <strong>{nomeLogado}</strong>. </> : <>Há uma conta aberta neste navegador. </>}
+              A nova senha vale para a conta que pediu este link, que pode ser outra. Ao salvar, essa sessão será encerrada.
+            </div>
+          )}
           {!token ? (
             <>
               <div className="login-feedback is-error" role="alert">Este link está incompleto. Abra o link do e-mail de novo ou peça outro.</div>
