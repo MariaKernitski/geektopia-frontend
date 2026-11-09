@@ -802,3 +802,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+.perfil-encerrar {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+.perfil-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+}
