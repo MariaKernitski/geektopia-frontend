@@ -815,3 +815,22 @@
   margin: 12px 0;
   font-size: 14px;
 }
+
+.perfil-completar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: #fff7dc;
+  border: 1px solid #f0dc94;
+  border-left: 4px solid var(--dark-yellow);
+  border-radius: 8px;
+}
+.perfil-completar p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--soft-txt-color);
+}

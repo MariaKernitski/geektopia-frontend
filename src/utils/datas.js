@@ -39,6 +39,13 @@ export function localParaIso(valor) {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
+// Datas "de calendário" (nascimento) são guardadas como dia, sem hora. Formatar no fuso do navegador recua um dia no
+// Brasil (01/01/1990 virava 31/12/1989), então este formato lê a data em UTC, como ela foi gravada.
+export function formatarDataCivil(iso) {
+  const d = paraData(iso);
+  return d ? d.toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '';
+}
+
 export function formatarData(iso) {
   const d = paraData(iso);
   return d ? d.toLocaleDateString('pt-BR') : '';

@@ -5,7 +5,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { FiAlertTriangle, FiArrowLeft, FiCamera, FiCheckCircle, FiClock, FiSearch, FiXCircle } from 'react-icons/fi';
 import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
-import { formatarData, formatarDataHora } from '../utils/datas';
+import { formatarDataCivil, formatarDataHora } from '../utils/datas';
 import { mascaraCpf } from '../utils/mascaras';
 import { idadeEmAnos } from '../utils/validacao';
 import '../style/Checkin.css';
@@ -146,7 +146,7 @@ export function AdminCheckin() {
             <dl className="ck-p-dados">
               <div><dt>Titular</dt><dd>{ing.nome_titular}</dd></div>
               <div><dt>Documento</dt><dd>{docFormatado(ing.documento_titular)}</dd></div>
-              <div><dt>Nascimento</dt><dd>{ing.data_nascimento_titular ? `${formatarData(ing.data_nascimento_titular)}${idade !== null ? ` (${idade} anos)` : ''}` : 'Não informado'}</dd></div>
+              <div><dt>Nascimento</dt><dd>{ing.data_nascimento_titular ? `${formatarDataCivil(ing.data_nascimento_titular)}${idade !== null ? ` (${idade} anos)` : ''}` : 'Não informado'}</dd></div>
               <div><dt>Ingresso</dt><dd>{ing.lote.nome_lote}</dd></div>
               <div><dt>Evento</dt><dd>{ing.geektopia.nome_edicao}</dd></div>
               {ing.idade_minima ? <div><dt>Classificação</dt><dd>{ing.idade_minima}+ anos</dd></div> : null}

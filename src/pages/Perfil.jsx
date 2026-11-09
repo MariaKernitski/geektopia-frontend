@@ -10,7 +10,7 @@ import api from '../services/api';
 import { useCarga } from '../hooks/useCarga';
 import { Cronometro } from '../components/Cronometro';
 import { mascaraCnpj, mascaraCpf, mascaraTelefone } from '../utils/mascaras';
-import { formatarData, formatarMoeda } from '../utils/datas';
+import { formatarData, formatarDataCivil, formatarMoeda } from '../utils/datas';
 import { eventoPassou } from '../utils/evento';
 import { requisitosSenha, senha as validarSenha } from '../utils/validacao';
 import { GENEROS, SEXUALIDADES, comporGenero, comporSexualidade, separarGenero, separarSexualidade } from '../utils/genero';
@@ -53,6 +53,7 @@ export function Perfil() {
   const { dados, erro, carregando, recarregar } = useCarga(buscar);
 
   const [params] = useSearchParams();
+  const [pedirEdicao, setPedirEdicao] = useState(false); // o aviso do gênero abre o formulário de edição
   const [secao, setSecao] = useState(() => (SECOES.some((x) => x.chave === params.get('secao')) ? params.get('secao') : 'dados'));
   const [mensagem, setMensagem] = useState({ tipo: '', texto: '' });
   const [enviandoFoto, setEnviandoFoto] = useState(false);
@@ -124,6 +125,16 @@ export function Perfil() {
 
         {mensagem.texto && <div className={`perfil-feedback is-${mensagem.tipo}`} role="status">{mensagem.texto}</div>}
 
+        {!user.genero && (
+          <div className="perfil-completar" role="note">
+            <div>
+              <strong>Complete o seu cadastro</strong>
+              <p>Falta informar o seu gênero (pode escolher “Prefiro não informar”). Isso ajuda a CCPOP a conhecer o público do evento, sem identificar você.</p>
+            </div>
+            <button type="button" className="btn btn-primary" onClick={() => { setSecao('dados'); setPedirEdicao(true); }}>Completar agora</button>
+          </div>
+        )}
+
         <div className="perfil-corpo">
           <nav className="perfil-nav" aria-label="Seções do perfil">
             {SECOES.map(({ chave, rotulo, Icone }) => (
@@ -136,7 +147,7 @@ export function Perfil() {
           </nav>
 
           <main className="perfil-painel">
-            {secao === 'dados' && <SecaoDados user={user} onSalvo={(texto) => { setMensagem({ tipo: 'sucesso', texto }); recarregar(); }} />}
+            {secao === 'dados' && <SecaoDados key={pedirEdicao ? 'editar' : 'ver'} user={user} iniciarEditando={pedirEdicao} onSalvo={(texto) => { setPedirEdicao(false); setMensagem({ tipo: 'sucesso', texto }); recarregar(); }} />}
             {secao === 'ingressos' && <ComprasPendentes aoConfirmar={recarregar} />}
             {secao === 'ingressos' && <SecaoIngressos proximos={ingressosProximos} anteriores={ingressosAnteriores} />}
             {secao === 'participacoes' && <SecaoParticipacoes ingressos={ingressos} inscricoes={inscricoes} solicitacoes={solicitacoes} />}
@@ -164,8 +175,8 @@ function Item({ Icone, rotulo, valor }) {
   );
 }
 
-function SecaoDados({ user, onSalvo }) {
-  const [editando, setEditando] = useState(false);
+function SecaoDados({ user, onSalvo, iniciarEditando = false }) {
+  const [editando, setEditando] = useState(iniciarEditando);
 
   const documentoRotulo = user.cpf ? 'CPF' : user.cnpj ? 'CNPJ' : user.passaporte ? 'Passaporte' : 'Documento';
   const documentoValor = user.cpf ? mascaraCpf(user.cpf) : user.cnpj ? mascaraCnpj(user.cnpj) : user.passaporte || '';
@@ -184,7 +195,7 @@ function SecaoDados({ user, onSalvo }) {
       <dl className="perfil-dados">
         <Item Icone={FiUser} rotulo="Nome completo" valor={user.nome_completo} />
         <Item Icone={FiCreditCard} rotulo={documentoRotulo} valor={documentoValor} />
-        <Item Icone={FiCalendar} rotulo="Data de nascimento" valor={user.data_nascimento ? formatarData(user.data_nascimento) : ''} />
+        <Item Icone={FiCalendar} rotulo="Data de nascimento" valor={user.data_nascimento ? formatarDataCivil(user.data_nascimento) : ''} />
       </dl>
       <h3 className="perfil-subtitulo">Contato e localização</h3>
       <dl className="perfil-dados">
