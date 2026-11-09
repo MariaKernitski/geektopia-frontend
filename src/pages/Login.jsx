@@ -58,6 +58,12 @@ export function Login() {
             </div>
           )}
 
+          {new URLSearchParams(location.search).get('conta') === 'excluida' && (
+            <div className="login-feedback is-success" role="status" style={{ marginTop: '0', marginBottom: '20px' }}>
+              Sua conta foi excluída. Se quiser voltar, é só criar uma nova conta.
+            </div>
+          )}
+
           {new URLSearchParams(location.search).get('conta') === 'encerrada' && (
             <div className="login-feedback is-success" role="status" style={{ marginTop: '0', marginBottom: '20px' }}>
               Sua conta foi encerrada. Os dados de quem já comprou ou se inscreveu ficam guardados; para voltar, fale com a organização do CCPOP.
